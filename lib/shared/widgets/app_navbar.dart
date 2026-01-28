@@ -20,7 +20,7 @@ class AppNavBar extends StatelessWidget {
       onTap: onTap,
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.white,
-      selectedItemColor: _unselectedColor,
+      selectedItemColor: _selectedIconColor,
       unselectedItemColor: _unselectedColor,
       showUnselectedLabels: true,
       selectedFontSize: 12,
