@@ -68,45 +68,139 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               //Ready to study?
-              Row(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Ready to study?",
-                          style: TextStyle(
-                            fontSize: 28,
-                            color: Color(0xFF826559),
-                            fontWeight: FontWeight.w800
-                          ),
-                        ),
-                        SvgPicture.asset(
-                          'assets/icons/book.svg',
-                          width: 36,
-                          height: 36,
-                        ),
-                        SizedBox(height: 6),
-                        Text("You have 5 assignments pending this week.",
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Ready to study?",
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFFA48C7E),
+                          fontSize: 28,
+                          color: Color(0xFF826559),
+                          fontWeight: FontWeight.w800
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      SvgPicture.asset(
+                        'assets/icons/book.svg',
+                        width: 28,
+                        height: 28,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 6),
+                  Text("You have 5 assignments pending this week.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFFA48C7E),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  //ปุ่ม Add New / All Assignments
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.add_circle, size: 22),
+                          label: const Text('Add New'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFDBBA7C),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 14,
+                            ),
+                            minimumSize: const Size(0, 44),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                            elevation: 6,
+                            shadowColor: const Color(0x66B08F4F),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.folder_rounded,
+                            size: 22,
+                            color: Colors.white,
+                          ),
+                          label: const Text('All Assignments'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFDBBA7C),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 14,
+                            ),
+                            minimumSize: const Size(0, 44),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
+                            elevation: 6,
+                            shadowColor: const Color(0x66B08F4F),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFF0E8),
-                      shape: BoxShape.circle,
-                    ),
+                  //หัวข้อ “Today” + badge จำนวนงาน
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFDBBA7C),
+                          borderRadius: BorderRadius.circular(2)
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Today',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF826559),
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: 
+                          const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE2D3C6),
+                          borderRadius: BorderRadius.circular(20)
+                        ),
+                        child: const Text(
+                          '3 Tasks',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Color(0xFF826559),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 12),
+                  //การ์ดงานใบแรก (Math)
                 ],
               ),
             ],
