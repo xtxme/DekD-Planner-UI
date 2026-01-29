@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../features/home/home_page.dart';
 import '../../../features/subjects/subjects_page.dart';
 import 'app_navbar.dart';
 import 'provider.dart';
@@ -17,7 +18,7 @@ class NavbarShell extends ConsumerWidget {
   ];
 
   static const List<Widget> _pages = [
-    _HomeTab(),
+    HomePage(),
     SubjectsPage(),
     _PlaceholderTab(title: 'Assignments Page'),
     _PlaceholderTab(title: 'Calendar Page'),
@@ -40,17 +41,6 @@ class NavbarShell extends ConsumerWidget {
         onTap: (index) =>
             ref.read(currentNavIndexProvider.notifier).state = index,
       ),
-    );
-  }
-}
-
-class _HomeTab extends StatelessWidget {
-  const _HomeTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Home Page'),
     );
   }
 }
