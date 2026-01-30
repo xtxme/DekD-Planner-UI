@@ -1,8 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'models/task_item.dart';
+import 'widgets/task_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
+  static const List<TaskItem> _todayTasks = [
+    TaskItem(
+      subject: 'MATH',
+      title: 'Algebra Worksheet 4.2',
+      subtitle: 'Chapter 4: Polynomials ',
+      tagBg: Color(0xFFE7F0FF),
+      tagColor: Color(0xFF2E7CF6),
+      dueText: 'Due 16:00 PM',
+      dueBg: Color(0xFFFFE7E7),
+      dueColor: Color(0xFFE05A5A),
+      showDuePill: true,
+      showShadow: true,
+    ),
+    TaskItem(
+      subject: 'HISTORY',
+      title: 'Algebra Worksheet 4.2',
+      subtitle: 'Chapter 4: Polynomials ',
+      tagBg: Color(0xFFFBF7F1),
+      tagColor: Color(0xFFE0B66B),
+      dueText: 'Due 11:59 PM',
+      dueColor: Color(0xFFA48C7E),
+      showDuePill: false,
+      showShadow: true,
+    ),
+  ];
+
+  static const List<TaskItem> _tomorrowTasks = [
+    TaskItem(
+      subject: 'CHEMISTRY',
+      title: 'Algebra Worksheet 4.2',
+      subtitle: 'Chapter 4: Polynomials',
+      tagBg: Color(0x335FAF97),
+      tagColor: Color(0xFF5FAF97),
+      dueText: 'Due 11:59 PM',
+      dueColor: Color(0xFFA48C7E),
+      showDuePill: false,
+    ),
+    TaskItem(
+      subject: 'CHEMISTRY',
+      title: 'Lab Report Draft',
+      subtitle: 'Experiment 12: Titration',
+      tagBg: Color(0x335FAF97),
+      tagColor: Color(0xFF5FAF97),
+      dueText: 'Due 11:59 PM',
+      dueColor: Color(0xFFA48C7E),
+      showDuePill: false,
+    ),
+  ];
+
+  List<Widget> _buildTaskCards(List<TaskItem> items) {
+    final widgets = <Widget>[];
+    for (var i = 0; i < items.length; i++) {
+      final item = items[i];
+      widgets.add(
+        TaskCard(
+          subject: item.subject,
+          title: item.title,
+          subtitle: item.subtitle,
+          tagBg: item.tagBg,
+          tagColor: item.tagColor,
+          dueText: item.dueText,
+          dueColor: item.dueColor,
+          dueBg: item.dueBg,
+          showDuePill: item.showDuePill,
+          showShadow: item.showShadow,
+        ),
+      );
+      if (i != items.length - 1) {
+        widgets.add(const SizedBox(height: 12));
+      }
+    }
+    return widgets;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +104,7 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -44,7 +120,7 @@ class HomePage extends StatelessWidget {
                         SizedBox(height: 4),
                         Text(
                           "Hi, Alex! 👋",
-                            style: TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             letterSpacing: 1.1,
                             color: Color(0xFF826559),
@@ -168,7 +244,7 @@ class HomePage extends StatelessWidget {
                         height: 28,
                         decoration: BoxDecoration(
                           color: Color(0xFFDBBA7C),
-                          borderRadius: BorderRadius.circular(2)
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -182,11 +258,13 @@ class HomePage extends StatelessWidget {
                       ),
                       const Spacer(),
                       Container(
-                        padding: 
-                          const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Color(0xFFE2D3C6),
-                          borderRadius: BorderRadius.circular(20)
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
                           '3 Tasks',
@@ -200,7 +278,31 @@ class HomePage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  //การ์ดงานใบแรก (Math)
+                  ..._buildTaskCards(_todayTasks),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD9C9BD),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Tomorrow',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF826559),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  ..._buildTaskCards(_tomorrowTasks),
                 ],
               ),
             ],
