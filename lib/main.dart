@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'features/auth/login_page.dart';
 
 import 'shared/widgets/navbar/navbar_shell.dart';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'DekD Planner',
       debugShowCheckedModeBanner: false,
-      home: const NavbarShell(),
+      home: const LoginPage(),
     );
   }
 }
