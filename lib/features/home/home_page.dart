@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'models/task_item.dart';
 import 'widgets/task_card.dart';
 import 'package:my_first_app/shared/widgets/navbar/app_navbar.dart';
@@ -83,6 +84,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final dateText =
+        DateFormat('EEEE, MMM d').format(now).toUpperCase();
     return Scaffold(
       //วางโครงพื้นฐานของหน้า
       backgroundColor: const Color(0xFFF7F2EE),
@@ -107,7 +111,7 @@ class HomePage extends StatelessWidget {
                       backgroundColor: Colors.white,
                       child: CircleAvatar(
                         radius: 19,
-                        backgroundColor: Color(0xFFE2D3C6),
+                        backgroundColor:  Color(0xFFF7F3EC),
                         child: Icon(Icons.person, color: Color(0xFF8C6B5A)),
                       ),
                     ),
@@ -115,10 +119,10 @@ class HomePage extends StatelessWidget {
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            "MONDAY, OCT 24",
-                            style: TextStyle(
+                        children: [
+                        Text(
+                          dateText,
+                          style: TextStyle(
                               fontSize: 13,
                               letterSpacing: 1.1,
                               color: Color(0xFFA48C7E),
