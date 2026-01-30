@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'features/home/home_page.dart';
+import 'shared/widgets/navbar/navbar_shell.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'DekD Planner',
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      home: const NavbarShell(),
     );
   }
 }

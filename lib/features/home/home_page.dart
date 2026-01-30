@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'models/task_item.dart';
 import 'widgets/task_card.dart';
+import 'package:my_first_app/shared/widgets/navbar/app_navbar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -87,66 +88,78 @@ class HomePage extends StatelessWidget {
       backgroundColor: const Color(0xFFF7F2EE),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          padding: const EdgeInsets.fromLTRB(0, 16, 0, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             //Top Bar
             children: [
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Colors.white,
-                    child: CircleAvatar(
-                      radius: 19,
-                      backgroundColor: Color(0xFFE2D3C6),
-                      child: Icon(Icons.person, color: Color(0xFF8C6B5A)),
+              Container(
+                width: double.infinity,
+                color: const Color(0xFFE2D3C6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.white,
+                      child: CircleAvatar(
+                        radius: 19,
+                        backgroundColor: Color(0xFFE2D3C6),
+                        child: Icon(Icons.person, color: Color(0xFF8C6B5A)),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "MONDAY, OCT 24",
-                          style: TextStyle(
-                            fontSize: 13,
-                            letterSpacing: 1.1,
-                            color: Color(0xFFA48C7E),
-                            fontWeight: FontWeight.w600,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            "MONDAY, OCT 24",
+                            style: TextStyle(
+                              fontSize: 13,
+                              letterSpacing: 1.1,
+                              color: Color(0xFFA48C7E),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          "Hi, Alex! 👋",
-                          style: TextStyle(
-                            fontSize: 18,
-                            letterSpacing: 1.1,
-                            color: Color(0xFF826559),
-                            fontWeight: FontWeight.w900,
+                          SizedBox(height: 4),
+                          Text(
+                            "Hi, Alex! 👋",
+                            style: TextStyle(
+                              fontSize: 18,
+                              letterSpacing: 1.1,
+                              color: Color(0xFF826559),
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFEFE2D6),
-                      shape: BoxShape.circle,
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFEFE2D6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.notifications,
+                        color: Color(0xFF826559),
+                      ),
                     ),
-                    child: const Icon(Icons.notifications,
-                    color: Color(0xFF826559)),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
               //Ready to study?
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -305,6 +318,7 @@ class HomePage extends StatelessWidget {
                   ..._buildTaskCards(_tomorrowTasks),
                 ],
               ),
+            ),
             ],
           ),
         ),

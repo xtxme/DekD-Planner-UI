@@ -29,9 +29,6 @@ class NavbarShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentNavIndexProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_titles[currentIndex]),
-      ),
       body: IndexedStack(
         index: currentIndex,
         children: _pages,
