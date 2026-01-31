@@ -61,7 +61,7 @@ class _ForgotPageState extends State<ForgotPage> {
                             ),
                           ),
                           child: Icon(
-                            Icons.school_sharp,
+                            Icons.question_mark_rounded,
                             size: 44,
                             color: Color(0xFFD2A34A),
                           ),

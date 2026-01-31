@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'forgot_page.dart';
+import 'register_page.dart';
 
 class LoginPage extends StatefulWidget{
   const LoginPage ({super.key});
@@ -209,15 +210,21 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 14,
                             ),
                           ),
-                          Text(' Register Now',
+                          TextButton(onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const RegisterPage()),
+                          );
+                          },                           
+                          child: Text(' Register Now',
                           style: TextStyle(
                             color: Color(0xFF7A5A4A),
                             fontWeight: FontWeight.w900,
                             fontSize: 14,
                             ),
                           ),
+                        ),
                         ],
-                      )
+                      ),
                       ],
                     ),
                   ),
