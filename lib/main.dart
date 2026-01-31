@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/auth/login_page.dart';
+import 'services/database/app_database.dart';
 
 import 'shared/widgets/navbar/navbar_shell.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppDatabase.instance.database;
   runApp(const ProviderScope(child: MyApp()));
 }
 
