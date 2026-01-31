@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'forgot_page.dart';
 
 class LoginPage extends StatefulWidget{
   const LoginPage ({super.key});
@@ -9,6 +10,7 @@ class LoginPage extends StatefulWidget{
 
 class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -179,14 +181,22 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      TextButton(onPressed: () {}, 
-                      child: Text('Forgot Password?',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFFA48C7E),
-                        fontWeight: FontWeight.w500,
-                      ),
-                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ForgotPage(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFFA48C7E),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 200),
                       Row(
