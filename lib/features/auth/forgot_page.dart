@@ -28,6 +28,29 @@ class _ForgotPageState extends State<ForgotPage> {
                       //ไอคอน + Forgot Password?
                       children: [
                         SizedBox(height: 56),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton.icon(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: const Icon(Icons.arrow_back_rounded, size: 18),
+                              label: const Text('Back to Login'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color(0xFF7A5A4A),
+                                padding: EdgeInsets.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                textStyle: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
                         Container(
                           width: 96,
                           height: 96,
@@ -107,7 +130,7 @@ class _ForgotPageState extends State<ForgotPage> {
                               ),
                             ),
                             const SizedBox(height: 28),
-                            SizedBox(
+                      SizedBox(
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton(
