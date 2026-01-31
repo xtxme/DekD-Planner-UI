@@ -136,8 +136,8 @@ class _ForgotPageState extends State<ForgotPage> {
                         child: ElevatedButton(
                           onPressed: () {}, 
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFD2A34A),
-                            foregroundColor: Color(0xFF7A5A4A),
+                            backgroundColor: Color(0xFFD9A441),
+                            foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),

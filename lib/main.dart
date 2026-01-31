@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/auth/login_page.dart';
+import 'features/auth/register_page.dart';
 import 'services/database/app_database.dart';
 
 import 'shared/widgets/navbar/navbar_shell.dart';
@@ -21,6 +22,10 @@ class MyApp extends StatelessWidget {
       title: 'DekD Planner',
       debugShowCheckedModeBanner: false,
       home: const LoginPage(),
+      routes: {
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+      },
     );
   }
 }

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-
 class RegisterPage extends StatefulWidget{
   const RegisterPage({super.key});
 
@@ -18,12 +16,17 @@ class _RegisterPageState extends State<RegisterPage> {
       //เตรียมโครงหน้า
       backgroundColor: const Color(0xFFFBFAF9),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                 //App bar
                 Row(
                   children: [
@@ -113,19 +116,76 @@ class _RegisterPageState extends State<RegisterPage> {
                   label: "Password", 
                   hint: "Create a password", 
                   icon: Icons.lock,
-                  suffix: Icon(Icons.visibility_off, color: Color(0xFFB08F7E)),
-                  obscure: true,
+                  isObscure: _obscurePassword,
+                  onToggle: () => setState(() {
+                    _obscurePassword = !_obscurePassword;
+                  }),
                 ),
                 const SizedBox(height: 20),
                 buildField(
                   label: "Confirm Password", 
                   hint: "Confirm your password", 
                   icon: Icons.lock_reset_outlined,
-                  obscure: true,
+                  isObscure: _obscureConfirm,
+                  onToggle: () => setState(() {
+                    _obscureConfirm = !_obscureConfirm;
+                  }),
                 ),
-              ],
-            ),
-          ),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                          onPressed: () {}, 
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFD2A34A),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size.fromHeight(56),
+                            shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                          ),
+                          child: const Text('Register',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          ),
+                        ),
+                        ),
+                        const SizedBox(height: 100),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Already have an account? ',
+                            style: TextStyle(
+                              color: Color(0xFFA48C7E),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, "/login");
+                              },
+                              child: Text(" Login",
+                              style: TextStyle(
+                                color: Color(0xFFD9A441),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -154,7 +214,7 @@ Widget buildField({
       ),
       const SizedBox(height: 8),
       TextField(
-        obscureText: obscure,
+        obscureText: isObscure ?? obscure,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
@@ -163,11 +223,17 @@ Widget buildField({
             fontWeight: FontWeight.w500,
           ),
           prefixIcon: Icon(icon, color: Color(0xFFA9998B)),
-          suffixIcon: IconButton(onPressed: () {
-            setState(() {
-               _obscure = !_obscure
-            })
-          }, icon: icon),
+          suffixIcon: onToggle == null
+              ? null
+              : IconButton(
+                  onPressed: onToggle,
+                  icon: Icon(
+                    (isObscure ?? true)
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                    color: Color(0xFFB08F7E),
+                  ),
+                ),
           filled: true,
           fillColor: Color(0xFFF3ECE6),
           contentPadding: const EdgeInsets.symmetric(vertical: 16),

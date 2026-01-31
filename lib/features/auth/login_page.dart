@@ -162,12 +162,13 @@ class _LoginPageState extends State<LoginPage> {
                       //ปุ่มLogin + ลิงก์ Forgot/Register 
                       SizedBox(
                         width: double.infinity,
-                        height: 52,
                         child: ElevatedButton(
                           onPressed: () {}, 
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFD2A34A),
-                            foregroundColor: Color(0xFF7A5A4A),
+                            backgroundColor: Color(0xFFD9A441),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            minimumSize: const Size.fromHeight(52),
                             shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -217,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
                           },                           
                           child: Text(' Register Now',
                           style: TextStyle(
-                            color: Color(0xFF7A5A4A),
+                            color: Color(0xFFD9A441),
                             fontWeight: FontWeight.w900,
                             fontSize: 14,
                             ),
