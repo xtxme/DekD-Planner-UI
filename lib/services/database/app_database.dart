@@ -62,4 +62,26 @@ const List<String> _createStatementsV1 = <String>[
     show_due_pill INTEGER NOT NULL
   );
   ''',
+  '''
+  CREATE TABLE auth_users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    password_salt TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+    last_login_at INTEGER
+  );
+  ''',
+  '''
+  CREATE TABLE auth_reset_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    password_salt TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+    last_login_at INTEGER
+  );
+  ''',
 ];
