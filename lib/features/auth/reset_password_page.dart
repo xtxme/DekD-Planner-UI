@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/password_text_form_field.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage ({super.key});
@@ -8,7 +9,16 @@ class ResetPasswordPage extends StatefulWidget {
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
-  bool _obscureNew = true;
+  final _formKey = GlobalKey<FormState>();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,9 +60,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     // Title + subtitle
                     const SizedBox(height: 12),
                     Row(
@@ -89,33 +101,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'Create a new password',
-                        hintStyle: TextStyle(
-                          color: Color(0xFFB8A99A),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        prefixIcon: Icon(Icons.mail_rounded, color: Color(0xFFA9998B)),
-                        suffixIcon: IconButton(
-                          onPressed: () => setState(() {
-                          _obscureNew = !_obscureNew;
-                        }), 
-                          icon: Icon(
-                             _obscureNew? Icons.visibility_off : Icons.visibility,
-                             color: Color(0xFFB08F7E),
-                          ),
-                        ),
-                        fillColor: Colors.white,
-                        filled: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
+                    PasswordTextFormField(
+                      controller: _newPasswordController,
+                      hintText: 'Create a new password',
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a new password.';
+                        }
+                        if (value.trim().length < 8) {
+                          return 'Password must be at least 8 characters.';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -137,33 +134,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     ),
                     // Confirm label + field
                     const SizedBox(height: 8),
-                    TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'Confirm your password',
-                        hintStyle: TextStyle(
-                          color: Color(0xFFB8A99A),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        prefixIcon: Icon(Icons.mail_rounded, color: Color(0xFFA9998B)),
-                        suffixIcon: IconButton(
-                          onPressed: () => setState(() {
-                          _obscureNew = !_obscureNew;
-                        }), 
-                          icon: Icon(
-                             _obscureNew? Icons.visibility_off : Icons.visibility,
-                             color: Color(0xFFB08F7E),
-                          ),
-                        ),
-                        fillColor: Colors.white,
-                        filled: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
+                    PasswordTextFormField(
+                      controller: _confirmPasswordController,
+                      hintText: 'Confirm your password',
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please confirm your password.';
+                        }
+                        if (value.trim() != _newPasswordController.text.trim()) {
+                          return 'Passwords do not match.';
+                        }
+                        return null;
+                      },
                     ),
                     // Reset button
                     const SizedBox(height: 28),
@@ -171,7 +153,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       width: double.infinity, //ขยายความกว้างให้เต็มพื้นที่ที่ parent อนุญาต
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (_formKey.currentState?.validate() != true) {
+                            return;
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFD6A75C),
                           foregroundColor: Colors.white,
@@ -189,7 +175,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         ),
                       ),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

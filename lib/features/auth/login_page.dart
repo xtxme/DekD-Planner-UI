@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'forgot_page.dart';
 import 'register_page.dart';
+import 'widgets/password_text_form_field.dart';
 
 class LoginPage extends StatefulWidget{
   const LoginPage ({super.key});
@@ -10,8 +11,6 @@ class LoginPage extends StatefulWidget{
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _obscurePassword = true;
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,42 +117,8 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            TextFormField(
-                              obscureText: _obscurePassword,
-                              decoration: InputDecoration(
-                                hintText: 'Enter your password',
-                                hintStyle: TextStyle(
-                                  color: Color(0xFFB8A99A),
-                                ),
-                                prefixIcon: Icon(Icons.lock, color: Color(0xFFA9998B)),
-                                suffixIcon: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword; //toggle ค่า
-                                    });
-                                }, 
-                                icon: Icon( //_obscurePassword == true แสดงไอคอนตาปิด
-                                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                                ),
-                                ),
-                                filled: true,
-                                fillColor: Colors.white,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(color: Color(0xFFD9C6B4)),
-                                ),
-                                //ขอบตอน ยังไม่กดพิมพ์
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(color: Color(0xFFD9C6B4)),
-                                ),
-                                //ขอบตอน กำลังพิมพ์
-                                focusedBorder:OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  borderSide: BorderSide(color: Color(0xFFD2A34A)),
-                                ),
-                              ),
+                            PasswordTextFormField(
+                              hintText: 'Enter your password',
                             ),
                           ],
                         ),

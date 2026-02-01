@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'DekD Planner',
       debugShowCheckedModeBanner: false,
-      home: const ResetPasswordPage(),
+      home: const LoginPage(),
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
