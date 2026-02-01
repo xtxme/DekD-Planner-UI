@@ -28,29 +28,34 @@ class _RegisterPageState extends State<RegisterPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                 //App bar
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context), 
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Color(0xFF7A5A4A),
+                Container(
+                  width: double.infinity,
+                  color: const Color(0xFFF4EBDD),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context), 
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Color(0xFF7A5A4A),
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          'Register',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF7A5A4A),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Register',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF7A5A4A),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 48,)
-                  ],
+                      SizedBox(width: 48,)
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 24),
                 //หัวเรื่องใหญ่ + ไอคอนหมวก
@@ -229,8 +234,7 @@ Widget buildField({
                   onPressed: onToggle,
                   icon: Icon(
                     (isObscure ?? true)
-                        ? Icons.visibility_off
-                        : Icons.visibility,
+                        ? Icons.visibility_off : Icons.visibility,
                     color: Color(0xFFB08F7E),
                   ),
                 ),

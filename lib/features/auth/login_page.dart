@@ -133,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                                     });
                                 }, 
                                 icon: Icon( //_obscurePassword == true แสดงไอคอนตาปิด
-                                  _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
                                 ),
                                 ),
                                 filled: true,

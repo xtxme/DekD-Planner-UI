@@ -23,7 +23,6 @@ class AppDatabase {
   Future<Database> _open() async {
     final basePath = await getDatabasesPath();
     final path = p.join(basePath, _dbName);
-    print('DB PATH: $path');
 
     return openDatabase(
       path,
@@ -69,7 +68,7 @@ const List<String> _createStatementsV1 = <String>[
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     password_salt TEXT NOT NULL,
-    created_at INTEGER NOT NULL
+    created_at INTEGER NOT NULL,
     last_login_at INTEGER
   );
   ''',
@@ -80,7 +79,7 @@ const List<String> _createStatementsV1 = <String>[
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     password_salt TEXT NOT NULL,
-    created_at INTEGER NOT NULL
+    created_at INTEGER NOT NULL,
     last_login_at INTEGER
   );
   ''',

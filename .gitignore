@@ -27,7 +27,10 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
+.fvm/
+.packages
 .pub-cache/
 .pub/
 /build/
@@ -43,3 +46,25 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android (local tooling/config)
+/android/.gradle
+/android/local.properties
+/android/key.properties
+
+# iOS/macOS (CocoaPods & Flutter ephemeral)
+/ios/Pods
+/ios/.symlinks
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/Flutter/Flutter.xcframework
+/macos/Pods
+/macos/Flutter/ephemeral
+
+# Linux/Windows Flutter ephemeral
+/linux/flutter/ephemeral
+/windows/flutter/ephemeral
+
+# Environment files
+.env
+.env.*
