@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'widgets/auth_primary_button.dart';
 class RegisterPage extends StatefulWidget{
   const RegisterPage({super.key});
 
@@ -173,32 +175,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                 },
                               ),
                               const SizedBox(height: 40),
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState?.validate() != true) {
-                                      return;
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFFD2A34A),
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
-                                    minimumSize: const Size.fromHeight(56),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  child: const Text(
-                                    'Register',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                ),
+                              AuthPrimaryButton(
+                                label: 'Register',
+                                onPressed: () {
+                                  if (_formKey.currentState?.validate() != true) {
+                                    return;
+                                  }
+                                },
                               ),
                               const SizedBox(height: 100),
                               Row(

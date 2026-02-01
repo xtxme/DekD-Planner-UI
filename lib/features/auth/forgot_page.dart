@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'widgets/auth_primary_button.dart';
+
 class ForgotPage extends StatefulWidget {
   const ForgotPage({super.key});
 
@@ -130,26 +132,9 @@ class _ForgotPageState extends State<ForgotPage> {
                               ),
                             ),
                             const SizedBox(height: 28),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: () {}, 
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFD9A441),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                          ),
-                          child: const Text('Send Reset Link',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          ),
-                        ),
+                      AuthPrimaryButton(
+                        label: 'Send Reset Link',
+                        onPressed: () {},
                       ),
                           ],
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/auth_primary_button.dart';
 import 'widgets/password_text_form_field.dart';
 
 class ResetPasswordPage extends StatefulWidget {
@@ -149,31 +150,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     ),
                     // Reset button
                     const SizedBox(height: 28),
-                    SizedBox(
-                      width: double.infinity, //ขยายความกว้างให้เต็มพื้นที่ที่ parent อนุญาต
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() != true) {
-                            return;
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD6A75C),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: Text(
-                          'Reset Password',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
+                    AuthPrimaryButton(
+                      label: 'Reset Password',
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() != true) {
+                          return;
+                        }
+                      },
                     ),
                     ],
                   ),

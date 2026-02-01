@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/features/auth/check_page.dart';
 import 'package:my_first_app/features/auth/reset_password_page.dart';
 import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'DekD Planner',
       debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+      home: const CheckPage(),
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
