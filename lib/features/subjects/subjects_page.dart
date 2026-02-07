@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../shared/widgets/navbar/app_navbar.dart';
+import '../../shared/widgets/navbar/provider.dart';
 import 'widgets/header.dart';
 import 'widgets/grid.dart';
-import 'widgets/addButton.dart';
+import '../../shared/widgets/add_button.dart';
 
-class SubjectsPage extends StatefulWidget {
-  const SubjectsPage({super.key});
+class SubjectsPage extends ConsumerStatefulWidget {
+  const SubjectsPage({
+    super.key,
+    this.withNavBar = true,
+  });
+
+  final bool withNavBar;
 
   @override
-  State<SubjectsPage> createState() => _SubjectsPageState();
+  ConsumerState<SubjectsPage> createState() => _SubjectsPageState();
 }
 
-class _SubjectsPageState extends State<SubjectsPage> {
+class _SubjectsPageState extends ConsumerState<SubjectsPage> {
   String _query = '';
 
   static const List<SubjectGridItem> _subjects = [
@@ -67,6 +76,8 @@ class _SubjectsPageState extends State<SubjectsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentIndex = ref.watch(currentNavIndexProvider);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F3EF),
       body: SafeArea(
@@ -83,13 +94,21 @@ class _SubjectsPageState extends State<SubjectsPage> {
               child: Stack(
                 children: [
                   SubjectsGrid(items: _filteredSubjects),
-                  const SubjectsAddButton(),
+                  const AddButton(),
                 ],
               ),
             ),
           ],
         ),
       ),
+      bottomNavigationBar: widget.withNavBar
+          ? AppNavBar(
+              currentIndex: currentIndex,
+              onTap: (index) {
+                ref.read(currentNavIndexProvider.notifier).state = index;
+              },
+            )
+          : null,
     );
   }
 }

@@ -36,9 +36,9 @@ class SubjectsGrid extends StatelessWidget {
       itemCount: items.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.82,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
+        childAspectRatio: 0.94,
       ),
       itemBuilder: (context, index) => SubjectCard(item: items[index]),
     );
@@ -66,13 +66,13 @@ class SubjectCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 76,
-            height: 76,
+            width: 65,
+            height: 65,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Color(0xFFF3ECE5),
             ),
-            child: Icon(item.icon, size: 36, color: const Color(0xFF876557)),
+            child: Icon(item.icon, size: 36, color: Color(0xFF7A5A4A),),
           ),
           const SizedBox(height: 14),
           Text(
@@ -80,7 +80,7 @@ class SubjectCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF876557),
+              color: Color(0xFF7A5A4A),
             ),
           ),
           const SizedBox(height: 10),
@@ -95,7 +95,7 @@ class SubjectCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isInactive ? const Color(0xFFB7A79D) : const Color(0xFF876557),
+                color: isInactive ? const Color(0xFFB7A79D) : Color(0xFF7A5A4A),
               ),
             ),
           ),

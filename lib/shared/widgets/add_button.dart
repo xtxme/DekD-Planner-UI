@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class SubjectsAddButton extends StatelessWidget {
-  const SubjectsAddButton ({super.key});
+class AddButton extends StatelessWidget {
+  const AddButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Positioned( //วางปุ่มไว้
+    return Positioned(
       right: 20,
       bottom: 16,
-      child: Container( //ตัวปุ่ม
-        width: 74,
-        height: 74,
-        decoration: BoxDecoration(
+      child: Container(
+        width: 65,
+        height: 65,
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Color(0xFFE0B35D),
           boxShadow: [
@@ -22,7 +22,11 @@ class SubjectsAddButton extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(Icons.add, size: 40, color: Color(0xFF876557)),
+        child: const Icon(
+          Icons.add,
+          size: 35,
+          color: Colors.white,
+        ),
       ),
     );
   }

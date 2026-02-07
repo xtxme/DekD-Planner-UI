@@ -12,7 +12,7 @@ class SubjectsHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity, //ขยายความกว้างให้มากที่สุดเท่าที่พ่อ (parent) อนุญาต
-      color: const Color(0xFFE2D4C7),
+      color: const Color(0xFFE2D3C6),
       padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -20,27 +20,46 @@ class SubjectsHeader extends StatelessWidget {
           const Text(
             'Subjects',
             style: TextStyle(
-              fontSize: 46,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF826559),
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF7A5A4A),
             ),
           ),
           const SizedBox(height: 16),
-          Container(
-            height: 56,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF7F5F3),
-              borderRadius: BorderRadius.circular(18),
-            ),
+          SizedBox(
+            height: 48,
             child: TextField(
+              textAlignVertical: TextAlignVertical.center,
               onChanged: onQueryChanged,
               decoration: InputDecoration(
-                border: InputBorder.none,
-                prefixIcon: Icon(Icons.search_rounded, color: Color(0xFFA58F83)),
+                isDense: true,
+                filled: true,
+                fillColor: const Color(0xFFF7F2EE),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                prefixIcon: const Icon(
+                  Icons.search_outlined,
+                  color: Color(0xFFA9998B),
+                ),
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 52,
+                  minHeight: 48,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFD9C6B4)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFFD9C6B4)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: Color(0xFF7A5A4A)),
+                ),
                 hintText: 'Search subjects...',
-                hintStyle: TextStyle(
-                  color: Color(0xFFB5A79E),
-                  fontSize: 32,
+                hintStyle: const TextStyle(
+                  color: Color(0xFFB8A99A),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),

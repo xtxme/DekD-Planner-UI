@@ -19,7 +19,7 @@ class NavbarShell extends ConsumerWidget {
 
   static const List<Widget> _pages = [
     HomePage(),
-    SubjectsPage(),
+    SubjectsPage(withNavBar: false),
     _PlaceholderTab(title: 'Assignments Page'),
     _PlaceholderTab(title: 'Calendar Page'),
     _PlaceholderTab(title: 'Settings Page'),
