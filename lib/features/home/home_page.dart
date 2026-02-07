@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'models/task_item.dart';
-import 'widgets/task_card.dart';
-import 'package:my_first_app/shared/widgets/navbar/app_navbar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -62,7 +61,7 @@ class HomePage extends StatelessWidget {
     for (var i = 0; i < items.length; i++) {
       final item = items[i];
       widgets.add(
-        TaskCard(
+        AssignmentsCard(
           subject: item.subject,
           title: item.title,
           subtitle: item.subtitle,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../features/assignments/assignments_page.dart';
 import '../../../features/home/home_page.dart';
 import '../../../features/subjects/subjects_page.dart';
 import 'app_navbar.dart';
@@ -9,18 +10,10 @@ import 'provider.dart';
 class NavbarShell extends ConsumerWidget {
   const NavbarShell({super.key});
 
-  static const List<String> _titles = [
-    'Home',
-    'Subjects',
-    'Assignments',
-    'Calendar',
-    'Settings',
-  ];
-
   static const List<Widget> _pages = [
     HomePage(),
     SubjectsPage(withNavBar: false),
-    _PlaceholderTab(title: 'Assignments Page'),
+    AssignmentsPage(withNavBar: false),
     _PlaceholderTab(title: 'Calendar Page'),
     _PlaceholderTab(title: 'Settings Page'),
   ];
