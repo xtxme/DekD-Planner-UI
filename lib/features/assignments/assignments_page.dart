@@ -18,71 +18,119 @@ class AssignmentsPage extends ConsumerWidget {
       subtitle: 'Chapter 4: Polynomials',
       tagBg: Color(0xFFE7F0FF),
       tagColor: Color(0xFF2E7CF6),
-      dueText: 'Due 16:00 PM',
-      dueBg: Color(0xFFFFE7E7),
-      dueColor: Color(0xFFE05A5A),
+      dueText: 'Due 4:00 PM',
+      dueBg: Color(0xFFFFECEC),
+      dueColor: Color(0xFFE65757),
       showDuePill: true,
+      showDueIcon: true,
       showShadow: true,
+      highlightLeftAccent: true,
+      hideLeadingCircle: true,
     ),
     _AssignmentItem(
       subject: 'HISTORY',
-      title: 'Algebra Worksheet 4.2',
-      subtitle: 'Chapter 4: Polynomials',
+      title: 'Read Chapter 4',
+      subtitle: 'The Industrial Revolution',
       tagBg: Color(0xFFFBF7F1),
       tagColor: Color(0xFFE0B66B),
-      dueText: 'Due 11:59 PM',
+      dueText: '11:59 PM',
       dueColor: Color(0xFFA48C7E),
       showDuePill: false,
+      showDueIcon: false,
       showShadow: true,
+      hideLeadingCircle: true,
+      highlightLeftAccent: true,
     ),
   ];
 
-  static const List<_AssignmentItem> _tomorrowAssignments = [
+  static const List<_AssignmentItem> _thisWeekAssignments = [
     _AssignmentItem(
       subject: 'CHEMISTRY',
-      title: 'Algebra Worksheet 4.2',
-      subtitle: 'Chapter 4: Polynomials',
-      tagBg: Color(0x335FAF97),
-      tagColor: Color(0xFF5FAF97),
-      dueText: 'Due 11:59 PM',
+      title: 'Lab Report: Titration',
+      subtitle: 'Experiment 12',
+      tagBg: Color(0xFFDFF2EA),
+      tagColor: Color(0xFF1C9E73),
+      dueText: 'Wed, Oct 26',
       dueColor: Color(0xFFA48C7E),
       showDuePill: false,
+      showDueIcon: false,
+      showShadow: true,
+      hideLeadingCircle: true,
     ),
     _AssignmentItem(
-      subject: 'CHEMISTRY',
-      title: 'Lab Report Draft',
-      subtitle: 'Experiment 12: Titration',
-      tagBg: Color(0x335FAF97),
-      tagColor: Color(0xFF5FAF97),
-      dueText: 'Due 11:59 PM',
+      subject: 'ENGLISH',
+      title: 'Essay Outline',
+      subtitle: 'Submit to Canvas',
+      tagBg: Color(0xFFF0E9FF),
+      tagColor: Color(0xFF9A5CFF),
+      dueText: 'Fri, Oct 28',
       dueColor: Color(0xFFA48C7E),
       showDuePill: false,
+      showDueIcon: false,
+      showShadow: true,
+      hideLeadingCircle: true,
+    ),
+  ];
+
+  static const List<_AssignmentItem> _nextWeekAssignments = [
+    _AssignmentItem(
+      subject: 'MATH',
+      title: 'Midterm Review Packet',
+      subtitle: 'Problems 1-50',
+      tagBg: Color(0xFFE7F0FF),
+      tagColor: Color(0xFF2E7CF6),
+      dueText: 'Mon, Oct 31',
+      dueColor: Color(0xFFA48C7E),
+      showDuePill: false,
+      showDueIcon: false,
+      showShadow: true,
+      hideLeadingCircle: true,
     ),
   ];
 
   List<Widget> _buildAssignmentCards(List<_AssignmentItem> items) {
     final widgets = <Widget>[];
     for (var i = 0; i < items.length; i++) {
-      final item = items[i];
-      widgets.add(
-        AssignmentsCard(
-          subject: item.subject,
-          title: item.title,
-          subtitle: item.subtitle,
-          tagBg: item.tagBg,
-          tagColor: item.tagColor,
-          dueText: item.dueText,
-          dueColor: item.dueColor,
-          dueBg: item.dueBg,
-          showDuePill: item.showDuePill,
-          showShadow: item.showShadow,
-        ),
-      );
+      widgets.add(_buildAssignmentCard(items[i]));
       if (i != items.length - 1) {
-        widgets.add(const SizedBox(height: 12));
+        widgets.add(const SizedBox(height: 14));
       }
     }
     return widgets;
+  }
+
+  Widget _buildAssignmentCard(_AssignmentItem item) {
+    Widget card = AssignmentsCard(
+      subject: item.subject,
+      title: item.title,
+      subtitle: item.subtitle,
+      tagBg: item.tagBg,
+      tagColor: item.tagColor,
+      dueText: item.dueText,
+      dueColor: item.dueColor,
+      dueBg: item.dueBg,
+      showDuePill: item.showDuePill,
+      showDueIcon: item.showDueIcon,
+      showLeadingCircle: !item.hideLeadingCircle,
+      showShadow: item.showShadow,
+    );
+
+    if (item.highlightLeftAccent) {
+      card = Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          border: Border(
+            left: BorderSide(color: Color(0xFFFF6B77), width: 4),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: card,
+        ),
+      );
+    }
+
+    return card;
   }
 
   @override
@@ -97,38 +145,75 @@ class AssignmentsPage extends ConsumerWidget {
             Container(
               width: double.infinity,
               color: const Color(0xFFE2D3C6),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: const Text(
-                'Assignments',
-                style: TextStyle(
-                  fontSize: 28,
-                  color: Color(0xFF826559),
-                  fontWeight: FontWeight.w900,
-                ),
+              padding: const EdgeInsets.fromLTRB(22, 14, 22, 18),
+              child: Row(
+                children: [
+                  const Text(
+                    'Assignments',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Color(0xFF8B6758),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F2EE),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: const Color(0xFFE5DBCF)),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(
+                          Icons.tune_rounded,
+                          size: 20,
+                          color: Color(0xFF8B6758),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Subject',
+                          style: TextStyle(
+                            color: Color(0xFF8B6758),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: Color(0xFF8B6758),
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             Expanded(
               child: Stack(
                 children: [
                   SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 110),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _SectionHeader(
-                          title: 'Today',
-                          accentColor: const Color(0xFFDBBA7C),
-                          trailingText: '${_todayAssignments.length} Tasks',
-                        ),
+                        const _TimelineSectionHeader(title: 'TODAY'),
                         const SizedBox(height: 12),
                         ..._buildAssignmentCards(_todayAssignments),
-                        const SizedBox(height: 24),
-                        const _SectionHeader(
-                          title: 'Tomorrow',
-                          accentColor: Color(0xFFD9C9BD),
-                        ),
+                        const SizedBox(height: 28),
+                        const _TimelineSectionHeader(title: 'THIS WEEK'),
                         const SizedBox(height: 12),
-                        ..._buildAssignmentCards(_tomorrowAssignments),
+                        ..._buildAssignmentCards(_thisWeekAssignments),
+                        const SizedBox(height: 28),
+                        const _TimelineSectionHeader(title: 'THIS WEEK'),
+                        const SizedBox(height: 12),
+                        ..._buildAssignmentCards(_nextWeekAssignments),
                       ],
                     ),
                   ),
@@ -151,56 +236,38 @@ class AssignmentsPage extends ConsumerWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({
-    required this.title,
-    required this.accentColor,
-    this.trailingText,
-  });
+class _TimelineSectionHeader extends StatelessWidget {
+  const _TimelineSectionHeader({required this.title});
 
   final String title;
-  final Color accentColor;
-  final String? trailingText;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Container(
-          width: 6,
-          height: 28,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
-            color: accentColor,
-            borderRadius: BorderRadius.circular(2),
+            color: const Color(0xFFE2D9D0),
+            borderRadius: BorderRadius.circular(10),
           ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
-            color: Color(0xFF826559),
-          ),
-        ),
-        if (trailingText != null) ...[
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE2D3C6),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              trailingText!,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Color(0xFF826559),
-                fontWeight: FontWeight.w800,
-              ),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              letterSpacing: 1.4,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF8B6758),
             ),
           ),
-        ],
+        ),
+        const SizedBox(width: 12),
+        const Expanded(
+          child: Divider(
+            thickness: 1,
+            color: Color(0xFFE3DBD3),
+          ),
+        ),
       ],
     );
   }
@@ -217,7 +284,10 @@ class _AssignmentItem {
     required this.dueColor,
     this.dueBg,
     this.showDuePill = true,
+    this.showDueIcon = true,
     this.showShadow = false,
+    this.highlightLeftAccent = false,
+    this.hideLeadingCircle = false,
   });
 
   final String subject;
@@ -229,5 +299,8 @@ class _AssignmentItem {
   final Color dueColor;
   final Color? dueBg;
   final bool showDuePill;
+  final bool showDueIcon;
   final bool showShadow;
+  final bool highlightLeftAccent;
+  final bool hideLeadingCircle;
 }

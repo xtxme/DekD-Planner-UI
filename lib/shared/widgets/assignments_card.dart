@@ -13,6 +13,7 @@ class AssignmentsCard extends StatelessWidget {
     this.dueBg,
     this.showDuePill = true,
     this.showDueIcon = true,
+    this.showLeadingCircle = true,
     this.showShadow = false,
   });
 
@@ -26,6 +27,7 @@ class AssignmentsCard extends StatelessWidget {
   final Color? dueBg;
   final bool showDuePill;
   final bool showDueIcon;
+  final bool showLeadingCircle;
   final bool showShadow;
 
   @override
@@ -49,15 +51,17 @@ class AssignmentsCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 22,
-            height: 22,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFB9A89A), width: 2),
+          if (showLeadingCircle) ...[
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFB9A89A), width: 2),
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
+            const SizedBox(width: 12),
+          ],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

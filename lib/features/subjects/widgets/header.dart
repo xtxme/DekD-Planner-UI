@@ -20,7 +20,7 @@ class SubjectsHeader extends StatelessWidget {
           const Text(
             'Subjects',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 24,
               fontWeight: FontWeight.w900,
               color: Color(0xFF7A5A4A),
             ),
