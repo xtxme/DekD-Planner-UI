@@ -203,15 +203,24 @@ class AssignmentsPage extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const _TimelineSectionHeader(title: 'TODAY'),
+                        _TimelineSectionHeader(
+                          title: 'TODAY',
+                          taskCount: _todayAssignments.length,
+                        ),
                         const SizedBox(height: 12),
                         ..._buildAssignmentCards(_todayAssignments),
                         const SizedBox(height: 28),
-                        const _TimelineSectionHeader(title: 'THIS WEEK'),
+                        _TimelineSectionHeader(
+                          title: 'THIS WEEK',
+                          taskCount: _thisWeekAssignments.length,
+                        ),
                         const SizedBox(height: 12),
                         ..._buildAssignmentCards(_thisWeekAssignments),
                         const SizedBox(height: 28),
-                        const _TimelineSectionHeader(title: 'THIS WEEK'),
+                        _TimelineSectionHeader(
+                          title: 'THIS WEEK',
+                          taskCount: _nextWeekAssignments.length,
+                        ),
                         const SizedBox(height: 12),
                         ..._buildAssignmentCards(_nextWeekAssignments),
                       ],
@@ -237,12 +246,18 @@ class AssignmentsPage extends ConsumerWidget {
 }
 
 class _TimelineSectionHeader extends StatelessWidget {
-  const _TimelineSectionHeader({required this.title});
+  const _TimelineSectionHeader({
+    required this.title,
+    required this.taskCount,
+  });
 
   final String title;
+  final int taskCount;
 
   @override
   Widget build(BuildContext context) {
+    final taskLabel = '$taskCount ${taskCount == 1 ? 'Task' : 'Tasks'}';
+
     return Row(
       children: [
         Container(
@@ -266,6 +281,22 @@ class _TimelineSectionHeader extends StatelessWidget {
           child: Divider(
             thickness: 1,
             color: Color(0xFFE3DBD3),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF0E5D5),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Text(
+            taskLabel,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF8B6758),
+            ),
           ),
         ),
       ],
