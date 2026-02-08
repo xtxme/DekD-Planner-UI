@@ -5,6 +5,7 @@ import '../../shared/widgets/navbar/app_navbar.dart';
 import '../../shared/widgets/navbar/provider.dart';
 
 import 'widgets/account_section_card.dart';
+import 'widgets/app_preferences_card.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key, this.withNavBar = true});
@@ -16,6 +17,8 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
+  bool _notificationsEnabled = true;
+
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
@@ -44,8 +47,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     const SizedBox(height: 28),
                     _buildSectionTitle('APP PREFERENCES'),
                     const SizedBox(height: 12),
-                    _buildPlaceholderCard(height: 190),
-                    const SizedBox(height: 52),
+                    SettingsPreferencesCard(
+                      notificationsEnabled: _notificationsEnabled,
+                      onNotificationsChanged: (value) {
+                        setState(() {
+                          _notificationsEnabled = value;
+                        });
+                      },
+                      onTapAdjustNotificationTimes: () {},
+                    ),
                   ],
                 ),
               ),
@@ -66,7 +76,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   Widget _buildHeader() {
     return Container(
-      height: 86,
+      height: 55,
       width: double.infinity,
       alignment: Alignment.center,
       decoration: const BoxDecoration(
@@ -76,7 +86,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       child: const Text(
         'Settings',
         style: TextStyle(
-          fontSize: 44,
+          fontSize: 24,
           fontWeight: FontWeight.w900,
           color: Color(0xFF8B6758),
         ),
@@ -88,22 +98,10 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return Text(
       title,
       style: const TextStyle(
-        letterSpacing: 2.2,
-        fontSize: 34,
+        letterSpacing: 1.2,
+        fontSize: 15,
         fontWeight: FontWeight.w900,
         color: Color(0xFF9A8476),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholderCard({required double height}) {
-    return Container(
-      height: height,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE6DBD2)),
       ),
     );
   }
