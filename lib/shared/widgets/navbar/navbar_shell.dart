@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../features/assignments/assignments_page.dart';
 import '../../../features/home/home_page.dart';
+import '../../../features/settings/settings_page.dart';
 import '../../../features/subjects/subjects_page.dart';
 import 'app_navbar.dart';
 import 'provider.dart';
@@ -15,7 +16,7 @@ class NavbarShell extends ConsumerWidget {
     SubjectsPage(withNavBar: false),
     AssignmentsPage(withNavBar: false),
     _PlaceholderTab(title: 'Calendar Page'),
-    _PlaceholderTab(title: 'Settings Page'),
+    SettingsPage(withNavBar: false),
   ];
 
   @override
