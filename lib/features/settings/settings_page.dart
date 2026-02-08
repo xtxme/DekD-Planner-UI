@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/widgets/navbar/app_navbar.dart';
 import '../../shared/widgets/navbar/provider.dart';
+import 'edit_notifi.dart';
+import 'edit_profile.dart';
 
 import 'widgets/account_section_card.dart';
 import 'widgets/app_preferences_card.dart';
@@ -41,7 +43,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       name: 'Jane Doe',
                       email: 'jane.doe@student.com',
                       onTapProfile: () {},
-                      onEditProfile: () {},
+                      onEditProfile: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const EditProfilePage(),
+                          ),
+                        );
+                      },
                       onSignOut: () {},
                     ),
                     const SizedBox(height: 28),
@@ -54,7 +62,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           _notificationsEnabled = value;
                         });
                       },
-                      onTapAdjustNotificationTimes: () {},
+                      onTapAdjustNotificationTimes: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const EditNotificationPage(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
