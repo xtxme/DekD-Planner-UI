@@ -55,7 +55,7 @@ class EditProfileFormField extends StatelessWidget {
             color: Color(0xFF8B6758),
           ),
           decoration: InputDecoration(
-            suffixIcon: trailingIcon == null
+            prefixIcon: trailingIcon == null
                 ? null
                 : Icon(trailingIcon, size: 22, color: const Color(0xFFC4B8AE)),
             hintText: hintText,

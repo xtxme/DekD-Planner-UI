@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../auth/widgets/auth_primary_button.dart';
 import '../../shared/widgets/navbar/app_navbar.dart';
 import '../../shared/widgets/navbar/provider.dart';
 import 'widgets/edit_profile_avatar_section.dart';
@@ -79,25 +80,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       textInputAction: TextInputAction.newline,
                     ),
                     const SizedBox(height: 36),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 62,
-                      child: ElevatedButton(
-                        onPressed: _onSaveChanges,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFDEAF5F),
-                          foregroundColor: const Color(0xFF1F1A17),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          textStyle: const TextStyle(
-                            fontSize: 34,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        child: const Text('Save Changes'),
-                      ),
+                    AuthPrimaryButton(
+                      label: 'Save Changes',
+                      onPressed: _onSaveChanges,
                     ),
                     const SizedBox(height: 12),
                     Center(
@@ -106,7 +91,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                         child: const Text(
                           'Cancel',
                           style: TextStyle(
-                            fontSize: 32,
+                            fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: Color(0xFFA48C7E),
                           ),
