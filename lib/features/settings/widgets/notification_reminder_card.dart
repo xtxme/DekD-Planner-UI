@@ -41,15 +41,9 @@ class NotificationReminderCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF6F4F2),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x12000000),
-            offset: Offset(0, 3),
-            blurRadius: 8,
-          ),
-        ],
+        border: Border.all(color: const Color(0xFFE6DBD2)),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
@@ -60,7 +54,7 @@ class NotificationReminderCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.access_time_filled_rounded,
-                  color: Color(0xFFA68D7E),
+                  color: Color(0xFFA48C7E),
                   size: 24,
                 ),
                 SizedBox(width: 10),
@@ -69,13 +63,13 @@ class NotificationReminderCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF7E5E4E),
+                    color: Color(0xFF8B6758),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 14),
-            const Divider(height: 1, color: Color(0xFFE8DDD3)),
+            const Divider(height: 1, color: Color(0xFFEEE4DB)),
             const SizedBox(height: 16),
             _ReminderChoiceTile(
               title: '1 day before',
@@ -95,7 +89,7 @@ class NotificationReminderCard extends StatelessWidget {
               onTap: () => onPresetChanged(ReminderPreset.custom),
             ),
             const SizedBox(height: 16),
-            const Divider(height: 1, color: Color(0xFFE8DDD3)),
+            const Divider(height: 1, color: Color(0xFFEEE4DB)),
             const SizedBox(height: 14),
             Opacity(
               opacity: isCustom ? 1 : 0.45,
@@ -136,10 +130,10 @@ class _ReminderChoiceTile extends StatelessWidget {
         duration: const Duration(milliseconds: 160),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFFFFCF7) : const Color(0xFFF6F4F2),
+          color: selected ? const Color(0xFFFFF8EA) : const Color(0xFFFBF8F5),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? const Color(0xFFDEAF5F) : const Color(0xFFDCD0C5),
+            color: selected ? const Color(0xFFDEAF5F) : const Color(0xFFE6DBD2),
             width: selected ? 2 : 1.2,
           ),
         ),
@@ -152,8 +146,8 @@ class _ReminderChoiceTile extends StatelessWidget {
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: selected
-                      ? const Color(0xFF7E5E4E)
-                      : const Color(0xFF8D7668),
+                      ? const Color(0xFF8B6758)
+                      : const Color(0xFFA48C7E),
                 ),
               ),
             ),
@@ -180,7 +174,7 @@ class _RadioIndicator extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(
           width: 3,
-          color: selected ? const Color(0xFFDEAF5F) : const Color(0xFFD9CEC2),
+          color: selected ? const Color(0xFFDEAF5F) : const Color(0xFFD9CEC5),
         ),
       ),
       child: selected
@@ -268,8 +262,9 @@ class _CustomReminderPicker extends StatelessWidget {
           width: double.infinity,
           height: 56,
           decoration: BoxDecoration(
-            color: const Color(0xFFF0EBE3),
+            color: const Color(0xFFF8F3EC),
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE6DBD2)),
           ),
           child: Row(
             children: [
@@ -280,7 +275,7 @@ class _CustomReminderPicker extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF7E5E4E),
+                    color: Color(0xFF8B6758),
                   ),
                 ),
               ),
@@ -292,7 +287,7 @@ class _CustomReminderPicker extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF7E5E4E),
+                    color: Color(0xFF8B6758),
                   ),
                 ),
               ),
@@ -335,7 +330,7 @@ class _PickerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = muted ? const Color(0xFFDDD2C7) : const Color(0xFF7E5E4E);
+    final textColor = muted ? const Color(0xFFD3C6BB) : const Color(0xFF8B6758);
 
     return InkWell(
       onTap: onTap,

@@ -14,15 +14,9 @@ class NotificationMasterSwitchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF6F4F2),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x14000000),
-            offset: Offset(0, 3),
-            blurRadius: 8,
-          ),
-        ],
+        border: Border.all(color: const Color(0xFFE6DBD2)),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 16, 14, 16),
@@ -30,10 +24,11 @@ class NotificationMasterSwitchCard extends StatelessWidget {
           children: [
             Container(
               width: 68,
-              height: 68,
+              height: 58,
               decoration: BoxDecoration(
-                color: const Color(0xFFEDE8E2),
+                color: const Color(0xFFF8F3EC),
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE8DDD3)),
               ),
               child: const Icon(
                 Icons.notifications_active_rounded,
@@ -51,7 +46,7 @@ class NotificationMasterSwitchCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF7E5E4E),
+                      color: Color(0xFF8B6758),
                     ),
                   ),
                   SizedBox(height: 4),
@@ -60,7 +55,7 @@ class NotificationMasterSwitchCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF9C8678),
+                      color: Color(0xFFA48C7E),
                     ),
                   ),
                 ],
@@ -72,7 +67,7 @@ class NotificationMasterSwitchCard extends StatelessWidget {
               activeColor: Colors.white,
               activeTrackColor: const Color(0xFFDEAF5F),
               inactiveThumbColor: Colors.white,
-              inactiveTrackColor: const Color(0xFFD8CDC2),
+              inactiveTrackColor: const Color(0xFFD9CEC5),
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ],
