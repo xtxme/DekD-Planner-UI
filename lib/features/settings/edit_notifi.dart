@@ -19,8 +19,8 @@ class EditNotificationPage extends ConsumerStatefulWidget {
 
 class _EditNotificationPageState extends ConsumerState<EditNotificationPage> {
   bool _allNotificationsEnabled = true;
-  ReminderPreset _selectedPreset = ReminderPreset.custom;
-  int _selectedAmount = 2;
+  ReminderPreset _selectedPreset = ReminderPreset.oneDayBefore;
+  int _selectedAmount = 1;
   ReminderUnit _selectedUnit = ReminderUnit.daysBefore;
 
   @override

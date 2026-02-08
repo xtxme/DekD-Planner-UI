@@ -5,14 +5,25 @@ enum ReminderPreset { oneDayBefore, sixHoursBefore, custom }
 enum ReminderUnit { hoursBefore, daysBefore, weeksBefore }
 
 extension ReminderUnitLabel on ReminderUnit {
-  String get label {
+  String get dropdownLabel {
     switch (this) {
       case ReminderUnit.hoursBefore:
-        return 'Hours Before';
+        return 'Hours';
       case ReminderUnit.daysBefore:
-        return 'Days Before';
+        return 'Days';
       case ReminderUnit.weeksBefore:
-        return 'Weeks Before';
+        return 'Weeks';
+    }
+  }
+
+  String countLabel(int amount) {
+    switch (this) {
+      case ReminderUnit.hoursBefore:
+        return amount == 1 ? 'hour' : 'hours';
+      case ReminderUnit.daysBefore:
+        return amount == 1 ? 'day' : 'days';
+      case ReminderUnit.weeksBefore:
+        return amount == 1 ? 'week' : 'weeks';
     }
   }
 }
@@ -38,6 +49,11 @@ class NotificationReminderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCustom = selectedPreset == ReminderPreset.custom;
+    final selectedLabel = _formatSelectedReminder(
+      preset: selectedPreset,
+      amount: selectedAmount,
+      unit: selectedUnit,
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -84,25 +100,39 @@ class NotificationReminderCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _ReminderChoiceTile(
-              title: 'Custom...',
+              title: 'Custom reminder',
               selected: isCustom,
               onTap: () => onPresetChanged(ReminderPreset.custom),
             ),
-            const SizedBox(height: 16),
-            const Divider(height: 1, color: Color(0xFFEEE4DB)),
             const SizedBox(height: 14),
-            Opacity(
-              opacity: isCustom ? 1 : 0.45,
-              child: IgnorePointer(
-                ignoring: !isCustom,
-                child: _CustomReminderPicker(
-                  selectedAmount: selectedAmount,
-                  selectedUnit: selectedUnit,
-                  onAmountChanged: onAmountChanged,
-                  onUnitChanged: onUnitChanged,
-                ),
+            Text(
+              'Selected: $selectedLabel',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF8B6758),
               ),
             ),
+            if (isCustom) ...[
+              const SizedBox(height: 16),
+              const Divider(height: 1, color: Color(0xFFEEE4DB)),
+              const SizedBox(height: 12),
+              const Text(
+                'Choose amount and unit below',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFFA48C7E),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _CustomReminderPicker(
+                selectedAmount: selectedAmount,
+                selectedUnit: selectedUnit,
+                onAmountChanged: onAmountChanged,
+                onUnitChanged: onUnitChanged,
+              ),
+            ],
           ],
         ),
       ),
@@ -206,7 +236,7 @@ class _CustomReminderPicker extends StatelessWidget {
   final ValueChanged<int> onAmountChanged;
   final ValueChanged<ReminderUnit> onUnitChanged;
 
-  static const List<int> _amounts = [1, 2, 3];
+  static final List<int> _amounts = List<int>.generate(7, (index) => index + 1);
   static const List<ReminderUnit> _units = [
     ReminderUnit.hoursBefore,
     ReminderUnit.daysBefore,
@@ -215,156 +245,125 @@ class _CustomReminderPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var amountIndex = _amounts.indexOf(selectedAmount);
-    if (amountIndex < 0) {
-      amountIndex = 0;
-    }
+    final amountValue = _amounts.contains(selectedAmount)
+        ? selectedAmount
+        : _amounts.first;
+    final unitValue = _units.contains(selectedUnit)
+        ? selectedUnit
+        : _units.first;
 
-    var unitIndex = _units.indexOf(selectedUnit);
-    if (unitIndex < 0) {
-      unitIndex = 0;
-    }
-
-    final hasTop = amountIndex > 0 || unitIndex > 0;
-    final hasBottom =
-        amountIndex < _amounts.length - 1 || unitIndex < _units.length - 1;
-
-    final topAmount = amountIndex > 0
-        ? _amounts[amountIndex - 1].toString()
-        : '';
-    final topUnit = unitIndex > 0 ? _units[unitIndex - 1].label : '';
-    final bottomAmount = amountIndex < _amounts.length - 1
-        ? _amounts[amountIndex + 1].toString()
-        : '';
-    final bottomUnit = unitIndex < _units.length - 1
-        ? _units[unitIndex + 1].label
-        : '';
-
-    return Column(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _PickerRow(
-          amountText: topAmount,
-          unitText: topUnit,
-          muted: true,
-          onTap: hasTop
-              ? () {
-                  if (amountIndex > 0) {
-                    onAmountChanged(_amounts[amountIndex - 1]);
-                  }
-                  if (unitIndex > 0) {
-                    onUnitChanged(_units[unitIndex - 1]);
-                  }
-                }
-              : null,
-        ),
-        const SizedBox(height: 10),
-        Container(
-          width: double.infinity,
-          height: 56,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8F3EC),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE6DBD2)),
-          ),
-          child: Row(
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  selectedAmount.toString(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF8B6758),
-                  ),
+              const Text(
+                'Amount',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFA48C7E),
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  selectedUnit.label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF8B6758),
-                  ),
-                ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<int>(
+                value: amountValue,
+                isExpanded: true,
+                icon: const Icon(Icons.expand_more_rounded),
+                decoration: _dropdownDecoration(),
+                items: _amounts
+                    .map(
+                      (amount) => DropdownMenuItem<int>(
+                        value: amount,
+                        child: Text(amount.toString()),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    onAmountChanged(value);
+                  }
+                },
               ),
             ],
           ),
         ),
-        const SizedBox(height: 10),
-        _PickerRow(
-          amountText: bottomAmount,
-          unitText: bottomUnit,
-          muted: true,
-          onTap: hasBottom
-              ? () {
-                  if (amountIndex < _amounts.length - 1) {
-                    onAmountChanged(_amounts[amountIndex + 1]);
+        const SizedBox(width: 12),
+        Expanded(
+          flex: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Unit',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFA48C7E),
+                ),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<ReminderUnit>(
+                value: unitValue,
+                isExpanded: true,
+                icon: const Icon(Icons.expand_more_rounded),
+                decoration: _dropdownDecoration(),
+                items: _units
+                    .map(
+                      (unit) => DropdownMenuItem<ReminderUnit>(
+                        value: unit,
+                        child: Text(unit.dropdownLabel),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    onUnitChanged(value);
                   }
-                  if (unitIndex < _units.length - 1) {
-                    onUnitChanged(_units[unitIndex + 1]);
-                  }
-                }
-              : null,
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
-}
 
-class _PickerRow extends StatelessWidget {
-  const _PickerRow({
-    required this.amountText,
-    required this.unitText,
-    required this.muted,
-    this.onTap,
-  });
-
-  final String amountText;
-  final String unitText;
-  final bool muted;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textColor = muted ? const Color(0xFFD3C6BB) : const Color(0xFF8B6758);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        height: 30,
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                amountText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: textColor,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                unitText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: textColor,
-                ),
-              ),
-            ),
-          ],
-        ),
+  InputDecoration _dropdownDecoration() {
+    return InputDecoration(
+      isDense: true,
+      filled: true,
+      fillColor: const Color(0xFFF8F3EC),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFE6DBD2)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFE6DBD2)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFDEAF5F), width: 1.6),
       ),
     );
+  }
+}
+
+String _formatSelectedReminder({
+  required ReminderPreset preset,
+  required int amount,
+  required ReminderUnit unit,
+}) {
+  switch (preset) {
+    case ReminderPreset.oneDayBefore:
+      return '1 day before';
+    case ReminderPreset.sixHoursBefore:
+      return '6 hours before';
+    case ReminderPreset.custom:
+      return '$amount ${unit.countLabel(amount)} before';
   }
 }
