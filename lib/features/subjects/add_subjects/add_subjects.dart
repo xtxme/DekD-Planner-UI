@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/theme/app_colors.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
-import '../../../shared/widgets/navbar/provider.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../edit_subjects/widgets/edit_subjects_appearance_card.dart';
 import '../edit_subjects/widgets/edit_subjects_field_shell.dart';
 import '../edit_subjects/widgets/edit_subjects_section_label.dart';

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/widgets/auth_primary_button.dart';
 import '../../../shared/theme/app_colors.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
-import '../../../shared/widgets/navbar/provider.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../models/assignment_draft.dart';
 import 'widgets/add_assignment_deadline_card.dart';
 import 'widgets/add_assignment_input_shell.dart';

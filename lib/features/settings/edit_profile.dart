@@ -4,7 +4,7 @@ import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../auth/widgets/auth_primary_button.dart';
 import '../../shared/widgets/navbar/app_navbar.dart';
-import '../../shared/widgets/navbar/provider.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 import 'widgets/edit_profile_avatar_section.dart';
 import 'widgets/edit_profile_form_field.dart';
 

@@ -7,7 +7,7 @@ import '../add_assignments/add_assignments.dart';
 import '../assignments_detail/assignments_detail.dart';
 import 'widgets/timeline_section_header.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
-import '../../../shared/widgets/navbar/provider.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../../../shared/widgets/add_button.dart';
 
 class AssignmentsPage extends ConsumerWidget {

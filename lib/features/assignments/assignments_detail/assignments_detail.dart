@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
-import '../../../shared/widgets/navbar/provider.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../providers.dart';
 import '../edit_assignments/edit_assignments.dart';
 import 'widgets/assignment_detail_action_buttons.dart';

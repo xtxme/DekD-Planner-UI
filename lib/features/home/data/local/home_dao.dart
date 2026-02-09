@@ -1,5 +1,5 @@
-import 'package:my_first_app/services/database/app_database.dart';
-import 'package:my_first_app/services/database/home/home_task.dart';
+import 'package:my_first_app/core/database/app_database.dart';
+import 'package:my_first_app/features/home/data/models/home_task_row.dart';
 
 class HomeDao {
   HomeDao({AppDatabase? database}) : _database = database ?? AppDatabase.instance;

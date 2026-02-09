@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
-import '../../../shared/widgets/navbar/provider.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../edit_subjects/edit_subjects.dart';
 import 'widgets/segmented_tabs.dart';
 import 'widgets/subject_card.dart';

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
-import '../../../shared/widgets/navbar/provider.dart';
-import '../../../services/database/home/home_dao.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
+import 'package:my_first_app/features/home/data/local/home_dao.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_action_button.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_colors.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_field_shell.dart';

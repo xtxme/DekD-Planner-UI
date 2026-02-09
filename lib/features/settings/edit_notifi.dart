@@ -4,7 +4,7 @@ import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../auth/widgets/auth_primary_button.dart';
 import '../../shared/widgets/navbar/app_navbar.dart';
-import '../../shared/widgets/navbar/provider.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 import 'widgets/notification_master_switch_card.dart';
 import 'widgets/notification_reminder_card.dart';
 
