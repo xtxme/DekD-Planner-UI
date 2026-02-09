@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/theme/app_colors.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import '../../../shared/widgets/navbar/provider.dart';
+import 'material_all_icons_pack.dart' as material_all_icons_pack;
 import 'widgets/edit_subjects_appearance_card.dart';
 import 'widgets/edit_subjects_field_shell.dart';
 import 'widgets/edit_subjects_section_label.dart';
@@ -364,14 +365,42 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
   Future<void> _onAddIconPressed() async {
     final pickedIcon = await showIconPicker(
       context,
-      configuration: const SinglePickerConfiguration(
-        adaptiveDialog: true,
+      configuration: SinglePickerConfiguration(
+        adaptiveDialog: false,
         showSearchBar: true,
-        title: Text('Add Icon'),
         searchHintText: 'Search icon',
-        noResultsText: 'No icons found for:',
-        iconPackModes: [IconPack.allMaterial],
-        constraints: BoxConstraints(maxHeight: 560, minWidth: 320, maxWidth: 720),
+        iconSize: 30,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        title: const Text(
+          'Add Icon',
+          style: TextStyle(
+            fontSize: 48 / 2,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        closeChild: const Text(
+          'Cancel',
+          style: TextStyle(
+            fontSize: 34 / 2,
+            fontWeight: FontWeight.w500,
+            color: AppColors.accent,
+          ),
+        ),
+        iconColor: AppColors.secondaryText,
+        backgroundColor: AppColors.surface,
+        iconPickerShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+        iconPackModes: const [IconPack.custom],
+        customIconPack: material_all_icons_pack.allIcons,
+        constraints: const BoxConstraints(
+          maxHeight: 700,
+          minHeight: 480,
+          minWidth: 320,
+          maxWidth: 380,
+        ),
       ),
     );
 

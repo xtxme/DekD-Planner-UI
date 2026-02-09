@@ -62,7 +62,7 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
 
   final List<IconData> _iconChoices = [..._defaultIconChoices];
 
-  Color _selectedColor = AppColors.headerSurface;
+  Color _selectedColor = AppColors.accent;
   IconData _selectedIcon = Icons.calculate_rounded;
 
   @override
@@ -109,26 +109,29 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      'Subject Name',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryText,
+                        height: 1.12,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: _nameController,
                       focusNode: _nameFocusNode,
                       style: const TextStyle(
-                        fontSize: 28,
+                        fontSize: 24,
                         fontWeight: FontWeight.w900,
                         color: AppColors.textPrimary,
-                        height: 1.2,
+                        height: 1.15,
                       ),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
-                        hintText: 'Subject Name',
-                        hintStyle: TextStyle(
-                          fontSize: 38,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.secondaryText.withValues(alpha: 0.9),
-                          height: 1.05,
-                        ),
                       ),
                     ),
                     AnimatedContainer(
@@ -138,23 +141,6 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                       color: _nameFocusNode.hasFocus
                           ? AppColors.accent
                           : AppColors.border,
-                    ),
-                    const SizedBox(height: 24),
-                    const EditSubjectsSectionLabel(text: 'APPEARANCE'),
-                    const SizedBox(height: 10),
-                    EditSubjectsAppearanceCard(
-                      colorChoices: _colorChoices,
-                      selectedColor: _selectedColor,
-                      iconChoices: _iconChoices,
-                      selectedIcon: _selectedIcon,
-                      onColorTap: (value) {
-                        setState(() => _selectedColor = value);
-                      },
-                      onAddColorTap: _onAddColorPressed,
-                      onIconTap: (value) {
-                        setState(() => _selectedIcon = value);
-                      },
-                      onAddIconTap: _onAddIconPressed,
                     ),
                     const SizedBox(height: 24),
                     const EditSubjectsSectionLabel(text: 'SUBJECT CODE'),
@@ -168,7 +154,7 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                             child: Text(
                               '#',
                               style: TextStyle(
-                                fontSize: 38,
+                                fontSize: 26,
                                 fontWeight: FontWeight.w900,
                                 color: AppColors.secondaryText,
                               ),
@@ -183,18 +169,10 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.textPrimary,
                               ),
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
-                                hintText: 'e.g. TH101',
-                                hintStyle: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.secondaryText.withValues(
-                                    alpha: 0.65,
-                                  ),
-                                ),
                               ),
                             ),
                           ),
@@ -226,11 +204,28 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             color: AppColors.secondaryText.withValues(
-                              alpha: 0.5,
+                              alpha: 0.8,
                             ),
                           ),
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 24),
+                    const EditSubjectsSectionLabel(text: 'APPEARANCE'),
+                    const SizedBox(height: 10),
+                    EditSubjectsAppearanceCard(
+                      colorChoices: _colorChoices,
+                      selectedColor: _selectedColor,
+                      iconChoices: _iconChoices,
+                      selectedIcon: _selectedIcon,
+                      onColorTap: (value) {
+                        setState(() => _selectedColor = value);
+                      },
+                      onAddColorTap: _onAddColorPressed,
+                      onIconTap: (value) {
+                        setState(() => _selectedIcon = value);
+                      },
+                      onAddIconTap: _onAddIconPressed,
                     ),
                     const SizedBox(height: 30),
                     SizedBox(

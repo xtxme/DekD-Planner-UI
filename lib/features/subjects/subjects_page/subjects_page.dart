@@ -4,6 +4,7 @@ import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import '../../../shared/widgets/navbar/provider.dart';
+import '../add_subjects/add_subjects.dart';
 import '../subjects_detail/subjects_detail.dart';
 import 'widgets/header.dart';
 import 'widgets/grid.dart';
@@ -103,7 +104,16 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
                       );
                     },
                   ),
-                  const AddButton(),
+                  AddButton(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const AddSubjectsPage(withNavBar: false),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
