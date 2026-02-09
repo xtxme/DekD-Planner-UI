@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/painting/basic_types.dart'
+    show FontWeight, Radius, TextAlign;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../auth/widgets/auth_primary_button.dart';
 import '../../shared/theme/app_colors.dart';
@@ -509,7 +510,7 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
                   shrinkWrap: true,
                   padding: const EdgeInsets.fromLTRB(12, 6, 12, 16),
                   itemCount: widget.availableSubjects.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final subject = widget.availableSubjects[index];
                     final isSelected = _selectedSubject == subject;
@@ -624,14 +625,14 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
               dayPeriodShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              dayPeriodColor: MaterialStateColor.resolveWith((states) {
-                if (states.contains(MaterialState.selected)) {
+              dayPeriodColor: WidgetStateColor.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
                   return AppColors.accent;
                 }
                 return AppColors.lightSurface;
               }),
-              dayPeriodTextColor: MaterialStateColor.resolveWith((states) {
-                if (states.contains(MaterialState.selected)) {
+              dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
                   return Colors.white;
                 }
                 return AppColors.primaryText;

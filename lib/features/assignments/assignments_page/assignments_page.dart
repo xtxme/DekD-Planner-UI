@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-import 'add_assignments.dart';
-import 'assignments_detail.dart';
-import '../../shared/widgets/navbar/app_navbar.dart';
-import '../../shared/widgets/navbar/provider.dart';
-import '../../shared/widgets/add_button.dart';
+import '../add_assignments.dart';
+import '../assignments_detail.dart';
+import 'widgets/timeline_section_header.dart';
+import '../../../shared/widgets/navbar/app_navbar.dart';
+import '../../../shared/widgets/navbar/provider.dart';
+import '../../../shared/widgets/add_button.dart';
 
 class AssignmentsPage extends ConsumerWidget {
   const AssignmentsPage({super.key, this.withNavBar = true});
@@ -219,21 +220,21 @@ class AssignmentsPage extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _TimelineSectionHeader(
+                        TimelineSectionHeader(
                           title: 'TODAY',
                           taskCount: _todayAssignments.length,
                         ),
                         const SizedBox(height: 12),
                         ..._buildAssignmentCards(context, _todayAssignments),
                         const SizedBox(height: 28),
-                        _TimelineSectionHeader(
+                        TimelineSectionHeader(
                           title: 'THIS WEEK',
                           taskCount: _thisWeekAssignments.length,
                         ),
                         const SizedBox(height: 12),
                         ..._buildAssignmentCards(context, _thisWeekAssignments),
                         const SizedBox(height: 28),
-                        _TimelineSectionHeader(
+                        TimelineSectionHeader(
                           title: 'THIS WEEK',
                           taskCount: _nextWeekAssignments.length,
                         ),
@@ -266,59 +267,6 @@ class AssignmentsPage extends ConsumerWidget {
               },
             )
           : null,
-    );
-  }
-}
-
-class _TimelineSectionHeader extends StatelessWidget {
-  const _TimelineSectionHeader({required this.title, required this.taskCount});
-
-  final String title;
-  final int taskCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final taskLabel = '$taskCount ${taskCount == 1 ? 'Task' : 'Tasks'}';
-
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.cFFE2D9D0,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              letterSpacing: 1.4,
-              fontWeight: FontWeight.w900,
-              color: AppColors.cFF8B6758,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        const Expanded(
-          child: Divider(thickness: 1, color: AppColors.cFFE3DBD3),
-        ),
-        const SizedBox(width: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          decoration: BoxDecoration(
-            color: AppColors.cFFF0E5D5,
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Text(
-            taskLabel,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: AppColors.cFF8B6758,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
