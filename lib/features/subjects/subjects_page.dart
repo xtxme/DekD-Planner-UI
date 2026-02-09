@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../shared/widgets/navbar/app_navbar.dart';
 import '../../shared/widgets/navbar/provider.dart';
@@ -77,7 +78,7 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
     final currentIndex = ref.watch(currentNavIndexProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F3EF),
+      backgroundColor: AppColors.cFFF7F3EF,
       body: SafeArea(
         child: Column(
           children: [

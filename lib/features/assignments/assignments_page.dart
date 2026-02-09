@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import 'add_assignments.dart';
 import '../../shared/widgets/navbar/app_navbar.dart';
@@ -17,11 +18,11 @@ class AssignmentsPage extends ConsumerWidget {
       subject: 'MATH',
       title: 'Algebra Worksheet 4.2',
       subtitle: 'Chapter 4: Polynomials',
-      tagBg: Color(0xFFE7F0FF),
-      tagColor: Color(0xFF2E7CF6),
+      tagBg: AppColors.cFFE7F0FF,
+      tagColor: AppColors.cFF2E7CF6,
       dueText: 'Due 4:00 PM',
-      dueBg: Color(0xFFFFECEC),
-      dueColor: Color(0xFFE65757),
+      dueBg: AppColors.cFFFFECEC,
+      dueColor: AppColors.cFFE65757,
       showDuePill: true,
       showDueIcon: true,
       showShadow: true,
@@ -32,10 +33,10 @@ class AssignmentsPage extends ConsumerWidget {
       subject: 'HISTORY',
       title: 'Read Chapter 4',
       subtitle: 'The Industrial Revolution',
-      tagBg: Color(0xFFFBF7F1),
-      tagColor: Color(0xFFE0B66B),
+      tagBg: AppColors.cFFFBF7F1,
+      tagColor: AppColors.cFFE0B66B,
       dueText: '11:59 PM',
-      dueColor: Color(0xFFA48C7E),
+      dueColor: AppColors.cFFA48C7E,
       showDuePill: false,
       showDueIcon: false,
       showShadow: true,
@@ -49,10 +50,10 @@ class AssignmentsPage extends ConsumerWidget {
       subject: 'CHEMISTRY',
       title: 'Lab Report: Titration',
       subtitle: 'Experiment 12',
-      tagBg: Color(0xFFDFF2EA),
-      tagColor: Color(0xFF1C9E73),
+      tagBg: AppColors.cFFDFF2EA,
+      tagColor: AppColors.cFF1C9E73,
       dueText: 'Wed, Oct 26',
-      dueColor: Color(0xFFA48C7E),
+      dueColor: AppColors.cFFA48C7E,
       showDuePill: false,
       showDueIcon: false,
       showShadow: true,
@@ -62,10 +63,10 @@ class AssignmentsPage extends ConsumerWidget {
       subject: 'ENGLISH',
       title: 'Essay Outline',
       subtitle: 'Submit to Canvas',
-      tagBg: Color(0xFFF0E9FF),
-      tagColor: Color(0xFF9A5CFF),
+      tagBg: AppColors.cFFF0E9FF,
+      tagColor: AppColors.cFF9A5CFF,
       dueText: 'Fri, Oct 28',
-      dueColor: Color(0xFFA48C7E),
+      dueColor: AppColors.cFFA48C7E,
       showDuePill: false,
       showDueIcon: false,
       showShadow: true,
@@ -78,10 +79,10 @@ class AssignmentsPage extends ConsumerWidget {
       subject: 'MATH',
       title: 'Midterm Review Packet',
       subtitle: 'Problems 1-50',
-      tagBg: Color(0xFFE7F0FF),
-      tagColor: Color(0xFF2E7CF6),
+      tagBg: AppColors.cFFE7F0FF,
+      tagColor: AppColors.cFF2E7CF6,
       dueText: 'Mon, Oct 31',
-      dueColor: Color(0xFFA48C7E),
+      dueColor: AppColors.cFFA48C7E,
       showDuePill: false,
       showDueIcon: false,
       showShadow: true,
@@ -120,7 +121,9 @@ class AssignmentsPage extends ConsumerWidget {
       card = Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(16)),
-          border: Border(left: BorderSide(color: Color(0xFFFF6B77), width: 4)),
+          border: Border(
+            left: BorderSide(color: AppColors.cFFFF6B77, width: 4),
+          ),
         ),
         child: ClipRRect(borderRadius: BorderRadius.circular(16), child: card),
       );
@@ -134,13 +137,13 @@ class AssignmentsPage extends ConsumerWidget {
     final currentIndex = ref.watch(currentNavIndexProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F2EE),
+      backgroundColor: AppColors.cFFF7F2EE,
       body: SafeArea(
         child: Column(
           children: [
             Container(
               width: double.infinity,
-              color: const Color(0xFFE2D3C6),
+              color: AppColors.cFFE2D3C6,
               padding: const EdgeInsets.fromLTRB(22, 14, 22, 18),
               child: Row(
                 children: [
@@ -148,7 +151,7 @@ class AssignmentsPage extends ConsumerWidget {
                     'Assignments',
                     style: TextStyle(
                       fontSize: 24,
-                      color: Color(0xFF8B6758),
+                      color: AppColors.cFF8B6758,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -159,22 +162,22 @@ class AssignmentsPage extends ConsumerWidget {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF7F2EE),
+                      color: AppColors.cFFF7F2EE,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: const Color(0xFFE5DBCF)),
+                      border: Border.all(color: AppColors.cFFE5DBCF),
                     ),
                     child: const Row(
                       children: [
                         Icon(
                           Icons.tune_rounded,
                           size: 20,
-                          color: Color(0xFF8B6758),
+                          color: AppColors.cFF8B6758,
                         ),
                         SizedBox(width: 8),
                         Text(
                           'Subject',
                           style: TextStyle(
-                            color: Color(0xFF8B6758),
+                            color: AppColors.cFF8B6758,
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                           ),
@@ -182,7 +185,7 @@ class AssignmentsPage extends ConsumerWidget {
                         SizedBox(width: 8),
                         Icon(
                           Icons.keyboard_arrow_down_rounded,
-                          color: Color(0xFF8B6758),
+                          color: AppColors.cFF8B6758,
                           size: 20,
                         ),
                       ],
@@ -265,7 +268,7 @@ class _TimelineSectionHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
-            color: const Color(0xFFE2D9D0),
+            color: AppColors.cFFE2D9D0,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
@@ -274,17 +277,19 @@ class _TimelineSectionHeader extends StatelessWidget {
               fontSize: 15,
               letterSpacing: 1.4,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF8B6758),
+              color: AppColors.cFF8B6758,
             ),
           ),
         ),
         const SizedBox(width: 12),
-        const Expanded(child: Divider(thickness: 1, color: Color(0xFFE3DBD3))),
+        const Expanded(
+          child: Divider(thickness: 1, color: AppColors.cFFE3DBD3),
+        ),
         const SizedBox(width: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: const Color(0xFFF0E5D5),
+            color: AppColors.cFFF0E5D5,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Text(
@@ -292,7 +297,7 @@ class _TimelineSectionHeader extends StatelessWidget {
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF8B6758),
+              color: AppColors.cFF8B6758,
             ),
           ),
         ),

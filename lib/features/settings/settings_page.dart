@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../shared/widgets/navbar/app_navbar.dart';
 import '../../shared/widgets/navbar/provider.dart';
@@ -26,7 +27,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final currentIndex = ref.watch(currentNavIndexProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F2EE),
+      backgroundColor: AppColors.cFFF7F2EE,
       body: SafeArea(
         child: Column(
           children: [
@@ -94,15 +95,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       width: double.infinity,
       alignment: Alignment.center,
       decoration: const BoxDecoration(
-        color: Color(0xFFF7F2EE),
-        border: Border(bottom: BorderSide(color: Color(0xFFE7DDD4))),
+        color: AppColors.cFFF7F2EE,
+        border: Border(bottom: BorderSide(color: AppColors.cFFE7DDD4)),
       ),
       child: const Text(
         'Settings',
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.w900,
-          color: Color(0xFF8B6758),
+          color: AppColors.cFF8B6758,
         ),
       ),
     );
@@ -115,7 +116,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         letterSpacing: 1.2,
         fontSize: 15,
         fontWeight: FontWeight.w900,
-        color: Color(0xFF9A8476),
+        color: AppColors.cFF9A8476,
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../auth/widgets/auth_primary_button.dart';
 import '../../shared/theme/app_colors.dart';

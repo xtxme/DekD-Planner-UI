@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../shared/widgets/add_button.dart';
 import '../../shared/widgets/navbar/app_navbar.dart';
@@ -78,7 +79,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     final currentIndex = ref.watch(currentNavIndexProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F2EE),
+      backgroundColor: AppColors.cFFF7F2EE,
       body: SafeArea(
         child: Column(
           children: [
@@ -106,8 +107,10 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                         const SizedBox(height: 16),
                         SubjectSegmentedTabs(
                           isUpcoming: _showUpcoming,
-                          onUpcomingTap: () => setState(() => _showUpcoming = true),
-                          onCompletedTap: () => setState(() => _showUpcoming = false),
+                          onUpcomingTap: () =>
+                              setState(() => _showUpcoming = true),
+                          onCompletedTap: () =>
+                              setState(() => _showUpcoming = false),
                         ),
                         const SizedBox(height: 20),
                         _buildSectionTitle(),
@@ -146,22 +149,22 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
         letterSpacing: 3,
         fontSize: 15,
         fontWeight: FontWeight.w900,
-        color: Color(0xFF9A7E70),
+        color: AppColors.cFF9A7E70,
       ),
     );
   }
 
   Widget _buildAssignmentCard(_AssignmentItem item) {
     final dueColor = item.status == _AssignmentStatus.late
-        ? const Color(0xFFE54A4A)
-        : const Color(0xFFA48C7E);
+        ? AppColors.cFFE54A4A
+        : AppColors.cFFA48C7E;
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFF0E6DE)),
+        border: Border.all(color: AppColors.cFFF0E6DE),
       ),
       child: Row(
         children: [
@@ -169,10 +172,10 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
             width: 76,
             height: 76,
             decoration: BoxDecoration(
-              color: const Color(0xFFF1ECE7),
+              color: AppColors.cFFF1ECE7,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(item.icon, size: 34, color: const Color(0xFF8B6758)),
+            child: Icon(item.icon, size: 34, color: AppColors.cFF8B6758),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -186,7 +189,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF8B6758),
+                    color: AppColors.cFF8B6758,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -252,26 +255,26 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
   Color _statusBg(_AssignmentStatus status) {
     switch (status) {
       case _AssignmentStatus.toDo:
-        return const Color(0xFFF4E3CD);
+        return AppColors.cFFF4E3CD;
       case _AssignmentStatus.inProgress:
-        return const Color(0xFFDCE7FF);
+        return AppColors.cFFDCE7FF;
       case _AssignmentStatus.late:
-        return const Color(0xFFF9DDE0);
+        return AppColors.cFFF9DDE0;
       case _AssignmentStatus.completed:
-        return const Color(0xFFDFF2EA);
+        return AppColors.cFFDFF2EA;
     }
   }
 
   Color _statusFg(_AssignmentStatus status) {
     switch (status) {
       case _AssignmentStatus.toDo:
-        return const Color(0xFFD45C14);
+        return AppColors.cFFD45C14;
       case _AssignmentStatus.inProgress:
-        return const Color(0xFF2E64D4);
+        return AppColors.cFF2E64D4;
       case _AssignmentStatus.late:
-        return const Color(0xFFD64545);
+        return AppColors.cFFD64545;
       case _AssignmentStatus.completed:
-        return const Color(0xFF1C9E73);
+        return AppColors.cFF1C9E73;
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 enum ReminderPreset { oneDayBefore, sixHoursBefore, custom }
 
@@ -59,7 +60,7 @@ class NotificationReminderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE6DBD2)),
+        border: Border.all(color: AppColors.cFFE6DBD2),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
@@ -70,7 +71,7 @@ class NotificationReminderCard extends StatelessWidget {
               children: [
                 Icon(
                   Icons.access_time_filled_rounded,
-                  color: Color(0xFFA48C7E),
+                  color: AppColors.cFFA48C7E,
                   size: 24,
                 ),
                 SizedBox(width: 10),
@@ -79,13 +80,13 @@ class NotificationReminderCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF8B6758),
+                    color: AppColors.cFF8B6758,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 14),
-            const Divider(height: 1, color: Color(0xFFEEE4DB)),
+            const Divider(height: 1, color: AppColors.cFFEEE4DB),
             const SizedBox(height: 16),
             _ReminderChoiceTile(
               title: '1 day before',
@@ -110,19 +111,19 @@ class NotificationReminderCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF8B6758),
+                color: AppColors.cFF8B6758,
               ),
             ),
             if (isCustom) ...[
               const SizedBox(height: 16),
-              const Divider(height: 1, color: Color(0xFFEEE4DB)),
+              const Divider(height: 1, color: AppColors.cFFEEE4DB),
               const SizedBox(height: 12),
               const Text(
                 'Choose amount and unit below',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFFA48C7E),
+                  color: AppColors.cFFA48C7E,
                 ),
               ),
               const SizedBox(height: 12),
@@ -160,10 +161,10 @@ class _ReminderChoiceTile extends StatelessWidget {
         duration: const Duration(milliseconds: 160),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFFFF8EA) : const Color(0xFFFBF8F5),
+          color: selected ? AppColors.cFFFFF8EA : AppColors.cFFFBF8F5,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? const Color(0xFFDEAF5F) : const Color(0xFFE6DBD2),
+            color: selected ? AppColors.cFFDEAF5F : AppColors.cFFE6DBD2,
             width: selected ? 2 : 1.2,
           ),
         ),
@@ -175,9 +176,7 @@ class _ReminderChoiceTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: selected
-                      ? const Color(0xFF8B6758)
-                      : const Color(0xFFA48C7E),
+                  color: selected ? AppColors.cFF8B6758 : AppColors.cFFA48C7E,
                 ),
               ),
             ),
@@ -204,7 +203,7 @@ class _RadioIndicator extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(
           width: 3,
-          color: selected ? const Color(0xFFDEAF5F) : const Color(0xFFD9CEC5),
+          color: selected ? AppColors.cFFDEAF5F : AppColors.cFFD9CEC5,
         ),
       ),
       child: selected
@@ -213,7 +212,7 @@ class _RadioIndicator extends StatelessWidget {
                 width: 11,
                 height: 11,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFDEAF5F),
+                  color: AppColors.cFFDEAF5F,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -264,7 +263,7 @@ class _CustomReminderPicker extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFFA48C7E),
+                  color: AppColors.cFFA48C7E,
                 ),
               ),
               const SizedBox(height: 8),
@@ -301,7 +300,7 @@ class _CustomReminderPicker extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFFA48C7E),
+                  color: AppColors.cFFA48C7E,
                 ),
               ),
               const SizedBox(height: 8),
@@ -335,19 +334,19 @@ class _CustomReminderPicker extends StatelessWidget {
     return InputDecoration(
       isDense: true,
       filled: true,
-      fillColor: const Color(0xFFF8F3EC),
+      fillColor: AppColors.cFFF8F3EC,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE6DBD2)),
+        borderSide: const BorderSide(color: AppColors.cFFE6DBD2),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE6DBD2)),
+        borderSide: const BorderSide(color: AppColors.cFFE6DBD2),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFDEAF5F), width: 1.6),
+        borderSide: const BorderSide(color: AppColors.cFFDEAF5F, width: 1.6),
       ),
     );
   }

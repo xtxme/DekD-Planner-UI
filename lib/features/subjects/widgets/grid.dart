@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class SubjectGridItem {
   final String title;
@@ -24,7 +25,7 @@ class SubjectsGrid extends StatelessWidget {
       return const Center(
         child: Text(
           'No subject found',
-          style: TextStyle(color: Color(0xFF876557), fontSize: 18),
+          style: TextStyle(color: AppColors.cFF876557, fontSize: 18),
         ),
       );
     }
@@ -61,7 +62,7 @@ class SubjectCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFE2D4C7),
+            color: AppColors.cFFE2D4C7,
             borderRadius: BorderRadius.circular(22),
           ),
           child: Column(
@@ -72,13 +73,9 @@ class SubjectCard extends StatelessWidget {
                 height: 65,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFFF3ECE5),
+                  color: AppColors.cFFF3ECE5,
                 ),
-                child: Icon(
-                  item.icon,
-                  size: 36,
-                  color: const Color(0xFF7A5A4A),
-                ),
+                child: Icon(item.icon, size: 36, color: AppColors.cFF7A5A4A),
               ),
               const SizedBox(height: 14),
               Text(
@@ -86,7 +83,7 @@ class SubjectCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF7A5A4A),
+                  color: AppColors.cFF7A5A4A,
                 ),
               ),
               const SizedBox(height: 10),
@@ -96,7 +93,7 @@ class SubjectCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5EFE9),
+                  color: AppColors.cFFF5EFE9,
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
@@ -105,8 +102,8 @@ class SubjectCard extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: isInactive
-                        ? const Color(0xFFB7A79D)
-                        : const Color(0xFF7A5A4A),
+                        ? AppColors.cFFB7A79D
+                        : AppColors.cFF7A5A4A,
                   ),
                 ),
               ),

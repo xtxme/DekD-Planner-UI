@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class EditProfileFormField extends StatelessWidget {
   const EditProfileFormField({
@@ -28,7 +29,7 @@ class EditProfileFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const borderColor = Color(0xFFE6DBD2);
+    const borderColor = AppColors.cFFE6DBD2;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +39,7 @@ class EditProfileFormField extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF8B6758),
+            color: AppColors.cFF8B6758,
           ),
         ),
         const SizedBox(height: 8),
@@ -52,20 +53,20 @@ class EditProfileFormField extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF8B6758),
+            color: AppColors.cFF8B6758,
           ),
           decoration: InputDecoration(
             prefixIcon: trailingIcon == null
                 ? null
-                : Icon(trailingIcon, size: 22, color: const Color(0xFFC4B8AE)),
+                : Icon(trailingIcon, size: 22, color: AppColors.cFFC4B8AE),
             hintText: hintText,
             hintStyle: const TextStyle(
-              color: Color(0xFFA48C7E),
+              color: AppColors.cFFA48C7E,
               fontWeight: FontWeight.w500,
             ),
-            
+
             filled: true,
-            fillColor: const Color(0xFFFFFCF8),
+            fillColor: AppColors.cFFFFFCF8,
             contentPadding: EdgeInsets.symmetric(
               horizontal: 18,
               vertical: maxLines > 1 ? 16 : 14,
@@ -80,7 +81,7 @@ class EditProfileFormField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFFDEAF5F)),
+              borderSide: const BorderSide(color: AppColors.cFFDEAF5F),
             ),
           ),
         ),
@@ -91,7 +92,7 @@ class EditProfileFormField extends StatelessWidget {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Color(0xFFA48C7E),
+              color: AppColors.cFFA48C7E,
             ),
           ),
         ],

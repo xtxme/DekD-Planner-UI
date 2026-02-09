@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class NotificationMasterSwitchCard extends StatelessWidget {
   const NotificationMasterSwitchCard({
@@ -16,7 +17,7 @@ class NotificationMasterSwitchCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE6DBD2)),
+        border: Border.all(color: AppColors.cFFE6DBD2),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 16, 14, 16),
@@ -26,13 +27,13 @@ class NotificationMasterSwitchCard extends StatelessWidget {
               width: 68,
               height: 58,
               decoration: BoxDecoration(
-                color: const Color(0xFFF8F3EC),
+                color: AppColors.cFFF8F3EC,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE8DDD3)),
+                border: Border.all(color: AppColors.cFFE8DDD3),
               ),
               child: const Icon(
                 Icons.notifications_active_rounded,
-                color: Color(0xFFDEAF5F),
+                color: AppColors.cFFDEAF5F,
                 size: 35,
               ),
             ),
@@ -46,7 +47,7 @@ class NotificationMasterSwitchCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF8B6758),
+                      color: AppColors.cFF8B6758,
                     ),
                   ),
                   SizedBox(height: 4),
@@ -55,7 +56,7 @@ class NotificationMasterSwitchCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFFA48C7E),
+                      color: AppColors.cFFA48C7E,
                     ),
                   ),
                 ],
@@ -65,9 +66,9 @@ class NotificationMasterSwitchCard extends StatelessWidget {
               value: enabled,
               onChanged: onChanged,
               activeColor: Colors.white,
-              activeTrackColor: const Color(0xFFDEAF5F),
+              activeTrackColor: AppColors.cFFDEAF5F,
               inactiveThumbColor: Colors.white,
-              inactiveTrackColor: const Color(0xFFD9CEC5),
+              inactiveTrackColor: AppColors.cFFD9CEC5,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ],

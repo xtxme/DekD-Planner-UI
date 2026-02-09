@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/features/auth/login_page.dart';
 import 'package:my_first_app/features/auth/widgets/auth_primary_button.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class UpdatePage extends StatelessWidget {
   const UpdatePage({super.key});
@@ -16,7 +17,7 @@ class UpdatePage extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xFFFDF8F2), Color(0xFFFFFAF5)],
+              colors: [AppColors.cFFFDF8F2, AppColors.cFFFFFAF5],
             ),
           ),
           child: LayoutBuilder(
@@ -37,7 +38,7 @@ class UpdatePage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF8B6A5E),
+                            color: AppColors.cFF8B6A5E,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -47,7 +48,7 @@ class UpdatePage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             height: 1.4,
-                            color: Color(0xFFA48C7E),
+                            color: AppColors.cFFA48C7E,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -91,26 +92,19 @@ class _CheckMarkBadge extends StatelessWidget {
             width: 132,
             height: 132,
             decoration: BoxDecoration(
-              color: const Color(0xFFF6EAD8),
+              color: AppColors.cFFF6EAD8,
               shape: BoxShape.circle,
-              border: Border.all(
-                color: const Color(0xFFF2DDC3),
-                width: 2,
-              ),
+              border: Border.all(color: AppColors.cFFF2DDC3, width: 2),
             ),
           ),
           Container(
             width: 86,
             height: 86,
             decoration: const BoxDecoration(
-              color: Color(0xFFE1B873),
+              color: AppColors.cFFE1B873,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.check,
-              color: Colors.white,
-              size: 36,
-            ),
+            child: const Icon(Icons.check, color: Colors.white, size: 36),
           ),
         ],
       ),

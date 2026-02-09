@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class AssignmentsCard extends StatelessWidget {
   const AssignmentsCard({
@@ -37,11 +38,11 @@ class AssignmentsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF0E6DE)),
+        border: Border.all(color: AppColors.cFFF0E6DE),
         boxShadow: showShadow
             ? const [
                 BoxShadow(
-                  color: Color(0x1A000000),
+                  color: AppColors.c1A000000,
                   blurRadius: 8,
                   offset: Offset(0, 4),
                 ),
@@ -57,7 +58,7 @@ class AssignmentsCard extends StatelessWidget {
               height: 22,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFB9A89A), width: 2),
+                border: Border.all(color: AppColors.cFFB9A89A, width: 2),
               ),
             ),
             const SizedBox(width: 12),
@@ -94,7 +95,7 @@ class AssignmentsCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: dueBg ?? const Color(0xFFF0E6DE),
+                          color: dueBg ?? AppColors.cFFF0E6DE,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
@@ -140,7 +141,7 @@ class AssignmentsCard extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 18,
-                    color: Color(0xFF826559),
+                    color: AppColors.cFF826559,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -149,7 +150,7 @@ class AssignmentsCard extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     fontSize: 14,
-                    color: Color(0xFFA48C7E),
+                    color: AppColors.cFFA48C7E,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

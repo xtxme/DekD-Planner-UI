@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class AddAssignmentSaveButton extends StatelessWidget {
   const AddAssignmentSaveButton({
@@ -22,10 +23,10 @@ class AddAssignmentSaveButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: effectiveOnPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFDCAF5C),
+          backgroundColor: AppColors.cFFDCAF5C,
           foregroundColor: Colors.white,
-          disabledBackgroundColor: const Color(0xFFE2D8CF),
-          disabledForegroundColor: const Color(0xFF9A8A80),
+          disabledBackgroundColor: AppColors.cFFE2D8CF,
+          disabledForegroundColor: AppColors.cFF9A8A80,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(22),
@@ -49,7 +50,7 @@ class AddAssignmentSaveButton extends StatelessWidget {
                     child: Icon(
                       Icons.check_rounded,
                       size: 20,
-                      color: Color(0xFFDCAF5C),
+                      color: AppColors.cFFDCAF5C,
                     ),
                   ),
                   SizedBox(width: 10),

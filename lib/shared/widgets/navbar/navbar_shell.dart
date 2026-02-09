@@ -23,10 +23,7 @@ class NavbarShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentNavIndexProvider);
     return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: currentIndex, children: _pages),
       bottomNavigationBar: AppNavBar(
         currentIndex: currentIndex,
         onTap: (index) =>
@@ -43,8 +40,6 @@ class _PlaceholderTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(title),
-    );
+    return Center(child: Text(title));
   }
 }

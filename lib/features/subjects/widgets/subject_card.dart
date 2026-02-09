@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class SubjectInfoCard extends StatelessWidget {
   const SubjectInfoCard({
@@ -22,15 +23,15 @@ class SubjectInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFEAE3DB),
+        color: AppColors.cFFEAE3DB,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFD7C8BC)),
+        border: Border.all(color: AppColors.cFFD7C8BC),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Row(
           children: [
-            Container(width: 8, height: 260, color: const Color(0xFFE0B35D)),
+            Container(width: 8, height: 260, color: AppColors.cFFE0B35D),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
@@ -45,7 +46,7 @@ class SubjectInfoCard extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE3DBD2),
+                            color: AppColors.cFFE3DBD2,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -53,7 +54,7 @@ class SubjectInfoCard extends StatelessWidget {
                             style: const TextStyle(
                               letterSpacing: 2,
                               fontWeight: FontWeight.w800,
-                              color: Color(0xFF9A8476),
+                              color: AppColors.cFF9A8476,
                             ),
                           ),
                         ),
@@ -65,7 +66,11 @@ class SubjectInfoCard extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Icon(icon, size: 34, color: const Color(0xFF8B6758)),
+                          child: Icon(
+                            icon,
+                            size: 34,
+                            color: AppColors.cFF8B6758,
+                          ),
                         ),
                       ],
                     ),
@@ -76,7 +81,7 @@ class SubjectInfoCard extends StatelessWidget {
                         height: 1.15,
                         fontSize: 25,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF8B6758),
+                        color: AppColors.cFF8B6758,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -85,16 +90,20 @@ class SubjectInfoCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFFA48C7E),
+                        color: AppColors.cFFA48C7E,
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Divider(color: Color(0xFFD9CEC3)),
+                    const Divider(color: AppColors.cFFD9CEC3),
                     const SizedBox(height: 10),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.info, size: 20, color: Color(0xFFA48C7E)),
+                        const Icon(
+                          Icons.info,
+                          size: 20,
+                          color: AppColors.cFFA48C7E,
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
@@ -102,7 +111,7 @@ class SubjectInfoCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 16,
                               height: 1.45,
-                              color: Color(0xFF9A8476),
+                              color: AppColors.cFF9A8476,
                               fontWeight: FontWeight.w600,
                             ),
                           ),

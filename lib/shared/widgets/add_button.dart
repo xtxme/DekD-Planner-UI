@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class AddButton extends StatelessWidget {
   const AddButton({super.key, this.onTap});
@@ -15,14 +16,14 @@ class AddButton extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Color(0x332C2017),
+              color: AppColors.c332C2017,
               blurRadius: 14,
               offset: Offset(0, 6),
             ),
           ],
         ),
         child: Material(
-          color: const Color(0xFFE0B35D),
+          color: AppColors.cFFE0B35D,
           shape: const CircleBorder(),
           child: InkWell(
             onTap: onTap,

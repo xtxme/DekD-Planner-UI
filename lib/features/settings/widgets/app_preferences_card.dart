@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class SettingsPreferencesCard extends StatelessWidget {
   const SettingsPreferencesCard({
@@ -18,7 +19,7 @@ class SettingsPreferencesCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE6DBD2)),
+        border: Border.all(color: AppColors.cFFE6DBD2),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
@@ -39,14 +40,14 @@ class SettingsPreferencesCard extends StatelessWidget {
                     value: notificationsEnabled,
                     onChanged: onNotificationsChanged,
                     activeColor: Colors.white,
-                    activeTrackColor: const Color(0xFFDEAF5F),
+                    activeTrackColor: AppColors.cFFDEAF5F,
                     inactiveThumbColor: Colors.white,
-                    inactiveTrackColor: const Color(0xFFD9CEC5),
+                    inactiveTrackColor: AppColors.cFFD9CEC5,
                   ),
                 ],
               ),
             ),
-            const Divider(height: 1, color: Color(0xFFEEE4DB)),
+            const Divider(height: 1, color: AppColors.cFFEEE4DB),
             InkWell(
               onTap: onTapAdjustNotificationTimes,
               child: const Padding(
@@ -61,7 +62,7 @@ class SettingsPreferencesCard extends StatelessWidget {
                     ),
                     Icon(
                       Icons.chevron_right_rounded,
-                      color: Color(0xFFC7B8AD),
+                      color: AppColors.cFFC7B8AD,
                       size: 28,
                     ),
                   ],
@@ -91,7 +92,7 @@ class _TitleSubtitle extends StatelessWidget {
           style: const TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.w900,
-            color: Color(0xFF8B6758),
+            color: AppColors.cFF8B6758,
           ),
         ),
         const SizedBox(height: 6),
@@ -100,7 +101,7 @@ class _TitleSubtitle extends StatelessWidget {
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: Color(0xFFA48C7E),
+            color: AppColors.cFFA48C7E,
           ),
         ),
       ],

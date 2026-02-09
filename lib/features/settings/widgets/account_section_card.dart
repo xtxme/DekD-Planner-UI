@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class SettingsAccountCard extends StatelessWidget {
   const SettingsAccountCard({
@@ -22,7 +23,7 @@ class SettingsAccountCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFE6DBD2)),
+        border: Border.all(color: AppColors.cFFE6DBD2),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
@@ -39,13 +40,13 @@ class SettingsAccountCard extends StatelessWidget {
                       width: 65,
                       height: 65,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFF7CDC5),
+                        color: AppColors.cFFF7CDC5,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.person_4_rounded,
                         size: 42,
-                        color: Color(0xFF8B6758),
+                        color: AppColors.cFF8B6758,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -58,7 +59,7 @@ class SettingsAccountCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 19,
                               fontWeight: FontWeight.w900,
-                              color: Color(0xFF8B6758),
+                              color: AppColors.cFF8B6758,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -67,7 +68,7 @@ class SettingsAccountCard extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFFA48C7E),
+                              color: AppColors.cFFA48C7E,
                             ),
                           ),
                         ],
@@ -77,7 +78,10 @@ class SettingsAccountCard extends StatelessWidget {
                 ),
               ),
             ),
-            const Divider(height: 1, color: Color(0xFFEEE4DB)), //เส้นคั่นแนวนอน
+            const Divider(
+              height: 1,
+              color: AppColors.cFFEEE4DB,
+            ), //เส้นคั่นแนวนอน
             InkWell(
               //ทำให้พื้นที่ตรงนั้น “กดได้”
               onTap: onEditProfile,
@@ -85,7 +89,7 @@ class SettingsAccountCard extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(18, 18, 18, 18),
                 child: Row(
                   children: [
-                    Icon(Icons.person, color: Color(0xFFA9998B), size: 28),
+                    Icon(Icons.person, color: AppColors.cFFA9998B, size: 28),
                     SizedBox(width: 14),
                     Expanded(
                       child: Text(
@@ -93,20 +97,20 @@ class SettingsAccountCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF8B6758),
+                          color: AppColors.cFF8B6758,
                         ),
                       ),
                     ),
                     Icon(
                       Icons.chevron_right_rounded,
-                      color: Color(0xFFC7B8AD),
+                      color: AppColors.cFFC7B8AD,
                       size: 28,
                     ),
                   ],
                 ),
               ),
             ),
-            const Divider(height: 1, color: Color(0xFFEEE4DB)),
+            const Divider(height: 1, color: AppColors.cFFEEE4DB),
             InkWell(
               onTap: onSignOut,
               child: Padding(
@@ -115,7 +119,7 @@ class SettingsAccountCard extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.logout_rounded,
-                      color: Color(0xFFF04444),
+                      color: AppColors.cFFF04444,
                       size: 24,
                     ),
                     SizedBox(width: 14),
@@ -125,7 +129,7 @@ class SettingsAccountCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFFF04444),
+                          color: AppColors.cFFF04444,
                         ),
                       ),
                     ),

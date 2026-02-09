@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class SubjectsHeader extends StatelessWidget {
   const SubjectsHeader({
@@ -11,8 +12,9 @@ class SubjectsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity, //ขยายความกว้างให้มากที่สุดเท่าที่พ่อ (parent) อนุญาต
-      color: const Color(0xFFE2D3C6),
+      width:
+          double.infinity, //ขยายความกว้างให้มากที่สุดเท่าที่พ่อ (parent) อนุญาต
+      color: AppColors.cFFE2D3C6,
       padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,7 +24,7 @@ class SubjectsHeader extends StatelessWidget {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF7A5A4A),
+              color: AppColors.cFF7A5A4A,
             ),
           ),
           const SizedBox(height: 16),
@@ -34,11 +36,11 @@ class SubjectsHeader extends StatelessWidget {
               decoration: InputDecoration(
                 isDense: true,
                 filled: true,
-                fillColor: const Color(0xFFF7F2EE),
+                fillColor: AppColors.cFFF7F2EE,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 prefixIcon: const Icon(
                   Icons.search_outlined,
-                  color: Color(0xFFA9998B),
+                  color: AppColors.cFFA9998B,
                 ),
                 prefixIconConstraints: const BoxConstraints(
                   minWidth: 52,
@@ -46,19 +48,19 @@ class SubjectsHeader extends StatelessWidget {
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFD9C6B4)),
+                  borderSide: const BorderSide(color: AppColors.cFFD9C6B4),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFD9C6B4)),
+                  borderSide: const BorderSide(color: AppColors.cFFD9C6B4),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFF7A5A4A)),
+                  borderSide: const BorderSide(color: AppColors.cFF7A5A4A),
                 ),
                 hintText: 'Search subjects...',
                 hintStyle: const TextStyle(
-                  color: Color(0xFFB8A99A),
+                  color: AppColors.cFFB8A99A,
                   fontWeight: FontWeight.w500,
                 ),
               ),

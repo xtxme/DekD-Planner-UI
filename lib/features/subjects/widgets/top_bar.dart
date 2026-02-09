@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class SubjectsDetailTopBar extends StatelessWidget {
   const SubjectsDetailTopBar({
@@ -23,10 +24,10 @@ class SubjectsDetailTopBar extends StatelessWidget {
           SizedBox(
             width: 48,
             child: IconButton(
-              onPressed: onBack, 
+              onPressed: onBack,
               icon: const Icon(
                 Icons.arrow_back_rounded,
-                color: Color(0xFF8B6758),
+                color: AppColors.cFF8B6758,
               ),
             ),
           ),
@@ -37,7 +38,7 @@ class SubjectsDetailTopBar extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
-                color: Color(0xFF8B6758),
+                color: AppColors.cFF8B6758,
               ),
             ),
           ),
@@ -47,19 +48,19 @@ class SubjectsDetailTopBar extends StatelessWidget {
               children: [
                 Expanded(
                   child: IconButton(
-                    onPressed: onEdit, 
-                    icon: Icon(Icons.edit, color: Color(0xFF8B6758)),
+                    onPressed: onEdit,
+                    icon: Icon(Icons.edit, color: AppColors.cFF8B6758),
                   ),
                 ),
                 Expanded(
                   child: IconButton(
-                    onPressed: onDelete, 
+                    onPressed: onDelete,
                     icon: Icon(
                       Icons.delete_outline,
-                      color: Color(0xFF8B6758),
+                      color: AppColors.cFF8B6758,
                     ),
                   ),
-                ),  
+                ),
               ],
             ),
           ),

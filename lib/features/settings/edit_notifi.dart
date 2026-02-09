@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../auth/widgets/auth_primary_button.dart';
 import '../../shared/widgets/navbar/app_navbar.dart';
@@ -28,7 +29,7 @@ class _EditNotificationPageState extends ConsumerState<EditNotificationPage> {
     final currentIndex = ref.watch(currentNavIndexProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F2EE),
+      backgroundColor: AppColors.cFFF7F2EE,
       body: SafeArea(
         child: Column(
           children: [
@@ -104,8 +105,8 @@ class _EditNotificationPageState extends ConsumerState<EditNotificationPage> {
       width: double.infinity,
       height: 72,
       decoration: const BoxDecoration(
-        color: Color(0xFFF7F2EE),
-        border: Border(bottom: BorderSide(color: Color(0xFFE7DDD4))),
+        color: AppColors.cFFF7F2EE,
+        border: Border(bottom: BorderSide(color: AppColors.cFFE7DDD4)),
       ),
       child: Row(
         children: [
@@ -113,7 +114,7 @@ class _EditNotificationPageState extends ConsumerState<EditNotificationPage> {
             onPressed: () => Navigator.of(context).maybePop(),
             icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
-              color: Color(0xFF8B6758),
+              color: AppColors.cFF8B6758,
               size: 24,
             ),
           ),
@@ -124,7 +125,7 @@ class _EditNotificationPageState extends ConsumerState<EditNotificationPage> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
-                color: Color(0xFF8B6758),
+                color: AppColors.cFF8B6758,
               ),
             ),
           ),

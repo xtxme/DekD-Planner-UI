@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class SubjectSegmentedTabs extends StatelessWidget {
   const SubjectSegmentedTabs({
@@ -18,7 +19,7 @@ class SubjectSegmentedTabs extends StatelessWidget {
       height: 64,
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: const Color(0xFFE6DED6),
+        color: AppColors.cFFE6DED6,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
@@ -57,7 +58,7 @@ class _TabButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: selected ? const Color(0xFF8B6758) : Colors.transparent,
+            color: selected ? AppColors.cFF8B6758 : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
           ),
           alignment: Alignment.center,
@@ -66,7 +67,7 @@ class _TabButton extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
-              color: selected ? Colors.white : const Color(0xFFA48C7E),
+              color: selected ? Colors.white : AppColors.cFFA48C7E,
             ),
           ),
         ),

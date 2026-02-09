@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import 'widgets/auth_primary_button.dart';
-class RegisterPage extends StatefulWidget{
+
+class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
@@ -26,7 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       //เตรียมโครงหน้า
-      backgroundColor: const Color(0xFFFBFAF9),
+      backgroundColor: AppColors.cFFFBFAF9,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -40,15 +42,18 @@ class _RegisterPageState extends State<RegisterPage> {
                       //App bar
                       Container(
                         width: double.infinity,
-                        color: const Color(0xFFF4EBDD),
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        color: AppColors.cFFF4EBDD,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 8,
+                        ),
                         child: Row(
                           children: [
                             IconButton(
-                              onPressed: () => Navigator.pop(context), 
+                              onPressed: () => Navigator.pop(context),
                               icon: const Icon(
                                 Icons.arrow_back_ios,
-                                color: Color(0xFF7A5A4A),
+                                color: AppColors.cFF7A5A4A,
                               ),
                             ),
                             Expanded(
@@ -58,17 +63,20 @@ class _RegisterPageState extends State<RegisterPage> {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w900,
-                                    color: Color(0xFF7A5A4A),
+                                    color: AppColors.cFF7A5A4A,
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(width: 48,)
+                            SizedBox(width: 48),
                           ],
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
                         child: Form(
                           key: _formKey,
                           child: Column(
@@ -81,14 +89,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                 children: [
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           "Create Your\nAccount",
                                           style: TextStyle(
                                             fontSize: 32,
                                             fontWeight: FontWeight.w900,
-                                            color: Color(0xFF7A5A4A),
+                                            color: AppColors.cFF7A5A4A,
                                             height: 1.2,
                                           ),
                                         ),
@@ -97,7 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           "Start planning your success today.",
                                           style: TextStyle(
                                             fontSize: 18,
-                                            color: Color(0xFFA48C7E),
+                                            color: AppColors.cFFA48C7E,
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
@@ -110,13 +119,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                     height: 56,
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFF4EBDD),
+                                      color: AppColors.cFFF4EBDD,
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       Icons.school,
                                       size: 28,
-                                      color: Color(0xFFD2A34A),
+                                      color: AppColors.cFFD2A34A,
                                     ),
                                   ),
                                 ],
@@ -168,7 +177,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   if (value == null || value.trim().isEmpty) {
                                     return 'Please confirm your password.';
                                   }
-                                  if (value.trim() != _passwordController.text.trim()) {
+                                  if (value.trim() !=
+                                      _passwordController.text.trim()) {
                                     return 'Passwords do not match.';
                                   }
                                   return null;
@@ -178,7 +188,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               AuthPrimaryButton(
                                 label: 'Register',
                                 onPressed: () {
-                                  if (_formKey.currentState?.validate() != true) {
+                                  if (_formKey.currentState?.validate() !=
+                                      true) {
                                     return;
                                   }
                                 },
@@ -190,7 +201,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   Text(
                                     'Already have an account? ',
                                     style: TextStyle(
-                                      color: Color(0xFFA48C7E),
+                                      color: AppColors.cFFA48C7E,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -202,7 +213,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     child: Text(
                                       " Login",
                                       style: TextStyle(
-                                        color: Color(0xFFD9A441),
+                                        color: AppColors.cFFD9A441,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w900,
                                       ),
@@ -215,9 +226,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                     ],
+                  ),
                 ),
               ),
-              )
             );
           },
         ),
@@ -226,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
- //helper widget สร้าง input fields
+//helper widget สร้าง input fields
 Widget buildField({
   required String label,
   required String hint,
@@ -245,7 +256,7 @@ Widget buildField({
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w900,
-          color: Color(0xFF7A5A4A),
+          color: AppColors.cFF7A5A4A,
         ),
       ),
       const SizedBox(height: 8),
@@ -259,23 +270,24 @@ Widget buildField({
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
-            color: Color(0xFFA48C7E),
+            color: AppColors.cFFA48C7E,
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
-          prefixIcon: Icon(icon, color: Color(0xFFA9998B)),
+          prefixIcon: Icon(icon, color: AppColors.cFFA9998B),
           suffixIcon: onToggle == null
               ? null
               : IconButton(
                   onPressed: onToggle,
                   icon: Icon(
                     (isObscure ?? true)
-                        ? Icons.visibility_off : Icons.visibility,
-                    color: Color(0xFFB08F7E),
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                    color: AppColors.cFFB08F7E,
                   ),
                 ),
           filled: true,
-          fillColor: Color(0xFFF3ECE6),
+          fillColor: AppColors.cFFF3ECE6,
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),

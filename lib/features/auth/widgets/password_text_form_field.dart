@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class PasswordTextFormField extends StatefulWidget {
   const PasswordTextFormField({
@@ -6,10 +7,10 @@ class PasswordTextFormField extends StatefulWidget {
     this.controller,
     this.validator,
     this.hintText = 'Enter your password',
-    this.iconColor = const Color(0xFFB08F7E),
+    this.iconColor = AppColors.cFFB08F7E,
     this.prefixIcon = Icons.lock,
     this.fillColor = Colors.white,
-    this.borderColor = const Color(0xFFD9C6B4),
+    this.borderColor = AppColors.cFFD9C6B4,
   });
 
   final TextEditingController? controller;
@@ -38,10 +39,8 @@ class _PasswordTextFormFieldState extends State<PasswordTextFormField> {
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: TextStyle(
-          color: Color(0xFFB8A99A),
-        ),
-        prefixIcon: Icon(widget.prefixIcon, color: Color(0xFFA9998B)),
+        hintStyle: TextStyle(color: AppColors.cFFB8A99A),
+        prefixIcon: Icon(widget.prefixIcon, color: AppColors.cFFA9998B),
         suffixIcon: IconButton(
           onPressed: () {
             setState(() {
@@ -66,7 +65,7 @@ class _PasswordTextFormFieldState extends State<PasswordTextFormField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Color(0xFFD2A34A)),
+          borderSide: BorderSide(color: AppColors.cFFD2A34A),
         ),
       ),
     );

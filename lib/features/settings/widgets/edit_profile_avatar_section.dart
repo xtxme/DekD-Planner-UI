@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class EditProfileAvatarSection extends StatelessWidget {
   const EditProfileAvatarSection({
@@ -20,10 +21,10 @@ class EditProfileAvatarSection extends StatelessWidget {
             height: 115,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFF8F5F2), width: 4),
+              border: Border.all(color: AppColors.cFFF8F5F2, width: 4),
               boxShadow: const [
                 BoxShadow(
-                  color: Color(0x22000000),
+                  color: AppColors.c22000000,
                   blurRadius: 5,
                   offset: Offset(0, 3),
                 ),
@@ -32,12 +33,12 @@ class EditProfileAvatarSection extends StatelessWidget {
             child: ClipOval(
               child: imageProvider == null
                   ? Container(
-                      color: const Color(0xFFF2C9BF),
+                      color: AppColors.cFFF2C9BF,
                       alignment: Alignment.center,
                       child: const Icon(
                         Icons.person_rounded,
                         size: 70,
-                        color: Color(0xFF8B6758),
+                        color: AppColors.cFF8B6758,
                       ),
                     )
                   : Image(image: imageProvider!, fit: BoxFit.cover),
@@ -46,9 +47,7 @@ class EditProfileAvatarSection extends StatelessWidget {
           const SizedBox(height: 16),
           TextButton(
             onPressed: onTapChangePhoto,
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFFDEAF5F),
-            ),
+            style: TextButton.styleFrom(foregroundColor: AppColors.cFFDEAF5F),
             child: const Text(
               'Change Profile Photo',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),

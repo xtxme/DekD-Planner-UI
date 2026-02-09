@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/features/auth/widgets/auth_primary_button.dart';
 import 'package:my_first_app/features/auth/register_page.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
-class CheckPage extends StatefulWidget{
-  const CheckPage ({super.key});
+class CheckPage extends StatefulWidget {
+  const CheckPage({super.key});
 
   @override
   State<CheckPage> createState() => _CheckPageState();
 }
 
-class _CheckPageState extends State<CheckPage>{
+class _CheckPageState extends State<CheckPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFAF9),
+      backgroundColor: AppColors.cFFFBFAF9,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -30,23 +31,23 @@ class _CheckPageState extends State<CheckPage>{
                         width: 96,
                         height: 96,
                         decoration: BoxDecoration(
-                          color: Color(0xFFF4EBDD),
+                          color: AppColors.cFFF4EBDD,
                           borderRadius: BorderRadius.all(Radius.circular(24)),
                         ),
                         child: Icon(
                           Icons.mark_email_read_sharp,
                           size: 44,
-                          color: Color(0xFFD2A34A),
+                          color: AppColors.cFFD2A34A,
                         ),
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Check your mail', 
+                        'Check your mail',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFF7A5A4A),
+                          color: AppColors.cFF7A5A4A,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -55,8 +56,8 @@ class _CheckPageState extends State<CheckPage>{
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFFA48C7E),
-                          fontWeight: FontWeight.w500
+                          color: AppColors.cFFA48C7E,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -68,34 +69,39 @@ class _CheckPageState extends State<CheckPage>{
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Did not receive the email?",
-                          style: TextStyle(
-                            color: Color(0xFFA48C7E),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
+                          Text(
+                            "Did not receive the email?",
+                            style: TextStyle(
+                              color: AppColors.cFFA48C7E,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
                             ),
                           ),
-                          TextButton(onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const RegisterPage()),
-                          );
-                          },                           
-                          child: Text('Resend Email',
-                          style: TextStyle(
-                            color: Color(0xFFD9A441),
-                            fontWeight: FontWeight.w900,
-                            fontSize: 14,
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const RegisterPage(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Resend Email',
+                              style: TextStyle(
+                                color: AppColors.cFFD9A441,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 14,
+                              ),
                             ),
                           ),
-                        ),
                         ],
                       ),
-                    ]
+                    ],
                   ),
                 ),
               ),
             );
-          }
+          },
         ),
       ),
     );

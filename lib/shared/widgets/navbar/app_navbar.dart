@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class AppNavBar extends StatelessWidget {
-  const AppNavBar({
-    super.key,
-    required this.currentIndex,
-    required this.onTap,
-  });
+  const AppNavBar({super.key, required this.currentIndex, required this.onTap});
 
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  static const Color _selectedIconColor = Color(0xFFDEAF5F);
-  static const Color _unselectedColor = Color(0xFFA48C7E);
+  static const Color _selectedIconColor = AppColors.cFFDEAF5F;
+  static const Color _unselectedColor = AppColors.cFFA48C7E;
 
   @override
   Widget build(BuildContext context) {
@@ -38,19 +35,19 @@ class AppNavBar extends StatelessWidget {
 
 class _NavItem extends BottomNavigationBarItem {
   _NavItem({required IconData icon, required String label})
-      : super(
-          icon: _IconWidget(icon: icon),
-          activeIcon: _IconWidget(icon: icon, isActive: true),
-          label: label,
-        );
+    : super(
+        icon: _IconWidget(icon: icon),
+        activeIcon: _IconWidget(icon: icon, isActive: true),
+        label: label,
+      );
 }
 
 class _IconWidget extends StatelessWidget {
   const _IconWidget({required this.icon, this.isActive = false});
-  
+
   final IconData icon;
   final bool isActive;
-  
+
   @override
   Widget build(BuildContext context) {
     return Icon(
