@@ -31,6 +31,11 @@ class SubjectsHeader extends StatelessWidget {
           SizedBox(
             height: 48,
             child: TextField(
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.search,
+              textCapitalization: TextCapitalization.none,
+              enableSuggestions: true,
+              autocorrect: true,
               textAlignVertical: TextAlignVertical.center,
               onChanged: onQueryChanged,
               decoration: InputDecoration(

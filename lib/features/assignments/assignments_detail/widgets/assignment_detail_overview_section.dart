@@ -27,19 +27,23 @@ class AssignmentDetailOverviewSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Icon(
-              Icons.event_note_rounded,
+              Icons.error_rounded,
               size: 22,
-              color: AppColors.error,
+              color: AppColors.cFFE54A4A,
             ),
             const SizedBox(width: 8),
-            Text(
-              dueText,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: AppColors.error,
+            Expanded(
+              child: Text(
+                dueText,
+                softWrap: true,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.cFFE54A4A,
+                ),
               ),
             ),
           ],

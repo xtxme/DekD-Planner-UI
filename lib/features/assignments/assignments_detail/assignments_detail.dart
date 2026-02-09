@@ -20,7 +20,7 @@ class AssignmentsDetailPage extends ConsumerWidget {
     final currentIndex = ref.watch(currentNavIndexProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.cFFF7F2EE,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +37,7 @@ class AssignmentsDetailPage extends ConsumerWidget {
                   children: [
                     const AssignmentDetailOverviewSection(
                       title: 'Algebra Worksheet 4.2',
-                      dueText: 'Due Today, 4:00 PM',
+                      dueText: 'Due: Oct 10, 2023 | 09:00',
                     ),
                     const SizedBox(height: 28),
                     const AssignmentDetailStatsSection(

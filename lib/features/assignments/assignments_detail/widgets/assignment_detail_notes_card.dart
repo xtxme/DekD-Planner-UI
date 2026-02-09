@@ -15,27 +15,31 @@ class AssignmentDetailNotesCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.border),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Stack(
         children: [
-          Container(
-            width: 6,
-            decoration: const BoxDecoration(
-              color: AppColors.cFFE2D8CF,
-              borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 6,
+                decoration: const BoxDecoration(
+                  color: AppColors.cFFE2D8CF,
+                  borderRadius: BorderRadius.horizontal(
+                    left: Radius.circular(20),
+                  ),
+                ),
+              ),
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 22),
-              child: Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 18 / 1.15,
-                  height: 1.45,
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 18, 18, 22),
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 18 / 1.15,
+                height: 1.45,
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

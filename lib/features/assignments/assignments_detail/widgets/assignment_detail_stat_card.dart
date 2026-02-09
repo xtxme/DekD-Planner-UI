@@ -27,6 +27,7 @@ class AssignmentDetailStatCard extends StatelessWidget {
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             width: 54,
@@ -50,8 +51,10 @@ class AssignmentDetailStatCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
+            softWrap: true,
             style: const TextStyle(
               fontSize: 20 / 1.2,
+              height: 1.25,
               fontWeight: FontWeight.w900,
               color: AppColors.textPrimary,
             ),

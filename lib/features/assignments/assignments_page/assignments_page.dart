@@ -139,7 +139,7 @@ class AssignmentsPage extends ConsumerWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          Navigator.of(context, rootNavigator: true).push(
+          Navigator.of(context).push(
             MaterialPageRoute(
               builder: (_) => const AssignmentsDetailPage(withNavBar: false),
             ),
@@ -245,7 +245,7 @@ class AssignmentsPage extends ConsumerWidget {
                   ),
                   AddButton(
                     onTap: () {
-                      Navigator.of(context, rootNavigator: true).push(
+                      Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) =>
                               const AddAssignmentsPage(withNavBar: false),

@@ -15,37 +15,52 @@ class AssignmentDetailActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _ActionItem(
-          icon: Icons.check_rounded,
-          label: 'Complete',
-          labelColor: AppColors.cFF1C9E73,
-          iconColor: AppColors.cFF1C9E73,
-          bgColor: AppColors.cFFDFF2EA,
-          borderColor: AppColors.cFF5FAF97,
-          onTap: onComplete,
-        ),
-        _ActionItem(
-          icon: Icons.edit_rounded,
-          label: 'Edit',
-          labelColor: AppColors.textSecondary,
-          iconColor: AppColors.textPrimary,
-          bgColor: AppColors.surface,
-          borderColor: AppColors.border,
-          onTap: onEdit,
-        ),
-        _ActionItem(
-          icon: Icons.delete_rounded,
-          label: 'Delete',
-          labelColor: AppColors.cFFE65757,
-          iconColor: AppColors.cFFE65757,
-          bgColor: AppColors.surface,
-          borderColor: AppColors.cFFF9DDE0,
-          onTap: onDelete,
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - 16) / 3;
+        return Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          runSpacing: 12,
+          children: [
+            SizedBox(
+              width: itemWidth,
+              child: _ActionItem(
+                icon: Icons.check_rounded,
+                label: 'Complete',
+                labelColor: AppColors.cFF1C9E73,
+                iconColor: AppColors.cFF1C9E73,
+                bgColor: AppColors.cFFDFF2EA,
+                borderColor: AppColors.cFF5FAF97,
+                onTap: onComplete,
+              ),
+            ),
+            SizedBox(
+              width: itemWidth,
+              child: _ActionItem(
+                icon: Icons.edit_rounded,
+                label: 'Edit',
+                labelColor: AppColors.textSecondary,
+                iconColor: AppColors.textPrimary,
+                bgColor: AppColors.surface,
+                borderColor: AppColors.border,
+                onTap: onEdit,
+              ),
+            ),
+            SizedBox(
+              width: itemWidth,
+              child: _ActionItem(
+                icon: Icons.delete_rounded,
+                label: 'Delete',
+                labelColor: AppColors.cFFE65757,
+                iconColor: AppColors.cFFE65757,
+                bgColor: AppColors.surface,
+                borderColor: AppColors.cFFF9DDE0,
+                onTap: onDelete,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -74,30 +89,35 @@ class _ActionItem extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(40),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        child: Column(
-          children: [
-            Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: bgColor,
-                border: Border.all(color: borderColor),
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          child: Column(
+            children: [
+              Container(
+                width: 58,
+                height: 58,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: bgColor,
+                  border: Border.all(color: borderColor),
+                ),
+                child: Icon(icon, color: iconColor, size: 30),
               ),
-              child: Icon(icon, color: iconColor, size: 30),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: labelColor,
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                softWrap: true,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: labelColor,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -108,6 +108,11 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
                     TextField(
                       controller: _nameController,
                       focusNode: _nameFocusNode,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.none,
+                      enableSuggestions: true,
+                      autocorrect: true,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
@@ -150,6 +155,11 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
                             child: TextField(
                               controller: _codeController,
                               focusNode: _codeFocusNode,
+                              keyboardType: TextInputType.text,
+                              textInputAction: TextInputAction.next,
+                              textCapitalization: TextCapitalization.none,
+                              enableSuggestions: false,
+                              autocorrect: false,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
@@ -175,6 +185,11 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
                       child: TextField(
                         controller: _descriptionController,
                         focusNode: _descriptionFocusNode,
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.newline,
+                        textCapitalization: TextCapitalization.none,
+                        enableSuggestions: true,
+                        autocorrect: true,
                         minLines: 4,
                         maxLines: null,
                         style: const TextStyle(

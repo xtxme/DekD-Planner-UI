@@ -136,12 +136,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                 label: "Name",
                                 hint: "Your Name",
                                 icon: Icons.person_sharp,
+                                keyboardType: TextInputType.name,
                               ),
                               const SizedBox(height: 20),
                               buildField(
                                 label: "Email Address",
                                 hint: "student@gmail.com",
                                 icon: Icons.mail_rounded,
+                                keyboardType: TextInputType.emailAddress,
+                                enableSuggestions: false,
+                                autocorrect: false,
                               ),
                               const SizedBox(height: 20),
                               buildField(
@@ -150,6 +154,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 icon: Icons.lock,
                                 isObscure: _obscurePassword,
                                 controller: _passwordController,
+                                keyboardType: TextInputType.visiblePassword,
+                                enableSuggestions: false,
+                                autocorrect: false,
                                 onToggle: () => setState(() {
                                   _obscurePassword = !_obscurePassword;
                                 }),
@@ -170,6 +177,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 icon: Icons.lock_reset_outlined,
                                 isObscure: _obscureConfirm,
                                 controller: _confirmPasswordController,
+                                keyboardType: TextInputType.visiblePassword,
+                                enableSuggestions: false,
+                                autocorrect: false,
                                 onToggle: () => setState(() {
                                   _obscureConfirm = !_obscureConfirm;
                                 }),
@@ -247,6 +257,9 @@ Widget buildField({
   VoidCallback? onToggle, //ใช้เรียกตอนผู้ใช้ กดปุ่มสลับซ่อน/แสดงรหัสผ่าน
   TextEditingController? controller,
   String? Function(String?)? validator,
+  TextInputType keyboardType = TextInputType.text,
+  bool enableSuggestions = true,
+  bool autocorrect = true,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,9 +277,9 @@ Widget buildField({
         controller: controller,
         validator: validator,
         obscureText: isObscure ?? obscure,
-        enableSuggestions: false,
-        autocorrect: false,
-        keyboardType: TextInputType.visiblePassword,
+        enableSuggestions: enableSuggestions,
+        autocorrect: autocorrect,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(
