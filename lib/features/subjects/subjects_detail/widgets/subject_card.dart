@@ -4,7 +4,7 @@ import 'package:my_first_app/shared/theme/app_colors.dart';
 class SubjectInfoCard extends StatelessWidget {
   const SubjectInfoCard({
     super.key,
-    required this.category,
+    this.category,
     required this.title,
     required this.code,
     required this.teacherInfo,
@@ -12,7 +12,7 @@ class SubjectInfoCard extends StatelessWidget {
     required this.icon,
   });
 
-  final String category;
+  final String? category;
   final String title;
   final String code;
   final String teacherInfo;
@@ -21,6 +21,8 @@ class SubjectInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasCategory = category != null && category!.trim().isNotEmpty;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cFFEAE3DB,
@@ -40,24 +42,25 @@ class SubjectInfoCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.cFFE3DBD2,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            category.toUpperCase(),
-                            style: const TextStyle(
-                              letterSpacing: 2,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.cFF9A8476,
+                        if (hasCategory)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.cFFE3DBD2,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              category!.toUpperCase(),
+                              style: const TextStyle(
+                                letterSpacing: 2,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.cFF9A8476,
+                              ),
                             ),
                           ),
-                        ),
                         const Spacer(),
                         Container(
                           width: 60,

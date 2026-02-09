@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-import '../../../shared/widgets/add_button.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import '../../../shared/widgets/navbar/provider.dart';
-import '../add_subjects/add_subjects.dart';
+import '../edit_subjects/edit_subjects.dart';
 import 'widgets/segmented_tabs.dart';
 import 'widgets/subject_card.dart';
 import 'widgets/top_bar.dart';
@@ -87,50 +86,44 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
           children: [
             SubjectsDetailTopBar(
               onBack: () => Navigator.of(context).pop(),
-              onEdit: _showEditPlaceholderSheet,
+              onEdit: _openEditSubjectsPage,
               onDelete: _showDeletePlaceholderDialog,
             ),
             Expanded(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 110),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SubjectInfoCard(
-                          category: 'Science',
-                          title: 'Advanced Mathematics',
-                          code: 'MAT101',
-                          teacherInfo: 'Mr. Smith - Room 302.',
-                          description: 'Focus on Calculus and Linear Algebra.',
-                          icon: Icons.calculate_rounded,
-                        ),
-                        const SizedBox(height: 16),
-                        SubjectSegmentedTabs(
-                          isUpcoming: _showUpcoming,
-                          onUpcomingTap: () =>
-                              setState(() => _showUpcoming = true),
-                          onCompletedTap: () =>
-                              setState(() => _showUpcoming = false),
-                        ),
-                        const SizedBox(height: 20),
-                        _buildSectionTitle(),
-                        const SizedBox(height: 14),
-                        if (visibleAssignments.isEmpty)
-                          _buildEmptyState()
-                        else
-                          ...visibleAssignments.map(
-                            (item) => Padding(
-                              padding: const EdgeInsets.only(bottom: 14),
-                              child: _buildAssignmentCard(item),
-                            ),
-                          ),
-                      ],
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SubjectInfoCard(
+                      title: 'Advanced Mathematics',
+                      code: 'MAT101',
+                      teacherInfo: 'Mr. Smith - Room 302.',
+                      description: 'Focus on Calculus and Linear Algebra.',
+                      icon: Icons.calculate_rounded,
                     ),
-                  ),
-                  AddButton(onTap: _openAddSubjectsPage),
-                ],
+                    const SizedBox(height: 16),
+                    SubjectSegmentedTabs(
+                      isUpcoming: _showUpcoming,
+                      onUpcomingTap: () =>
+                          setState(() => _showUpcoming = true),
+                      onCompletedTap: () =>
+                          setState(() => _showUpcoming = false),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildSectionTitle(),
+                    const SizedBox(height: 14),
+                    if (visibleAssignments.isEmpty)
+                      _buildEmptyState()
+                    else
+                      ...visibleAssignments.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 14),
+                          child: _buildAssignmentCard(item),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -296,10 +289,10 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     );
   }
 
-  Future<void> _openAddSubjectsPage() async {
+  Future<void> _openEditSubjectsPage() async {
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => const AddSubjectsPage(withNavBar: false),
+        builder: (_) => const EditSubjectsPage(withNavBar: false),
       ),
     );
   }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
-class AddSubjectsSectionLabel extends StatelessWidget {
-  const AddSubjectsSectionLabel({super.key, required this.text});
+class EditSubjectsSectionLabel extends StatelessWidget {
+  const EditSubjectsSectionLabel({super.key, required this.text});
 
   final String text;
 

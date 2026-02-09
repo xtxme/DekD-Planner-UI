@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_iconpicker/Models/configuration.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../shared/theme/app_colors.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import '../../../shared/widgets/navbar/provider.dart';
-import '../edit_subjects/widgets/edit_subjects_appearance_card.dart';
-import '../edit_subjects/widgets/edit_subjects_field_shell.dart';
-import '../edit_subjects/widgets/edit_subjects_section_label.dart';
+import 'widgets/edit_subjects_appearance_card.dart';
+import 'widgets/edit_subjects_field_shell.dart';
+import 'widgets/edit_subjects_section_label.dart';
 
-class AddSubjectsPage extends ConsumerStatefulWidget {
-  const AddSubjectsPage({super.key, this.withNavBar = true});
+class EditSubjectsPage extends ConsumerStatefulWidget {
+  const EditSubjectsPage({super.key, this.withNavBar = true});
 
   final bool withNavBar;
 
   @override
-  ConsumerState<AddSubjectsPage> createState() => _AddSubjectsPageState();
+  ConsumerState<EditSubjectsPage> createState() => _EditSubjectsPageState();
 }
 
-class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
+class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
   late final TextEditingController _nameController;
   late final TextEditingController _codeController;
   late final TextEditingController _descriptionController;
@@ -41,36 +43,19 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
     Icons.public_rounded,
   ];
 
-  static const List<IconData> _iconPickerChoices = [
-    Icons.functions_rounded,
-    Icons.biotech_rounded,
-    Icons.history_edu_rounded,
-    Icons.computer_rounded,
-    Icons.language_rounded,
-    Icons.auto_stories_rounded,
-    Icons.psychology_rounded,
-    Icons.calculate_outlined,
-    Icons.science_outlined,
-    Icons.menu_book_outlined,
-    Icons.public_outlined,
-    Icons.palette_outlined,
-    Icons.school_rounded,
-    Icons.translate_rounded,
-    Icons.calculate_rounded,
-    Icons.science_rounded,
-  ];
-
   final List<IconData> _iconChoices = [..._defaultIconChoices];
 
-  Color _selectedColor = AppColors.headerSurface;
+  Color _selectedColor = AppColors.accent;
   IconData _selectedIcon = Icons.calculate_rounded;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController();
-    _codeController = TextEditingController();
-    _descriptionController = TextEditingController();
+    _nameController = TextEditingController(text: 'Mathematics');
+    _codeController = TextEditingController(text: 'MATH101');
+    _descriptionController = TextEditingController(
+      text: 'Mon/Wed 10:00 AM - Room 402',
+    );
     _nameFocusNode = FocusNode();
     _codeFocusNode = FocusNode();
     _descriptionFocusNode = FocusNode();
@@ -109,26 +94,29 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      'Subject Name',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondaryText,
+                        height: 1.12,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: _nameController,
                       focusNode: _nameFocusNode,
                       style: const TextStyle(
-                        fontSize: 28,
+                        fontSize: 24,
                         fontWeight: FontWeight.w900,
                         color: AppColors.textPrimary,
-                        height: 1.2,
+                        height: 1.15,
                       ),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
-                        hintText: 'Subject Name',
-                        hintStyle: TextStyle(
-                          fontSize: 38,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.secondaryText.withValues(alpha: 0.9),
-                          height: 1.05,
-                        ),
                       ),
                     ),
                     AnimatedContainer(
@@ -138,23 +126,6 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                       color: _nameFocusNode.hasFocus
                           ? AppColors.accent
                           : AppColors.border,
-                    ),
-                    const SizedBox(height: 24),
-                    const EditSubjectsSectionLabel(text: 'APPEARANCE'),
-                    const SizedBox(height: 10),
-                    EditSubjectsAppearanceCard(
-                      colorChoices: _colorChoices,
-                      selectedColor: _selectedColor,
-                      iconChoices: _iconChoices,
-                      selectedIcon: _selectedIcon,
-                      onColorTap: (value) {
-                        setState(() => _selectedColor = value);
-                      },
-                      onAddColorTap: _onAddColorPressed,
-                      onIconTap: (value) {
-                        setState(() => _selectedIcon = value);
-                      },
-                      onAddIconTap: _onAddIconPressed,
                     ),
                     const SizedBox(height: 24),
                     const EditSubjectsSectionLabel(text: 'SUBJECT CODE'),
@@ -168,7 +139,7 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                             child: Text(
                               '#',
                               style: TextStyle(
-                                fontSize: 38,
+                                fontSize: 26,
                                 fontWeight: FontWeight.w900,
                                 color: AppColors.secondaryText,
                               ),
@@ -183,18 +154,10 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.textPrimary,
                               ),
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
-                                hintText: 'e.g. TH101',
-                                hintStyle: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.secondaryText.withValues(
-                                    alpha: 0.65,
-                                  ),
-                                ),
                               ),
                             ),
                           ),
@@ -221,23 +184,40 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                         ),
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: 'Room number, class schedule, notes...',
+                          hintText: 'Write subject details',
                           hintStyle: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             color: AppColors.secondaryText.withValues(
-                              alpha: 0.5,
+                              alpha: 0.8,
                             ),
                           ),
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 24),
+                    const EditSubjectsSectionLabel(text: 'APPEARANCE'),
+                    const SizedBox(height: 10),
+                    EditSubjectsAppearanceCard(
+                      colorChoices: _colorChoices,
+                      selectedColor: _selectedColor,
+                      iconChoices: _iconChoices,
+                      selectedIcon: _selectedIcon,
+                      onColorTap: (value) {
+                        setState(() => _selectedColor = value);
+                      },
+                      onAddColorTap: _onAddColorPressed,
+                      onIconTap: (value) {
+                        setState(() => _selectedIcon = value);
+                      },
+                      onAddIconTap: _onAddIconPressed,
                     ),
                     const SizedBox(height: 30),
                     SizedBox(
                       width: double.infinity,
                       height: 64,
                       child: FilledButton.icon(
-                        onPressed: _onCreatePressed,
+                        onPressed: _onUpdatePressed,
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.accent,
                           foregroundColor: Colors.white,
@@ -245,9 +225,9 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
                             borderRadius: BorderRadius.circular(22),
                           ),
                         ),
-                        icon: const Icon(Icons.add_rounded, size: 30),
+                        icon: const Icon(Icons.save_rounded, size: 30),
                         label: const Text(
-                          'Create Subject',
+                          'Update Subject',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
@@ -291,7 +271,7 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
           ),
           const Expanded(
             child: Text(
-              'Add Subject',
+              'Edit Subject',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,
@@ -306,11 +286,11 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
     );
   }
 
-  void _onCreatePressed() {
+  void _onUpdatePressed() {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        const SnackBar(content: Text('Subject created (UI preview).')),
+        const SnackBar(content: Text('Subject updated (UI preview).')),
       );
   }
 
@@ -323,7 +303,11 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
   Future<void> _onAddColorPressed() async {
     var tempColor = _selectedColor;
     final hexController = TextEditingController(
-      text: tempColor.value.toRadixString(16).padLeft(8, '0').substring(2),
+      text: tempColor
+          .toARGB32()
+          .toRadixString(16)
+          .padLeft(8, '0')
+          .substring(2),
     );
 
     final pickedColor = await showDialog<Color>(
@@ -378,48 +362,17 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
   }
 
   Future<void> _onAddIconPressed() async {
-    final pickedIcon = await showDialog<IconData>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Add Icon'),
-          content: SizedBox(
-            width: 320,
-            child: SingleChildScrollView(
-              child: Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: _iconPickerChoices.map((icon) {
-                  return InkWell(
-                    onTap: () => Navigator.of(context).pop(icon),
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Icon(
-                        icon,
-                        color: AppColors.secondaryText,
-                        size: 28,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-          ],
-        );
-      },
+    final pickedIcon = await showIconPicker(
+      context,
+      configuration: const SinglePickerConfiguration(
+        adaptiveDialog: true,
+        showSearchBar: true,
+        title: Text('Add Icon'),
+        searchHintText: 'Search icon',
+        noResultsText: 'No icons found for:',
+        iconPackModes: [IconPack.allMaterial],
+        constraints: BoxConstraints(maxHeight: 560, minWidth: 320, maxWidth: 720),
+      ),
     );
 
     if (!mounted || pickedIcon == null) {
@@ -427,10 +380,10 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
     }
 
     setState(() {
-      if (!_iconChoices.contains(pickedIcon)) {
-        _iconChoices.add(pickedIcon);
+      if (!_iconChoices.contains(pickedIcon.data)) {
+        _iconChoices.add(pickedIcon.data);
       }
-      _selectedIcon = pickedIcon;
+      _selectedIcon = pickedIcon.data;
     });
   }
 }

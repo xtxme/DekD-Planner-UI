@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/theme/app_colors.dart';
 
-class AddSubjectsFieldShell extends StatelessWidget {
-  const AddSubjectsFieldShell({
+class EditSubjectsFieldShell extends StatelessWidget {
+  const EditSubjectsFieldShell({
     super.key,
     required this.child,
     this.minHeight = 72,
