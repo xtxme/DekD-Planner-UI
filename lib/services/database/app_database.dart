@@ -33,7 +33,11 @@ class AppDatabase {
         }
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        // TODO: add migration steps when bumping _dbVersion.
+        // Schema is still at v1. Keep explicit no-op upgrade handler to make
+        // future migrations straightforward when _dbVersion is bumped.
+        if (oldVersion >= newVersion) {
+          return;
+        }
       },
     );
   }

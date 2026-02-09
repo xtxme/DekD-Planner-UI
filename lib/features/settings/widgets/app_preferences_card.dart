@@ -39,7 +39,7 @@ class SettingsPreferencesCard extends StatelessWidget {
                   Switch(
                     value: notificationsEnabled,
                     onChanged: onNotificationsChanged,
-                    activeColor: Colors.white,
+                    activeThumbColor: Colors.white,
                     activeTrackColor: AppColors.cFFDEAF5F,
                     inactiveThumbColor: Colors.white,
                     inactiveTrackColor: AppColors.cFFD9CEC5,

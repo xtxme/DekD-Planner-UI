@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-import '../../shared/widgets/navbar/app_navbar.dart';
-import '../../shared/widgets/navbar/provider.dart';
-import 'subjects_detail.dart';
+import '../../../shared/widgets/navbar/app_navbar.dart';
+import '../../../shared/widgets/navbar/provider.dart';
+import '../subjects_detail/subjects_detail.dart';
 import 'widgets/header.dart';
 import 'widgets/grid.dart';
-import '../../shared/widgets/add_button.dart';
+import '../../../shared/widgets/add_button.dart';
 
 class SubjectsPage extends ConsumerStatefulWidget {
   const SubjectsPage({super.key, this.withNavBar = true});

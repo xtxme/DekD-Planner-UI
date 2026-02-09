@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:my_first_app/features/assignments/add_assignments.dart';
+import 'package:my_first_app/features/assignments/add_assignments/add_assignments.dart';
 import 'package:my_first_app/features/assignments/models/assignment_draft.dart';
 
 void main() {

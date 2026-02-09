@@ -268,7 +268,7 @@ class _CustomReminderPicker extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<int>(
-                value: amountValue,
+                initialValue: amountValue,
                 isExpanded: true,
                 icon: const Icon(Icons.expand_more_rounded),
                 decoration: _dropdownDecoration(),
@@ -305,7 +305,7 @@ class _CustomReminderPicker extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<ReminderUnit>(
-                value: unitValue,
+                initialValue: unitValue,
                 isExpanded: true,
                 icon: const Icon(Icons.expand_more_rounded),
                 decoration: _dropdownDecoration(),

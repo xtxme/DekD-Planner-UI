@@ -65,7 +65,7 @@ class NotificationMasterSwitchCard extends StatelessWidget {
             Switch(
               value: enabled,
               onChanged: onChanged,
-              activeColor: Colors.white,
+              activeThumbColor: Colors.white,
               activeTrackColor: AppColors.cFFDEAF5F,
               inactiveThumbColor: Colors.white,
               inactiveTrackColor: AppColors.cFFD9CEC5,

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-import '../add_assignments.dart';
-import '../assignments_detail.dart';
+import '../add_assignments/add_assignments.dart';
+import '../assignments_detail/assignments_detail.dart';
 import 'widgets/timeline_section_header.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import '../../../shared/widgets/navbar/provider.dart';
@@ -139,7 +139,7 @@ class AssignmentsPage extends ConsumerWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          Navigator.of(context).push(
+          Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(
               builder: (_) => const AssignmentsDetailPage(withNavBar: false),
             ),
@@ -245,7 +245,7 @@ class AssignmentsPage extends ConsumerWidget {
                   ),
                   AddButton(
                     onTap: () {
-                      Navigator.of(context).push(
+                      Navigator.of(context, rootNavigator: true).push(
                         MaterialPageRoute(
                           builder: (_) =>
                               const AddAssignmentsPage(withNavBar: false),

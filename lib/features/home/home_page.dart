@@ -216,7 +216,9 @@ class HomePage extends StatelessWidget {
                                 fontSize: 16,
                               ),
                               elevation: 6,
-                              shadowColor: AppColors.accent.withOpacity(0.4),
+                              shadowColor: AppColors.accent.withValues(
+                                alpha: 0.4,
+                              ),
                             ),
                           ),
                         ),
@@ -246,7 +248,9 @@ class HomePage extends StatelessWidget {
                                 fontSize: 16,
                               ),
                               elevation: 6,
-                              shadowColor: AppColors.accent.withOpacity(0.4),
+                              shadowColor: AppColors.accent.withValues(
+                                alpha: 0.4,
+                              ),
                             ),
                           ),
                         ),

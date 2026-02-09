@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/painting/basic_types.dart'
-    show FontWeight, Radius, TextAlign;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/widgets/auth_primary_button.dart';
-import '../../shared/theme/app_colors.dart';
-import '../../shared/widgets/navbar/app_navbar.dart';
-import '../../shared/widgets/navbar/provider.dart';
-import 'models/assignment_draft.dart';
+import '../../auth/widgets/auth_primary_button.dart';
+import '../../../shared/theme/app_colors.dart';
+import '../../../shared/widgets/navbar/app_navbar.dart';
+import '../../../shared/widgets/navbar/provider.dart';
+import '../models/assignment_draft.dart';
 import 'widgets/add_assignment_deadline_card.dart';
 import 'widgets/add_assignment_input_shell.dart';
 import 'widgets/add_assignment_section_label.dart';
@@ -128,8 +126,18 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
         ? 'Please select a due date.'
         : null;
 
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) {
+          return;
+        }
+        final canExit = await _confirmExitIfDirty();
+        if (!canExit || !mounted) {
+          return;
+        }
+        Navigator.of(this.context).pop();
+      },
       child: Scaffold(
         backgroundColor: AppColors.background,
         body: SafeArea(
@@ -676,10 +684,6 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
     ];
 
     return '${date.day} ${months[date.month - 1]} ${date.year}';
-  }
-
-  Future<bool> _onWillPop() async {
-    return _confirmExitIfDirty();
   }
 
   Future<void> _onBackPressed() async {

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-import '../../shared/widgets/navbar/app_navbar.dart';
-import '../../shared/widgets/navbar/provider.dart';
+import '../../../shared/widgets/navbar/app_navbar.dart';
+import '../../../shared/widgets/navbar/provider.dart';
 import 'widgets/assignment_detail_action_buttons.dart';
 import 'widgets/assignment_detail_header.dart';
 import 'widgets/assignment_detail_notes_section.dart';

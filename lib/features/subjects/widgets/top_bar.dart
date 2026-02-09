@@ -38,7 +38,7 @@ class SubjectsDetailTopBar extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
-                color: AppColors.cFF8B6758,
+                color: AppColors.primaryText,
               ),
             ),
           ),

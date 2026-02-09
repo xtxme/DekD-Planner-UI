@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-import '../../shared/widgets/add_button.dart';
-import '../../shared/widgets/navbar/app_navbar.dart';
-import '../../shared/widgets/navbar/provider.dart';
-import 'widgets/segmented_tabs.dart';
-import 'widgets/subject_card.dart';
-import 'widgets/top_bar.dart';
+import '../../../shared/widgets/add_button.dart';
+import '../../../shared/widgets/navbar/app_navbar.dart';
+import '../../../shared/widgets/navbar/provider.dart';
+import '../widgets/segmented_tabs.dart';
+import '../widgets/subject_card.dart';
+import '../widgets/top_bar.dart';
 
 enum _AssignmentStatus { toDo, inProgress, late, completed }
 
