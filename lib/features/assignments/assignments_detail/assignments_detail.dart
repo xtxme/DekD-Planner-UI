@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import '../../../shared/widgets/navbar/provider.dart';
+import '../providers.dart';
+import '../edit_assignments/edit_assignments.dart';
 import 'widgets/assignment_detail_action_buttons.dart';
 import 'widgets/assignment_detail_header.dart';
 import 'widgets/assignment_detail_notes_section.dart';
@@ -18,6 +21,10 @@ class AssignmentsDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentNavIndexProvider);
+    final draft = ref.watch(assignmentDraftProvider);
+    final dueText = draft == null
+        ? ''
+        : 'Due: ${DateFormat('MMM dd, yyyy | hh:mm a').format(draft.dueDateTime)}';
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -35,29 +42,51 @@ class AssignmentsDetailPage extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AssignmentDetailOverviewSection(
-                      title: 'Algebra Worksheet 4.2',
-                      dueText: 'Due: Oct 10, 2023 | 09:00',
-                    ),
-                    const SizedBox(height: 28),
-                    const AssignmentDetailStatsSection(
-                      subject: 'Mathematics',
-                      status: 'In Progress',
-                    ),
-                    const SizedBox(height: 28),
-                    const AssignmentDetailNotesSection(
-                      notesText:
-                          'Complete all problems in Chapter 4 section 2. '
-                          'Make sure to show your work for the polynomial '
-                          'division problems.\n\n'
-                          'Remember to check the back of the book for '
-                          'odd-numbered answers.\n'
-                          'Upload the scan as a single PDF.',
-                    ),
+                    if (draft == null) ...[
+                      const Text(
+                        'Assignment not found',
+                        style: TextStyle(
+                          fontSize: 26,
+                          height: 1.15,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'This assignment may have been deleted.',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ] else ...[
+                      AssignmentDetailOverviewSection(
+                        title: draft.title,
+                        dueText: dueText,
+                      ),
+                      const SizedBox(height: 28),
+                      AssignmentDetailStatsSection(
+                        subject: draft.subject,
+                        status: 'In Progress',
+                      ),
+                      const SizedBox(height: 28),
+                      AssignmentDetailNotesSection(notesText: draft.notes),
+                    ],
                     const SizedBox(height: 22),
                     AssignmentDetailActionButtons(
                       onComplete: () {},
-                      onEdit: () {},
+                      onEdit: draft == null
+                          ? null
+                          : () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      EditAssignmentsPage(initialDraft: draft),
+                                ),
+                              );
+                            },
                       onDelete: () {},
                     ),
                   ],
