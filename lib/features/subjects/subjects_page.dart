@@ -3,15 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../shared/widgets/navbar/app_navbar.dart';
 import '../../shared/widgets/navbar/provider.dart';
+import 'subjects_detail.dart';
 import 'widgets/header.dart';
 import 'widgets/grid.dart';
 import '../../shared/widgets/add_button.dart';
 
 class SubjectsPage extends ConsumerStatefulWidget {
-  const SubjectsPage({
-    super.key,
-    this.withNavBar = true,
-  });
+  const SubjectsPage({super.key, this.withNavBar = true});
 
   final bool withNavBar;
 
@@ -93,7 +91,17 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
             Expanded(
               child: Stack(
                 children: [
-                  SubjectsGrid(items: _filteredSubjects),
+                  SubjectsGrid(
+                    items: _filteredSubjects,
+                    onItemTap: (_) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const SubjectsDetailPage(withNavBar: false),
+                        ),
+                      );
+                    },
+                  ),
                   const AddButton(),
                 ],
               ),
