@@ -4,6 +4,7 @@ import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import 'add_assignments.dart';
+import 'assignments_detail.dart';
 import '../../shared/widgets/navbar/app_navbar.dart';
 import '../../shared/widgets/navbar/provider.dart';
 import '../../shared/widgets/add_button.dart';
@@ -90,10 +91,13 @@ class AssignmentsPage extends ConsumerWidget {
     ),
   ];
 
-  List<Widget> _buildAssignmentCards(List<_AssignmentItem> items) {
+  List<Widget> _buildAssignmentCards(
+    BuildContext context,
+    List<_AssignmentItem> items,
+  ) {
     final widgets = <Widget>[];
     for (var i = 0; i < items.length; i++) {
-      widgets.add(_buildAssignmentCard(items[i]));
+      widgets.add(_buildAssignmentCard(context, items[i]));
       if (i != items.length - 1) {
         widgets.add(const SizedBox(height: 14));
       }
@@ -101,7 +105,7 @@ class AssignmentsPage extends ConsumerWidget {
     return widgets;
   }
 
-  Widget _buildAssignmentCard(_AssignmentItem item) {
+  Widget _buildAssignmentCard(BuildContext context, _AssignmentItem item) {
     Widget card = AssignmentsCard(
       subject: item.subject,
       title: item.title,
@@ -129,7 +133,20 @@ class AssignmentsPage extends ConsumerWidget {
       );
     }
 
-    return card;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const AssignmentsDetailPage(withNavBar: false),
+            ),
+          );
+        },
+        child: card,
+      ),
+    );
   }
 
   @override
@@ -207,21 +224,21 @@ class AssignmentsPage extends ConsumerWidget {
                           taskCount: _todayAssignments.length,
                         ),
                         const SizedBox(height: 12),
-                        ..._buildAssignmentCards(_todayAssignments),
+                        ..._buildAssignmentCards(context, _todayAssignments),
                         const SizedBox(height: 28),
                         _TimelineSectionHeader(
                           title: 'THIS WEEK',
                           taskCount: _thisWeekAssignments.length,
                         ),
                         const SizedBox(height: 12),
-                        ..._buildAssignmentCards(_thisWeekAssignments),
+                        ..._buildAssignmentCards(context, _thisWeekAssignments),
                         const SizedBox(height: 28),
                         _TimelineSectionHeader(
                           title: 'THIS WEEK',
                           taskCount: _nextWeekAssignments.length,
                         ),
                         const SizedBox(height: 12),
-                        ..._buildAssignmentCards(_nextWeekAssignments),
+                        ..._buildAssignmentCards(context, _nextWeekAssignments),
                       ],
                     ),
                   ),

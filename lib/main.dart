@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
@@ -23,6 +24,12 @@ class MyApp extends StatelessWidget {
       title: 'DekD Planner',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('th'), Locale('en')],
       home: const NavbarShell(),
       routes: {
         '/login': (context) => const LoginPage(),

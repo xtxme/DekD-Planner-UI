@@ -40,6 +40,7 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
   late final TextEditingController _assignmentNameController;
   late final TextEditingController _notesController;
   late final FocusNode _assignmentNameFocusNode;
+  late final FocusNode _notesFocusNode;
   late final ScrollController _scrollController;
 
   String? _selectedSubject;
@@ -85,6 +86,7 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
     _assignmentNameController = TextEditingController();
     _notesController = TextEditingController();
     _assignmentNameFocusNode = FocusNode();
+    _notesFocusNode = FocusNode();
     _scrollController = ScrollController();
     _assignmentNameController.addListener(_onAssignmentNameChanged);
   }
@@ -95,6 +97,7 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
     _assignmentNameController.dispose();
     _notesController.dispose();
     _assignmentNameFocusNode.dispose();
+    _notesFocusNode.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -149,28 +152,35 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
                             ),
                             const SizedBox(height: 10),
                             AddAssignmentInputShell(
-                              child: TextField(
-                                controller: _assignmentNameController,
-                                focusNode: _assignmentNameFocusNode,
-                                textInputAction: TextInputAction.next,
-                                textAlignVertical: TextAlignVertical.center,
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primaryText,
-                                ),
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  isCollapsed: true,
-                                  hintText: 'e.g., Math Problem Set 4',
-                                  hintStyle: TextStyle(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: TextField(
+                                  controller: _assignmentNameController,
+                                  focusNode: _assignmentNameFocusNode,
+                                  textInputAction: TextInputAction.next,
+                                  textAlignVertical: TextAlignVertical.center,
+                                  style: const TextStyle(
                                     fontSize: 17,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.secondaryText,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primaryText,
                                   ),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
+                                    hintText: 'e.g., Math Problem Set 4',
+                                    hintStyle: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.secondaryText,
+                                    ),
+                                  ),
+                                  onSubmitted: (_) =>
+                                      _assignmentNameFocusNode.unfocus(),
                                 ),
-                                onSubmitted: (_) =>
-                                    _assignmentNameFocusNode.unfocus(),
                               ),
                             ),
                             if (assignmentNameError != null) ...[
@@ -199,30 +209,83 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
                               onTap: _onSelectSubject,
                               borderRadius: BorderRadius.circular(20),
                               child: AddAssignmentInputShell(
+                                minHeight: 72,
+                                padding: const EdgeInsets.fromLTRB(
+                                  14,
+                                  10,
+                                  12,
+                                  10,
+                                ),
                                 child: Row(
                                   children: [
-                                    const Icon(
-                                      Icons.menu_book_rounded,
-                                      color: AppColors.secondaryText,
-                                      size: 28,
+                                    Container(
+                                      width: 44,
+                                      height: 44,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.surfaceSoft,
+                                        borderRadius: BorderRadius.circular(14),
+                                        border: Border.all(
+                                          color: AppColors.border,
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.menu_book_rounded,
+                                        color: AppColors.accent,
+                                        size: 24,
+                                      ),
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      child: Text(
-                                        _selectedSubject ?? 'Select Subject',
-                                        style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w600,
-                                          color: _selectedSubject == null
-                                              ? AppColors.secondaryText
-                                              : AppColors.primaryText,
-                                        ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            _selectedSubject ??
+                                                'Select Subject',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w700,
+                                              color: _selectedSubject == null
+                                                  ? AppColors.secondaryText
+                                                  : AppColors.primaryText,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            _selectedSubject == null
+                                                ? 'Tap to choose a subject'
+                                                : 'Selected subject',
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.secondaryText,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    const Icon(
-                                      Icons.keyboard_arrow_down_rounded,
-                                      color: AppColors.secondaryText,
-                                      size: 28,
+                                    Container(
+                                      width: 38,
+                                      height: 38,
+                                      decoration: BoxDecoration(
+                                        color: _selectedSubject == null
+                                            ? AppColors.surfaceSoft
+                                            : AppColors.accent,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: AppColors.border,
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        Icons.keyboard_arrow_down_rounded,
+                                        color: _selectedSubject == null
+                                            ? AppColors.secondaryText
+                                            : Colors.white,
+                                        size: 24,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -280,26 +343,32 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
                       AddAssignmentInputShell(
                         minHeight: 150,
                         padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                        child: TextField(
-                          controller: _notesController,
-                          minLines: 5,
-                          maxLines: null,
-                          textInputAction: TextInputAction.done,
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primaryText,
-                          ),
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            isCollapsed: true,
-                            hintText:
-                                'Add details, links, or specific\nrequirements here...',
-                            hintStyle: TextStyle(
+                        child: GestureDetector(
+                          onTap: () => _notesFocusNode.requestFocus(),
+                          behavior: HitTestBehavior.opaque,
+                          child: TextField(
+                            controller: _notesController,
+                            focusNode: _notesFocusNode,
+                            minLines: 5,
+                            maxLines: null,
+                            keyboardType: TextInputType.multiline,
+                            textInputAction: TextInputAction.done,
+                            style: const TextStyle(
                               fontSize: 17,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.secondaryText,
-                              height: 1.35,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primaryText,
+                            ),
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                              hintText:
+                                  'Add details, links, or specific\nrequirements here...',
+                              hintStyle: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.secondaryText,
+                                height: 1.35,
+                              ),
                             ),
                           ),
                         ),
@@ -413,28 +482,81 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
         }
 
         return SafeArea(
-          child: ListView.separated(
-            shrinkWrap: true,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: widget.availableSubjects.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final subject = widget.availableSubjects[index];
-              return ListTile(
-                title: Text(
-                  subject,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryText,
-                  ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              Container(
+                width: 46,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(999),
                 ),
-                trailing: _selectedSubject == subject
-                    ? const Icon(Icons.check_rounded, color: AppColors.accent)
-                    : null,
-                onTap: () => Navigator.of(context).pop(subject),
-              );
-            },
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Choose Subject',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.primaryText,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 16),
+                  itemCount: widget.availableSubjects.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  itemBuilder: (context, index) {
+                    final subject = widget.availableSubjects[index];
+                    final isSelected = _selectedSubject == subject;
+                    return Material(
+                      color: isSelected
+                          ? AppColors.surfaceSoft
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(14),
+                      child: ListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: BorderSide(
+                            color: isSelected
+                                ? AppColors.accent
+                                : AppColors.border,
+                          ),
+                        ),
+                        tileColor: isSelected
+                            ? AppColors.surfaceSoft
+                            : AppColors.surface,
+                        leading: Icon(
+                          Icons.book_rounded,
+                          color: isSelected
+                              ? AppColors.accent
+                              : AppColors.secondaryText,
+                        ),
+                        title: Text(
+                          subject,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryText,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? const Icon(
+                                Icons.check_circle_rounded,
+                                color: AppColors.accent,
+                              )
+                            : null,
+                        onTap: () => Navigator.of(context).pop(subject),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         );
       },

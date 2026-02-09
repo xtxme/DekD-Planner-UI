@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-import '../../../shared/theme/app_colors.dart';
-
 class AddAssignmentInputShell extends StatelessWidget {
   const AddAssignmentInputShell({
     super.key,
