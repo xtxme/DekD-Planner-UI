@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../shared/theme/app_colors.dart';
+
 class AuthPrimaryButton extends StatelessWidget {
   const AuthPrimaryButton({
     super.key,
@@ -19,7 +21,7 @@ class AuthPrimaryButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFD9A441),
+            backgroundColor: AppColors.accent,
             foregroundColor: Colors.white,
             minimumSize: const Size.fromHeight(48),
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -30,10 +32,7 @@ class AuthPrimaryButton extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
           ),
         ),
       ),

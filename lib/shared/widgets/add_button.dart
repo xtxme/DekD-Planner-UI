@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AddButton extends StatelessWidget {
-  const AddButton({super.key});
+  const AddButton({super.key, this.onTap});
+
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -9,11 +11,8 @@ class AddButton extends StatelessWidget {
       right: 20,
       bottom: 16,
       child: Container(
-        width: 65,
-        height: 65,
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          color: Color(0xFFE0B35D),
           boxShadow: [
             BoxShadow(
               color: Color(0x332C2017),
@@ -22,10 +21,18 @@ class AddButton extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(
-          Icons.add,
-          size: 35,
-          color: Colors.white,
+        child: Material(
+          color: const Color(0xFFE0B35D),
+          shape: const CircleBorder(),
+          child: InkWell(
+            onTap: onTap,
+            customBorder: const CircleBorder(),
+            child: const SizedBox(
+              width: 65,
+              height: 65,
+              child: Icon(Icons.add, size: 35, color: Colors.white),
+            ),
+          ),
         ),
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../shared/theme/app_colors.dart';
+
 class AddAssignmentInputShell extends StatelessWidget {
   const AddAssignmentInputShell({
     super.key,
@@ -19,9 +21,9 @@ class AddAssignmentInputShell extends StatelessWidget {
       constraints: BoxConstraints(minHeight: minHeight),
       padding: padding,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFDFC),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE6DBD2)),
+        border: Border.all(color: AppColors.border),
       ),
       child: child,
     );

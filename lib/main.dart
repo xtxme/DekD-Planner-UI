@@ -4,6 +4,7 @@ import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
 import 'services/database/app_database.dart';
 
+import 'shared/theme/app_theme.dart';
 import 'shared/widgets/navbar/navbar_shell.dart';
 
 Future<void> main() async {
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'DekD Planner',
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
       home: const NavbarShell(),
       routes: {
         '/login': (context) => const LoginPage(),

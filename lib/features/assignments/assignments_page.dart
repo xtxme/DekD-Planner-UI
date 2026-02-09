@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 
+import 'add_assignments.dart';
 import '../../shared/widgets/navbar/app_navbar.dart';
 import '../../shared/widgets/navbar/provider.dart';
 import '../../shared/widgets/add_button.dart';
@@ -119,14 +120,9 @@ class AssignmentsPage extends ConsumerWidget {
       card = Container(
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(16)),
-          border: Border(
-            left: BorderSide(color: Color(0xFFFF6B77), width: 4),
-          ),
+          border: Border(left: BorderSide(color: Color(0xFFFF6B77), width: 4)),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: card,
-        ),
+        child: ClipRRect(borderRadius: BorderRadius.circular(16), child: card),
       );
     }
 
@@ -226,7 +222,16 @@ class AssignmentsPage extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  const AddButton(),
+                  AddButton(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const AddAssignmentsPage(withNavBar: false),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -246,10 +251,7 @@ class AssignmentsPage extends ConsumerWidget {
 }
 
 class _TimelineSectionHeader extends StatelessWidget {
-  const _TimelineSectionHeader({
-    required this.title,
-    required this.taskCount,
-  });
+  const _TimelineSectionHeader({required this.title, required this.taskCount});
 
   final String title;
   final int taskCount;
@@ -277,12 +279,7 @@ class _TimelineSectionHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        const Expanded(
-          child: Divider(
-            thickness: 1,
-            color: Color(0xFFE3DBD3),
-          ),
-        ),
+        const Expanded(child: Divider(thickness: 1, color: Color(0xFFE3DBD3))),
         const SizedBox(width: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
