@@ -18,17 +18,24 @@ class SubjectsDetailTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(8, 14, 8, 10),
+      padding: const EdgeInsets.fromLTRB(8, 14, 8, 10),
       child: Row(
         children: [
           SizedBox(
-            width: 48,
-            child: IconButton(
-              onPressed: onBack,
-              icon: const Icon(
-                Icons.arrow_back_rounded,
-                color: AppColors.cFF8B6758,
-              ),
+            width: 96,
+            child: Row(
+              children: [
+                IconButton(
+                  tooltip: 'Back',
+                  onPressed: onBack,
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: AppColors.cFF8B6758,
+                    semanticLabel: 'Back',
+                  ),
+                ),
+                const SizedBox(width: 48),
+              ],
             ),
           ),
           Expanded(
@@ -48,16 +55,23 @@ class SubjectsDetailTopBar extends StatelessWidget {
               children: [
                 Expanded(
                   child: IconButton(
+                    tooltip: 'Edit subject',
                     onPressed: onEdit,
-                    icon: Icon(Icons.edit, color: AppColors.cFF8B6758),
+                    icon: const Icon(
+                      Icons.edit,
+                      color: AppColors.cFF8B6758,
+                      semanticLabel: 'Edit subject',
+                    ),
                   ),
                 ),
                 Expanded(
                   child: IconButton(
+                    tooltip: 'Delete subject',
                     onPressed: onDelete,
-                    icon: Icon(
-                      Icons.delete_outline,
+                    icon: const Icon(
+                      Icons.delete,
                       color: AppColors.cFF8B6758,
+                      semanticLabel: 'Delete subject',
                     ),
                   ),
                 ),

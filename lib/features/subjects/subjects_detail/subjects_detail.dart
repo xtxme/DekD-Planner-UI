@@ -5,9 +5,10 @@ import 'package:my_first_app/shared/theme/app_colors.dart';
 import '../../../shared/widgets/add_button.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import '../../../shared/widgets/navbar/provider.dart';
-import '../widgets/segmented_tabs.dart';
-import '../widgets/subject_card.dart';
-import '../widgets/top_bar.dart';
+import '../add_subjects/add_subjects.dart';
+import 'widgets/segmented_tabs.dart';
+import 'widgets/subject_card.dart';
+import 'widgets/top_bar.dart';
 
 enum _AssignmentStatus { toDo, inProgress, late, completed }
 
@@ -77,6 +78,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
+    final visibleAssignments = _visibleAssignments;
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -85,8 +87,8 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
           children: [
             SubjectsDetailTopBar(
               onBack: () => Navigator.of(context).pop(),
-              onEdit: () {},
-              onDelete: () {},
+              onEdit: _showEditPlaceholderSheet,
+              onDelete: _showDeletePlaceholderDialog,
             ),
             Expanded(
               child: Stack(
@@ -98,7 +100,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                       children: [
                         const SubjectInfoCard(
                           category: 'Science',
-                          title: 'Advanced\nMathematics',
+                          title: 'Advanced Mathematics',
                           code: 'MAT101',
                           teacherInfo: 'Mr. Smith - Room 302.',
                           description: 'Focus on Calculus and Linear Algebra.',
@@ -115,16 +117,19 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                         const SizedBox(height: 20),
                         _buildSectionTitle(),
                         const SizedBox(height: 14),
-                        ..._visibleAssignments.map(
-                          (item) => Padding(
-                            padding: const EdgeInsets.only(bottom: 14),
-                            child: _buildAssignmentCard(item),
+                        if (visibleAssignments.isEmpty)
+                          _buildEmptyState()
+                        else
+                          ...visibleAssignments.map(
+                            (item) => Padding(
+                              padding: const EdgeInsets.only(bottom: 14),
+                              child: _buildAssignmentCard(item),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
-                  const AddButton(),
+                  AddButton(onTap: _openAddSubjectsPage),
                 ],
               ),
             ),
@@ -146,7 +151,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     return const Text(
       'ASSIGNMENTS FOR THIS SUBJECT',
       style: TextStyle(
-        letterSpacing: 3,
+        letterSpacing: 1.5,
         fontSize: 15,
         fontWeight: FontWeight.w900,
         color: AppColors.cFF9A7E70,
@@ -167,15 +172,16 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
         border: Border.all(color: AppColors.cFFF0E6DE),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 76,
-            height: 76,
+            width: 65,
+            height: 65,
             decoration: BoxDecoration(
               color: AppColors.cFFF1ECE7,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(item.icon, size: 34, color: AppColors.cFF8B6758),
+            child: Icon(item.icon, size: 30, color: AppColors.cFF8B6758),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -206,6 +212,8 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                     Expanded(
                       child: Text(
                         item.dueText,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 16,
                           color: dueColor,
@@ -215,27 +223,154 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 10),
+                _buildStatusChip(item),
               ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: _statusBg(item.status),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Text(
-              _statusText(item.status),
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: _statusFg(item.status),
-              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatusChip(_AssignmentItem item) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: _statusBg(item.status),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        _statusText(item.status),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w900,
+          color: _statusFg(item.status),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    final title = _showUpcoming
+        ? 'No upcoming assignments'
+        : 'No completed assignments yet';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.cFFF0E6DE),
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.inbox_outlined,
+            size: 30,
+            color: AppColors.cFFA48C7E,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: AppColors.cFF8B6758,
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Tap + to add your next assignment.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.cFFA48C7E,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openAddSubjectsPage() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const AddSubjectsPage(withNavBar: false),
+      ),
+    );
+  }
+
+  void _showEditPlaceholderSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.cFFFDF9F4,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Edit Subject',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.cFF8B6758,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Edit subject coming soon',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.cFFA48C7E,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showDeletePlaceholderDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Subject'),
+          content: const Text(
+            'Delete flow is not available yet. This is a placeholder dialog.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Understood'),
+            ),
+          ],
+        );
+      },
     );
   }
 

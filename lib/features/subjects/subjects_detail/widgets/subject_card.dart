@@ -34,7 +34,7 @@ class SubjectInfoCard extends StatelessWidget {
             Container(width: 8, height: 260, color: AppColors.cFFE0B35D),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
+                padding: const EdgeInsets.fromLTRB(20, 18, 18, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -60,8 +60,8 @@ class SubjectInfoCard extends StatelessWidget {
                         ),
                         const Spacer(),
                         Container(
-                          width: 74,
-                          height: 74,
+                          width: 60,
+                          height: 60,
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),

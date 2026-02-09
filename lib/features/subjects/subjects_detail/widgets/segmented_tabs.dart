@@ -16,11 +16,11 @@ class SubjectSegmentedTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 64,
+      height: 50,
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: AppColors.cFFE6DED6,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
@@ -54,20 +54,29 @@ class _TabButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            color: selected ? AppColors.cFF8B6758 : Colors.transparent,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: selected ? Colors.white : AppColors.cFFA48C7E,
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: '$label assignments tab',
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: onTap,
+            child: Container(
+              decoration: BoxDecoration(
+                color: selected ? AppColors.cFF8B6758 : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: selected ? Colors.white : AppColors.cFFA48C7E,
+                ),
+              ),
             ),
           ),
         ),
