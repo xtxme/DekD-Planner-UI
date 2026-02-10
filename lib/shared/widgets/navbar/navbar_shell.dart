@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 
 import '../../../features/assignments/assignments_page/assignments_page.dart';
 import '../../../features/home/home_page.dart';
 import '../../../features/settings/settings_page.dart';
 import '../../../features/subjects/subjects_page/subjects_page.dart';
-import '../../providers/nav_provider.dart';
 import 'app_navbar.dart';
 
 class NavbarShell extends ConsumerWidget {
