@@ -15,7 +15,6 @@ class NavbarShell extends ConsumerWidget {
     HomePage(),
     SubjectsPage(withNavBar: false),
     AssignmentsPage(withNavBar: false),
-    _PlaceholderTab(title: 'Calendar Page'),
     SettingsPage(withNavBar: false),
   ];
 
@@ -30,16 +29,5 @@ class NavbarShell extends ConsumerWidget {
             ref.read(currentNavIndexProvider.notifier).state = index,
       ),
     );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  const _PlaceholderTab({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text(title));
   }
 }

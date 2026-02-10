@@ -24,7 +24,7 @@ class SubjectRow {
     'description': description,
     'color_value': colorValue,
     'icon_codepoint': iconCodepoint,
-    'is_Archived': isArchived,
+    'is_archived': isArchived,
   };
 
   Map<String, dynamic> toUpdateMap() => {
@@ -33,7 +33,7 @@ class SubjectRow {
     'description': description,
     'color_value': colorValue,
     'icon_codepoint': iconCodepoint,
-    'is_Archived': isArchived,
+    'is_archived': isArchived,
   };
 
   factory SubjectRow.fromMap(Map<String, dynamic> map) => SubjectRow(

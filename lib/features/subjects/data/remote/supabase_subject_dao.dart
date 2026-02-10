@@ -72,8 +72,8 @@ class SupabaseSubjectDao implements SubjectDao {
         .eq('name', name)
         .limit(1);
 
-    if ((rows as List).isEmpty) return null;
-    return SubjectRow.fromMap(rows.first as Map<String, dynamic>);
+    if (rows.isEmpty) return null;
+    return SubjectRow.fromMap(rows.first);
   }
 
   String _requireUserId() {

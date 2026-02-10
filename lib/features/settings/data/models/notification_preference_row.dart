@@ -17,7 +17,7 @@ class NotificationPreferenceRow {
     'user_id': userId,
     'all_notifications_enabled': allNotificationsEnabled,
     'reminder_preset': reminderPreset,
-    'reminder_amoun': reminderAmount,
+    'reminder_amount': reminderAmount,
     'reminder_unit': reminderUnit,
   };
   

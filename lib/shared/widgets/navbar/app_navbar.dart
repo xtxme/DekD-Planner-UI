@@ -26,7 +26,6 @@ class AppNavBar extends StatelessWidget {
         _NavItem(icon: Icons.home, label: 'Home'),
         _NavItem(icon: Icons.menu_book, label: 'Subjects'),
         _NavItem(icon: Icons.assignment, label: 'Assignments'),
-        _NavItem(icon: Icons.calendar_month, label: 'Calendar'),
         _NavItem(icon: Icons.settings, label: 'Settings'),
       ],
     );
