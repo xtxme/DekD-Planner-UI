@@ -12,6 +12,9 @@ import 'widgets/add_assignment_deadline_card.dart';
 import 'widgets/add_assignment_input_shell.dart';
 import 'widgets/add_assignment_section_label.dart';
 
+import 'package:my_first_app/features/subjects/providers.dart';
+
+
 class AddAssignmentsPage extends ConsumerStatefulWidget {
   const AddAssignmentsPage({
     super.key,
@@ -790,6 +793,7 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
     final draft = AssignmentDraft(
       title: _title,
       subject: subject,
+      subjectId: null,
       dueDateTime: dueAt,
       notes: _notesController.text.trim(),
     );
@@ -798,16 +802,28 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
       if (widget.onSave != null) {
         await widget.onSave!(draft);
       } else {
+        final subjectDao = ref.read(subjectDaoProvider);
+        final matchedSubject = await subjectDao.findByName(draft.subject);
+        if (matchedSubject == null || matchedSubject.id == null) {
+          throw StateError('Subject not found');
+        }
+
         final dao = ref.read(assignmentDaoProvider);
         final id = await dao.insert(
           AssignmentRow(
             title: draft.title,
             subject: draft.subject,
+            subjectId: matchedSubject.id,
             dueAt: draft.dueDateTime,
             notes: draft.notes,
+            status: 'in_progress',
+            completedAt: null,
           ),
         );
-        ref.read(assignmentDraftProvider.notifier).state = draft.copyWith(id: id);
+        ref.read(assignmentDraftProvider.notifier).state = draft.copyWith(
+          id: id,
+          subjectId: matchedSubject.id,
+        );
         ref.invalidate(assignmentListProvider);
       }
 

@@ -9,6 +9,9 @@ import '../edit_subjects/widgets/edit_subjects_appearance_card.dart';
 import '../edit_subjects/widgets/edit_subjects_field_shell.dart';
 import '../edit_subjects/widgets/edit_subjects_section_label.dart';
 
+import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
+import 'package:my_first_app/features/subjects/providers.dart';
+
 class AddSubjectsPage extends ConsumerStatefulWidget {
   const AddSubjectsPage({super.key, this.withNavBar = true});
 
@@ -316,12 +319,42 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
     );
   }
 
-  void _onCreatePressed() {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(content: Text('Subject created (UI preview).')),
+  Future<void> _onCreatePressed() async {
+    final name = _nameController.text.trim();
+    final code = _codeController.text.trim();
+
+    if (name.isEmpty || code.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter subject name and code.')),
       );
+      return;
+    }
+
+    try {
+      final dao = ref.read(subjectDaoProvider);
+      await dao.insert(
+        SubjectRow(
+          name: name,
+          code: code,
+          description: _descriptionController.text.trim(),
+          colorValue: _selectedColor.toARGB32(),
+          iconCodepoint: _selectedIcon.codePoint,
+          isArchived: false,
+        ),
+      );
+      ref.invalidate(subjectListProvider);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Subject created.')));
+      Navigator.of(context).pop();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to create subject.')),
+      );
+    }
   }
 
   void _onFocusChanged() {

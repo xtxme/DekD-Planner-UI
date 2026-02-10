@@ -35,8 +35,8 @@ class SupabaseSubjectDao implements SubjectDao {
       query = query.eq('is_archived', false);
     }
 
-    final rows = await query.order('name', ascending: true);
-    return (rows as List<dynamic>)
+    final List<dynamic> rows = await query.order('name', ascending: true);
+    return rows
         .map((e) => SubjectRow.fromMap(e as Map<String, dynamic>))
         .toList();
   }

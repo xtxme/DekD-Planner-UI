@@ -9,6 +9,7 @@ final assignmentDraftProvider = StateProvider<AssignmentDraft?>(
   (ref) => AssignmentDraft(
     title: 'Algebra Worksheet 4.2',
     subject: 'Mathematics',
+    subjectId: null,
     dueDateTime: DateTime(2023, 10, 24, 16, 0),
     notes:
         'Complete all problems in Chapter 4 section 2. '

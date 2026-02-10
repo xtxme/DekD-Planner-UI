@@ -11,13 +11,13 @@ class SupabaseNotificationPreferencesDao {
   Future<NotificationPreferenceRow> getOrCreate() async {
     final userId = _requireUserId();
 
-    final rows = await _client
+    final List<dynamic> rows = await _client
         .from(_table)
         .select()
         .eq('user_id', userId)
         .limit(1);
 
-    if ((rows as List).isNotEmpty) {
+    if (rows.isNotEmpty) {
       return NotificationPreferenceRow.fromMap(
         rows.first as Map<String, dynamic>,
       );

@@ -11,9 +11,9 @@ class SupabaseProfileDao {
     final user = _client.auth.currentUser;
     if (user == null) throw StateError('User is not authenticated');
 
-    final rows =
+    final List<dynamic> rows =
         await _client.from(_table).select().eq('user_id', user.id).limit(1);
-    if ((rows as List).isNotEmpty) {
+    if (rows.isNotEmpty) {
       return ProfileRow.fromMap(rows.first as Map<String, dynamic>);
     }
 

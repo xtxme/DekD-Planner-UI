@@ -1,6 +1,7 @@
 class AssignmentDraft {
   const AssignmentDraft({
     this.id,
+    this.subjectId,
     required this.title,
     required this.subject,
     required this.dueDateTime,
@@ -8,6 +9,7 @@ class AssignmentDraft {
   });
 
   final String? id;
+  final String? subjectId;
   final String title;
   final String subject;
   final DateTime dueDateTime;
@@ -15,6 +17,7 @@ class AssignmentDraft {
 
   AssignmentDraft copyWith({
     String? id,
+    String? subjectId,
     String? title,
     String? subject,
     DateTime? dueDateTime,
@@ -22,6 +25,7 @@ class AssignmentDraft {
   }) {
     return AssignmentDraft(
       id: id ?? this.id,
+      subjectId: subjectId ?? this.subjectId,
       title: title ?? this.title,
       subject: subject ?? this.subject,
       dueDateTime: dueDateTime ?? this.dueDateTime,

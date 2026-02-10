@@ -10,6 +10,9 @@ import '../../../shared/widgets/navbar/app_navbar.dart';
 import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../../../shared/widgets/add_button.dart';
 
+import 'package:my_first_app/features/subjects/providers.dart';
+
+
 class AssignmentsPage extends ConsumerWidget {
   const AssignmentsPage({super.key, this.withNavBar = true});
 
@@ -153,6 +156,12 @@ class AssignmentsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentNavIndexProvider);
+    //ส่ง subjects จริงให้ Add form
+    final subjectsAsync = ref.watch(subjectListProvider);
+    final availableSubjectNames = subjectsAsync.maybeWhen(
+      data: (rows) => rows.map((e) => e.name).toList(),
+      orElse: () => const <String>[],
+    );
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -247,8 +256,10 @@ class AssignmentsPage extends ConsumerWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) =>
-                              const AddAssignmentsPage(withNavBar: false),
+                          builder: (_) => AddAssignmentsPage(
+                            withNavBar: false,
+                            availableSubjects: availableSubjectNames,
+                          ),
                         ),
                       );
                     },

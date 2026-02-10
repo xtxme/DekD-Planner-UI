@@ -24,6 +24,7 @@ class AssignmentRow {
       'user_id': userId,
       'title': title,
       'subject': subject,
+      'subject_id': subjectId,
       'due_at': dueAt.toUtc().toIso8601String(),
       'notes': notes,
       'status': status,
@@ -35,6 +36,7 @@ class AssignmentRow {
     return <String, dynamic>{
       'title': title,
       'subject': subject,
+      'subject_id': subjectId,
       'due_at': dueAt.toUtc().toIso8601String(),
       'notes': notes,
       'status': status,
@@ -47,12 +49,13 @@ class AssignmentRow {
       id: map['id'] as String?,
       title: map['title'] as String? ?? '',
       subject: map['subject'] as String? ?? '',
+      subjectId: map['subject_id'] as String?,
       dueAt: DateTime.parse(map['due_at'] as String).toLocal(),
       notes: map['notes'] as String? ?? '',
-      status: map['status'] as String? ?? '',
+      status: map['status'] as String? ?? 'in_progress',
       completedAt: map['completed_at'] == null
-        ? null
-        : DateTime.parse(map['completed_at'] as String).toLocal(),
+          ? null
+          : DateTime.parse(map['completed_at'] as String).toLocal(),
     );
   }
 }

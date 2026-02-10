@@ -9,6 +9,7 @@ import '../../subjects/add_subjects/widgets/edit_assignment_colors.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_field_shell.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_header.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_section_label.dart';
+import '../../subjects/providers.dart';
 import '../data/models/assignment_row.dart';
 import '../models/assignment_draft.dart';
 import '../providers.dart';
@@ -44,6 +45,7 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
   static final AssignmentDraft _fallbackDraft = AssignmentDraft(
     title: 'Algebra Worksheet 4.2',
     subject: 'Mathematics',
+    subjectId: null,
     dueDateTime: DateTime(2023, 10, 24, 16, 0),
     notes:
         'Complete all problems in Chapter 4 section 2. '
@@ -351,12 +353,18 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
     });
 
     final existingDraft = widget.initialDraft ?? ref.read(assignmentDraftProvider);
+    final subjectDao = ref.read(subjectDaoProvider);
+    final matchedSubject = await subjectDao.findByName(_selectedSubject);
+    final resolvedSubjectId = matchedSubject?.id ?? existingDraft?.subjectId;
     final row = AssignmentRow(
       id: existingDraft?.id,
       title: _nameController.text.trim(),
       subject: _selectedSubject,
+      subjectId: resolvedSubjectId,
       dueAt: _dueAt,
       notes: _notesController.text.trim(),
+      status: 'in_progress',
+      completedAt: null,
     );
 
     try {
@@ -372,6 +380,7 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
         id: persistedId,
         title: row.title,
         subject: row.subject,
+        subjectId: row.subjectId,
         dueDateTime: row.dueAt,
         notes: row.notes,
       );
