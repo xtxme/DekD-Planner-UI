@@ -3,15 +3,21 @@ class AssignmentRow {
     this.id,
     required this.title,
     required this.subject,
+    required this.subjectId,
     required this.dueAt,
     required this.notes,
+    required this.status,
+    this.completedAt,
   });
 
   final String? id;
   final String title;
   final String subject;
+  final String? subjectId; // new FK
   final DateTime dueAt;
   final String notes;
+  final String status; // to_do, in_progress, late, completed
+  final DateTime? completedAt;
 
   Map<String, dynamic> toInsertMap({required String userId}) {
     return <String, dynamic>{
@@ -20,6 +26,8 @@ class AssignmentRow {
       'subject': subject,
       'due_at': dueAt.toUtc().toIso8601String(),
       'notes': notes,
+      'status': status,
+      'completed_at': completedAt?.toUtc().toIso8601String(),
     };
   }
 
@@ -29,6 +37,8 @@ class AssignmentRow {
       'subject': subject,
       'due_at': dueAt.toUtc().toIso8601String(),
       'notes': notes,
+      'status': status,
+      'completed_at': completedAt?.toUtc().toIso8601String(),
     };
   }
 
@@ -39,6 +49,10 @@ class AssignmentRow {
       subject: map['subject'] as String? ?? '',
       dueAt: DateTime.parse(map['due_at'] as String).toLocal(),
       notes: map['notes'] as String? ?? '',
+      status: map['status'] as String? ?? '',
+      completedAt: map['completed_at'] == null
+        ? null
+        : DateTime.parse(map['completed_at'] as String).toLocal(),
     );
   }
 }

@@ -3,7 +3,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class AssignmentDao {
   Future<String> insert(AssignmentRow row);
-  Future<List<AssignmentRow>> getAll();
+  Future<List<AssignmentRow>> getAll({
+    String? status,
+    String? subjectId,
+    DateTime? from,
+    DateTime? to,
+  });
   Future<void> update(AssignmentRow row);
   Future<void> delete(String id);
 }
@@ -12,31 +17,44 @@ class SupabaseAssignmentDao implements AssignmentDao {
   SupabaseAssignmentDao({required SupabaseClient client}) : _client = client;
 
   final SupabaseClient _client;
-
   static const String _table = 'assignments';
 
   @override
   Future<String> insert(AssignmentRow row) async {
     final userId = _requireUserId();
-
     final inserted = await _client
         .from(_table)
         .insert(row.toInsertMap(userId: userId))
         .select('id')
         .single();
-
     return inserted['id'] as String;
   }
 
   @override
-  Future<List<AssignmentRow>> getAll() async {
+  Future<List<AssignmentRow>> getAll({
+    String? status,
+    String? subjectId,
+    DateTime? from,
+    DateTime? to,
+  }) async {
     final userId = _requireUserId();
 
-    final rows = await _client
-        .from(_table)
-        .select()
-        .eq('user_id', userId)
-        .order('due_at', ascending: true);
+    var query = _client.from(_table).select().eq('user_id', userId);
+
+    if (status != null && status.isNotEmpty) {
+      query = query.eq('status', status);
+    }
+    if (subjectId != null && subjectId.isNotEmpty) {
+      query = query.eq('subject_id', subjectId);
+    }
+    if (from != null) {
+      query = query.gte('due_at', from.toUtc().toIso8601String());
+    }
+    if (to != null) {
+      query = query.lte('due_at', to.toUtc().toIso8601String());
+    }
+
+    final rows = await query.order('due_at', ascending: true);
 
     return (rows as List<dynamic>)
         .map((row) => AssignmentRow.fromMap(row as Map<String, dynamic>))
@@ -62,7 +80,6 @@ class SupabaseAssignmentDao implements AssignmentDao {
   @override
   Future<void> delete(String id) async {
     final userId = _requireUserId();
-
     await _client.from(_table).delete().eq('id', id).eq('user_id', userId);
   }
 
