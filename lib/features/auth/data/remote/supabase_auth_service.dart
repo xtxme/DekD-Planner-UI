@@ -1,5 +1,5 @@
 import 'package:my_first_app/features/auth/domain/models/auth_user.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
 
 abstract class AuthRemoteService {
   Future<AuthUser?> signIn({required String email, required String password});
