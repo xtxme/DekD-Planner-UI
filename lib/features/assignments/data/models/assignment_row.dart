@@ -7,30 +7,38 @@ class AssignmentRow {
     required this.notes,
   });
 
-  //Fields ทั้งหมด
-  final int? id;
+  final String? id;
   final String title;
   final String subject;
   final DateTime dueAt;
   final String notes;
 
-  Map<String, Object?> toMap() { //แปลง Object → Database
-    return <String, Object?> {
-      'id': id,
+  Map<String, dynamic> toInsertMap({required String userId}) {
+    return <String, dynamic>{
+      'user_id': userId,
       'title': title,
       'subject': subject,
-      'due_at': dueAt.millisecondsSinceEpoch,
+      'due_at': dueAt.toUtc().toIso8601String(),
       'notes': notes,
     };
   }
 
-  factory AssignmentRow.fromMap(Map<String, Object?> map){ //Database → Object
+  Map<String, dynamic> toUpdateMap() {
+    return <String, dynamic>{
+      'title': title,
+      'subject': subject,
+      'due_at': dueAt.toUtc().toIso8601String(),
+      'notes': notes,
+    };
+  }
+
+  factory AssignmentRow.fromMap(Map<String, dynamic> map) {
     return AssignmentRow(
-      id: map['id'] as int?,
-      title: map['title'] as String? ?? '', //?? '' ถ้า null → ใช้ค่าว่างแทน
-      subject: map['subject'] as String? ?? '', 
-      dueAt: DateTime.fromMillisecondsSinceEpoch((map['due_at'] as int?) ?? 0), 
-      notes: map['subject'] as String? ?? '', 
+      id: map['id'] as String?,
+      title: map['title'] as String? ?? '',
+      subject: map['subject'] as String? ?? '',
+      dueAt: DateTime.parse(map['due_at'] as String).toLocal(),
+      notes: map['notes'] as String? ?? '',
     );
   }
 }

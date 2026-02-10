@@ -4,12 +4,12 @@ import 'package:intl/intl.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import 'package:my_first_app/shared/providers/nav_provider.dart';
-import 'package:my_first_app/features/home/data/local/home_dao.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_action_button.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_colors.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_field_shell.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_header.dart';
 import '../../subjects/add_subjects/widgets/edit_assignment_section_label.dart';
+import '../data/models/assignment_row.dart';
 import '../models/assignment_draft.dart';
 import '../providers.dart';
 
@@ -350,18 +350,34 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
       _isSaving = true;
     });
 
-    final currentDraft =
-        widget.initialDraft ?? ref.read(assignmentDraftProvider);
-    final draft = AssignmentDraft(
-      id: currentDraft?.id,
+    final existingDraft = widget.initialDraft ?? ref.read(assignmentDraftProvider);
+    final row = AssignmentRow(
+      id: existingDraft?.id,
       title: _nameController.text.trim(),
       subject: _selectedSubject,
-      dueDateTime: _dueAt,
+      dueAt: _dueAt,
       notes: _notesController.text.trim(),
     );
 
     try {
+      final dao = ref.read(assignmentDaoProvider);
+      late final String persistedId;
+      if (row.id == null) {
+        persistedId = await dao.insert(row);
+      } else {
+        await dao.update(row);
+        persistedId = row.id!;
+      }
+      final draft = AssignmentDraft(
+        id: persistedId,
+        title: row.title,
+        subject: row.subject,
+        dueDateTime: row.dueAt,
+        notes: row.notes,
+      );
+
       ref.read(assignmentDraftProvider.notifier).state = draft;
+      ref.invalidate(assignmentListProvider);
       widget.onSave?.call(draft);
 
       if (!mounted) {
@@ -412,16 +428,16 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
       return;
     }
 
-    final currentDraft =
-        widget.initialDraft ?? ref.read(assignmentDraftProvider);
+    final currentDraft = widget.initialDraft ?? ref.read(assignmentDraftProvider);
 
     setState(() => _isDeleting = true);
     try {
       final id = currentDraft?.id;
       if (id != null) {
-        await HomeDao().delete(id);
+        await ref.read(assignmentDaoProvider).delete(id);
       }
       ref.read(assignmentDraftProvider.notifier).state = null;
+      ref.invalidate(assignmentListProvider);
       if (!mounted) {
         return;
       }

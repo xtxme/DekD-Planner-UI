@@ -5,7 +5,9 @@ import '../../auth/widgets/auth_primary_button.dart';
 import '../../../shared/theme/app_colors.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import 'package:my_first_app/shared/providers/nav_provider.dart';
+import '../data/models/assignment_row.dart';
 import '../models/assignment_draft.dart';
+import '../providers.dart';
 import 'widgets/add_assignment_deadline_card.dart';
 import 'widgets/add_assignment_input_shell.dart';
 import 'widgets/add_assignment_section_label.dart';
@@ -795,6 +797,18 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
     try {
       if (widget.onSave != null) {
         await widget.onSave!(draft);
+      } else {
+        final dao = ref.read(assignmentDaoProvider);
+        final id = await dao.insert(
+          AssignmentRow(
+            title: draft.title,
+            subject: draft.subject,
+            dueAt: draft.dueDateTime,
+            notes: draft.notes,
+          ),
+        );
+        ref.read(assignmentDraftProvider.notifier).state = draft.copyWith(id: id);
+        ref.invalidate(assignmentListProvider);
       }
 
       if (!mounted) {

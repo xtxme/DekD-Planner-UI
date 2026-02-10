@@ -1,33 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
+import 'package:my_first_app/shared/widgets/navbar/navbar_shell.dart';
 
 import 'widgets/auth_primary_button.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
+  Future<void> _onRegisterPressed() async {
+    if (_isSubmitting) {
+      return;
+    }
+    if (_formKey.currentState?.validate() != true) {
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final service = ref.read(authRemoteServiceProvider);
+      await service.register(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        displayName: _nameController.text.trim(),
+      );
+      ref.invalidate(authSessionProvider);
+
+      if (!mounted) {
+        return;
+      }
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const NavbarShell()),
+        (route) => false,
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Register failed. Please try again.')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //เตรียมโครงหน้า
       backgroundColor: AppColors.cFFFBFAF9,
       body: SafeArea(
         child: LayoutBuilder(
@@ -39,7 +87,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      //App bar
                       Container(
                         width: double.infinity,
                         color: AppColors.cFFF4EBDD,
@@ -56,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 color: AppColors.cFF7A5A4A,
                               ),
                             ),
-                            Expanded(
+                            const Expanded(
                               child: Center(
                                 child: Text(
                                   'Register',
@@ -68,7 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 48),
+                            const SizedBox(width: 48),
                           ],
                         ),
                       ),
@@ -83,7 +130,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 24),
-                              //หัวเรื่องใหญ่ + ไอคอนหมวก
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -91,9 +137,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      children: [
+                                      children: const [
                                         Text(
-                                          "Create Your\nAccount",
+                                          'Create Your\nAccount',
                                           style: TextStyle(
                                             fontSize: 32,
                                             fontWeight: FontWeight.w900,
@@ -103,7 +149,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         ),
                                         SizedBox(height: 8),
                                         Text(
-                                          "Start planning your success today.",
+                                          'Start planning your success today.',
                                           style: TextStyle(
                                             fontSize: 18,
                                             color: AppColors.cFFA48C7E,
@@ -118,11 +164,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                     width: 56,
                                     height: 56,
                                     alignment: Alignment.center,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: AppColors.cFFF4EBDD,
                                       shape: BoxShape.circle,
                                     ),
-                                    child: Icon(
+                                    child: const Icon(
                                       Icons.school,
                                       size: 28,
                                       color: AppColors.cFFD2A34A,
@@ -131,26 +177,39 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ],
                               ),
                               const SizedBox(height: 28),
-                              // input fields
                               buildField(
-                                label: "Name",
-                                hint: "Your Name",
+                                label: 'Name',
+                                hint: 'Your Name',
                                 icon: Icons.person_sharp,
                                 keyboardType: TextInputType.name,
+                                controller: _nameController,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter your name.';
+                                  }
+                                  return null;
+                                },
                               ),
                               const SizedBox(height: 20),
                               buildField(
-                                label: "Email Address",
-                                hint: "student@gmail.com",
+                                label: 'Email Address',
+                                hint: 'student@gmail.com',
                                 icon: Icons.mail_rounded,
                                 keyboardType: TextInputType.emailAddress,
                                 enableSuggestions: false,
                                 autocorrect: false,
+                                controller: _emailController,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter your email.';
+                                  }
+                                  return null;
+                                },
                               ),
                               const SizedBox(height: 20),
                               buildField(
-                                label: "Password",
-                                hint: "Create a password",
+                                label: 'Password',
+                                hint: 'Create a password',
                                 icon: Icons.lock,
                                 isObscure: _obscurePassword,
                                 controller: _passwordController,
@@ -172,8 +231,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               const SizedBox(height: 20),
                               buildField(
-                                label: "Confirm Password",
-                                hint: "Confirm your password",
+                                label: 'Confirm Password',
+                                hint: 'Confirm your password',
                                 icon: Icons.lock_reset_outlined,
                                 isObscure: _obscureConfirm,
                                 controller: _confirmPasswordController,
@@ -196,19 +255,16 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               const SizedBox(height: 40),
                               AuthPrimaryButton(
-                                label: 'Register',
-                                onPressed: () {
-                                  if (_formKey.currentState?.validate() !=
-                                      true) {
-                                    return;
-                                  }
-                                },
+                                label:
+                                    _isSubmitting ? 'Registering...' : 'Register',
+                                onPressed:
+                                    _isSubmitting ? null : _onRegisterPressed,
                               ),
                               const SizedBox(height: 100),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  const Text(
                                     'Already have an account? ',
                                     style: TextStyle(
                                       color: AppColors.cFFA48C7E,
@@ -218,10 +274,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(context, "/login");
+                                      Navigator.pushNamed(context, '/login');
                                     },
-                                    child: Text(
-                                      " Login",
+                                    child: const Text(
+                                      ' Login',
                                       style: TextStyle(
                                         color: AppColors.cFFD9A441,
                                         fontSize: 14,
@@ -247,14 +303,13 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 }
 
-//helper widget สร้าง input fields
 Widget buildField({
   required String label,
   required String hint,
   required IconData icon,
-  bool obscure = false, //ซ่อนตัวอักษรหรือไม่ (password)
-  bool? isObscure, //กำลังซ่อนข้อความอยู่ไหม
-  VoidCallback? onToggle, //ใช้เรียกตอนผู้ใช้ กดปุ่มสลับซ่อน/แสดงรหัสผ่าน
+  bool obscure = false,
+  bool? isObscure,
+  VoidCallback? onToggle,
   TextEditingController? controller,
   String? Function(String?)? validator,
   TextInputType keyboardType = TextInputType.text,
@@ -266,7 +321,7 @@ Widget buildField({
     children: [
       Text(
         label,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w900,
           color: AppColors.cFF7A5A4A,
@@ -282,7 +337,7 @@ Widget buildField({
         keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: AppColors.cFFA48C7E,
             fontSize: 16,
             fontWeight: FontWeight.w500,

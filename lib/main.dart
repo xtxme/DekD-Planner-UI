@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/core/supabase/supabase_initializer.dart';
 import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
-import 'core/database/app_database.dart';
 
 import 'shared/theme/app_theme.dart';
 import 'shared/widgets/navbar/navbar_shell.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AppDatabase.instance.database;
+  await SupabaseInitializer.initialize();
   runApp(const ProviderScope(child: MyApp()));
 }
 

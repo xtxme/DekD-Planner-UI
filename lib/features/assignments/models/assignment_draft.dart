@@ -7,14 +7,14 @@ class AssignmentDraft {
     required this.notes,
   });
 
-  final int? id;
+  final String? id;
   final String title;
   final String subject;
   final DateTime dueDateTime;
   final String notes;
 
   AssignmentDraft copyWith({
-    int? id,
+    String? id,
     String? title,
     String? subject,
     DateTime? dueDateTime,
