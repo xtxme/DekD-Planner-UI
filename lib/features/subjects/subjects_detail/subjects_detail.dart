@@ -297,52 +297,6 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     );
   }
 
-  void _showEditPlaceholderSheet() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.cFFFDF9F4,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Edit Subject',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.cFF8B6758,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Edit subject coming soon',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.cFFA48C7E,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Close'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Future<void> _showDeletePlaceholderDialog() async {
     await showDialog<void>(
       context: context,

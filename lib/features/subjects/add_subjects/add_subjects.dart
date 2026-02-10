@@ -333,7 +333,7 @@ class _AddSubjectsPageState extends ConsumerState<AddSubjectsPage> {
   Future<void> _onAddColorPressed() async {
     var tempColor = _selectedColor;
     final hexController = TextEditingController(
-      text: tempColor.value.toRadixString(16).padLeft(8, '0').substring(2),
+      text: tempColor.toARGB32().toRadixString(16).padLeft(8, '0').substring(2),
     );
 
     final pickedColor = await showDialog<Color>(

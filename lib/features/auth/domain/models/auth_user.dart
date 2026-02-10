@@ -1,5 +1,11 @@
 class AuthUser {
-  const AuthUser();
+  const AuthUser({
+    required this.uid,
+    required this.email,
+    this.displayName,
+  });
 
-  // TODO(Step 4): Add authenticated user fields.
+  final String uid;
+  final String email;
+  final String? displayName;
 }

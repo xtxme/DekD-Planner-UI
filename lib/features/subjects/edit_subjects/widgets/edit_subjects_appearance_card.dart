@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../shared/theme/app_colors.dart';
 
 String _hexColor(Color color) {
-  final rgb = color.value.toRadixString(16).padLeft(8, '0').substring(2);
+  final rgb = color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2);
   return '#${rgb.toUpperCase()}';
 }
 
