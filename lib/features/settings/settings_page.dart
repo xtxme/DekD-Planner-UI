@@ -10,6 +10,9 @@ import 'edit_profile.dart';
 import 'widgets/account_section_card.dart';
 import 'widgets/app_preferences_card.dart';
 
+import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
+
+
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key, this.withNavBar = true});
 
@@ -21,6 +24,21 @@ class SettingsPage extends ConsumerStatefulWidget {
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
   bool _notificationsEnabled = true;
+  Future<void> _handleSignOut() async {
+    try {
+      await ref.read(authRemoteServiceProvider).signOut(); //Supabase
+      await ref.read(authLocalCacheDaoProvider).clearSession();
+      ref.invalidate(authSessionProvider);
+
+      if (!mounted) return;
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sign out failed. Please try again.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +69,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ),
                         );
                       },
-                      onSignOut: () {},
+                      onSignOut: _handleSignOut,
                     ),
                     const SizedBox(height: 28),
                     _buildSectionTitle('APP PREFERENCES'),

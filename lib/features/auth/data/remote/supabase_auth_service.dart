@@ -15,6 +15,7 @@ abstract class AuthRemoteService {
   Future<AuthUser?> currentUser();
 }
 
+//ตัว service ที่เรียก Auth API จริง
 class SupabaseAuthService implements AuthRemoteService {
   SupabaseAuthService(this._client);
 

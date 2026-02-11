@@ -40,7 +40,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _isSubmitting = true);
 
     try {
-      final service = ref.read(authRemoteServiceProvider);
+      final service = ref.read(authRemoteServiceProvider); //UI เรียกใช้งาน
       await service.signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,

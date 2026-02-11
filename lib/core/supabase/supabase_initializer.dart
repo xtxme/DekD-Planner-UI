@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+//ตั้งค่าเชื่อม Supabase ตอนเปิดแอป
 class SupabaseInitializer {
   static Future<void> initialize() async {
     await dotenv.load(fileName: '.env');

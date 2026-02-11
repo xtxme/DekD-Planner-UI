@@ -4,6 +4,7 @@ import 'package:my_first_app/features/auth/data/local/auth_local_cache_dao.dart'
 import 'package:my_first_app/features/auth/data/remote/supabase_auth_service.dart';
 import 'package:my_first_app/features/auth/domain/models/auth_user.dart';
 
+//Provider ที่ผูก Riverpod เข้ากับ SupabaseAuthService:
 final authRemoteServiceProvider = Provider<AuthRemoteService>(
   (ref) => SupabaseAuthService(ref.watch(supabaseClientProvider)),
 );

@@ -43,7 +43,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     setState(() => _isSubmitting = true);
 
     try {
-      final service = ref.read(authRemoteServiceProvider);
+      final service = ref.read(authRemoteServiceProvider); //UI เรียกใช้งาน
       await service.register(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),

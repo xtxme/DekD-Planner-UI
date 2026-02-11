@@ -6,11 +6,10 @@ import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
 
 import 'shared/theme/app_theme.dart';
-import 'shared/widgets/navbar/navbar_shell.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SupabaseInitializer.initialize();
+  await SupabaseInitializer.initialize(); //เรียก initialize
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('th'), Locale('en')],
-      home: const NavbarShell(),
+      home: const LoginPage(),
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
