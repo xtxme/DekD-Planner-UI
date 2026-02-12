@@ -1,25 +1,55 @@
 import 'package:flutter/material.dart';
-import 'widgets/auth_primary_button.dart';
-import 'widgets/password_text_form_field.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:my_first_app/features/auth/update_page.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-class ResetPasswordPage extends StatefulWidget {
+import 'widgets/auth_primary_button.dart';
+import 'widgets/password_text_form_field.dart';
+
+class ResetPasswordPage extends ConsumerStatefulWidget {
   const ResetPasswordPage({super.key});
 
   @override
-  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
+  ConsumerState<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _ResetPasswordPageState extends State<ResetPasswordPage> {
+class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onResetPressed() async {
+    if (_isSubmitting) return; //ป้องกันกดซ้ำ
+    if (_formKey.currentState?.validate() != true) return;
+
+    setState(() => _isSubmitting = true); //เปลี่ยนสถานะเป็นกำลังโหลด
+    try { //ใช้จับ error ถ้า server ล้ม / network fail
+      await ref.read(authRemoteServiceProvider).updatePassword( //เรียก service เปลี่ยน password
+            newPassword: _newPasswordController.text.trim(),
+          );
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const UpdatePage()),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Unable to reset password right now. Please try again.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   @override
@@ -157,12 +187,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       // Reset button
                       const SizedBox(height: 28),
                       AuthPrimaryButton(
-                        label: 'Reset Password',
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() != true) {
-                            return;
-                          }
-                        },
+                        label: _isSubmitting ? 'Resetting...' : 'Reset Password',
+                        onPressed: _isSubmitting ? null : _onResetPressed,
                       ),
                     ],
                   ),

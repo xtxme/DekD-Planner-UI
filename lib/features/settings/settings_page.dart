@@ -43,6 +43,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
+    //เพิ่มการอ่าน session
+    final authSession = ref.watch(authSessionProvider);
+    final user = authSession.valueOrNull;
+
+    final trimmedDisplayName = user?.displayName?.trim();
+    final displayName = (trimmedDisplayName?.isNotEmpty ?? false)
+        ? trimmedDisplayName!
+        : 'Unknown User';
+
+    final trimmedEmail = user?.email.trim();
+    final email = (trimmedEmail?.isNotEmpty ?? false) ? trimmedEmail! : '-';
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -59,8 +70,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     _buildSectionTitle('ACCOUNT'),
                     const SizedBox(height: 12),
                     SettingsAccountCard(
-                      name: 'Jane Doe',
-                      email: 'jane.doe@student.com',
+                      name: displayName,
+                      email: email,
                       onTapProfile: () {},
                       onEditProfile: () {
                         Navigator.of(context).push(

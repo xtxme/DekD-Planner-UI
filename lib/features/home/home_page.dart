@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'models/task_item.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   static const List<TaskItem> _todayTasks = [
@@ -83,9 +85,16 @@ class HomePage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
     final dateText = DateFormat('EEEE, MMM d').format(now).toUpperCase();
+    final authSession = ref.watch(authSessionProvider);
+    final displayName = authSession.valueOrNull?.displayName?.trim();
+    final greetingName = (displayName != null && displayName.isNotEmpty)
+        ? displayName
+        : 'Alex';
+    final firstName = greetingName.split(RegExp(r'\s+')).first.trim();
+    final greetingDisplayName = firstName.isNotEmpty ? firstName : 'Alex';
     return Scaffold(
       //วางโครงพื้นฐานของหน้า
       backgroundColor: AppColors.background,
@@ -130,7 +139,10 @@ class HomePage extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            "Hi, Alex! 👋",
+                            'Hi, $greetingDisplayName! 👋',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
                             style: TextStyle(
                               fontSize: 18,
                               letterSpacing: 1.1,

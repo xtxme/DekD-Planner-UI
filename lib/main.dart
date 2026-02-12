@@ -1,10 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/core/supabase/supabase_initializer.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'features/auth/check_page.dart';
+import 'features/auth/forgot_page.dart';
 import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
-
+import 'features/auth/reset_password_page.dart';
+import 'features/auth/update_page.dart';
 import 'shared/theme/app_theme.dart';
 
 Future<void> main() async {
@@ -13,8 +20,33 @@ Future<void> main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
+  StreamSubscription<AuthState>? _authStateSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _authStateSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      if (event == AuthChangeEvent.passwordRecovery) {
+        _navigatorKey.currentState?.pushNamed('/reset-password');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authStateSub?.cancel();
+    super.dispose();
+  }
 
   // This widget is the root of your application.
   @override
@@ -33,6 +65,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
+        '/forgot': (context) => const ForgotPage(),
+        '/check-email': (context) => const CheckPage(),
+        '/reset-password': (context) => const ResetPasswordPage(),
+        '/password-updated': (context) => const UpdatePage(),
       },
     );
   }

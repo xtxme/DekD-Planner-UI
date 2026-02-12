@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/features/auth/forgot_page.dart';
+import 'package:my_first_app/features/auth/login_page.dart';
 import 'package:my_first_app/features/auth/widgets/auth_primary_button.dart';
-import 'package:my_first_app/features/auth/register_page.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
 class CheckPage extends StatefulWidget {
@@ -26,22 +27,21 @@ class _CheckPageState extends State<CheckPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      //สร้างไอคอนตรงกลาง
                       Container(
                         width: 96,
                         height: 96,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppColors.cFFF4EBDD,
                           borderRadius: BorderRadius.all(Radius.circular(24)),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.mark_email_read_sharp,
                           size: 44,
                           color: AppColors.cFFD2A34A,
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Text(
+                      const Text(
                         'Check your mail',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -51,7 +51,7 @@ class _CheckPageState extends State<CheckPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const Text(
                         "We have sent password recovery\ninstructions to your email address.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -63,13 +63,20 @@ class _CheckPageState extends State<CheckPage> {
                       const SizedBox(height: 40),
                       AuthPrimaryButton(
                         label: 'Back To Login',
-                        onPressed: () => {},
+                        onPressed: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (_) => const LoginPage(),
+                            ),
+                            (route) => false,
+                          );
+                        },
                       ),
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             "Did not receive the email?",
                             style: TextStyle(
                               color: AppColors.cFFA48C7E,
@@ -79,13 +86,13 @@ class _CheckPageState extends State<CheckPage> {
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).push(
+                              Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (_) => const RegisterPage(),
+                                  builder: (_) => const ForgotPage(),
                                 ),
                               );
                             },
-                            child: Text(
+                            child: const Text(
                               'Resend Email',
                               style: TextStyle(
                                 color: AppColors.cFFD9A441,
