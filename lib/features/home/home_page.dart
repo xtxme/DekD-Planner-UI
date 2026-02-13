@@ -86,6 +86,7 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final now = DateTime.now();
     final dateText = DateFormat('EEEE, MMM d').format(now).toUpperCase();
     final authSession = ref.watch(authSessionProvider);
@@ -100,6 +101,9 @@ class HomePage extends ConsumerWidget {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
           padding: const EdgeInsets.fromLTRB(0, 16, 0, 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,15 +215,19 @@ class HomePage extends ConsumerWidget {
                           child: ElevatedButton.icon(
                             onPressed: () {},
                             icon: const Icon(Icons.add_circle, size: 22),
-                            label: const Text('Add New'),
+                            label: const Text(
+                              'Add New',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.accentSoft,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 14,
+                              padding: EdgeInsets.symmetric(
+                                vertical: isIOS ? 10 : 12,
+                                horizontal: isIOS ? 10 : 14,
                               ),
-                              minimumSize: const Size(0, 44),
+                              minimumSize: Size(0, isIOS ? 40 : 44),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
@@ -243,15 +251,19 @@ class HomePage extends ConsumerWidget {
                               size: 22,
                               color: Colors.white,
                             ),
-                            label: const Text('All Assignments'),
+                            label: const Text(
+                              'All Assignments',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.accentSoft,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 14,
+                              padding: EdgeInsets.symmetric(
+                                vertical: isIOS ? 10 : 12,
+                                horizontal: isIOS ? 10 : 14,
                               ),
-                              minimumSize: const Size(0, 44),
+                              minimumSize: Size(0, isIOS ? 40 : 44),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),

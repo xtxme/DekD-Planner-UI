@@ -56,6 +56,8 @@ class SettingsAccountCard extends StatelessWidget {
                         children: [
                           Text(
                             name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 19,
                               fontWeight: FontWeight.w900,
@@ -65,6 +67,8 @@ class SettingsAccountCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             email,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

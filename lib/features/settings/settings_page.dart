@@ -63,6 +63,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             _buildHeader(),
             Expanded(
               child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
                 padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
