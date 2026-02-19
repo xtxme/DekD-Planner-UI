@@ -100,82 +100,75 @@ class HomePage extends ConsumerWidget {
       //วางโครงพื้นฐานของหน้า
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
-          padding: const EdgeInsets.fromLTRB(0, 16, 0, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            //Top Bar
-            children: [
-              Container(
-                width: double.infinity,
-                color: AppColors.headerSurface,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 22,
-                      backgroundColor: Colors.white,
-                      child: CircleAvatar(
-                        radius: 19,
-                        backgroundColor: AppColors.background,
-                        child: Icon(Icons.person, color: AppColors.textPrimary),
-                      ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              color: AppColors.headerSurface,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Row(
+                children: [
+                  const CircleAvatar(
+                    radius: 22,
+                    backgroundColor: Colors.white,
+                    child: CircleAvatar(
+                      radius: 19,
+                      backgroundColor: AppColors.background,
+                      child: Icon(Icons.person, color: AppColors.textPrimary),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            dateText,
-                            style: TextStyle(
-                              fontSize: 13,
-                              letterSpacing: 1.1,
-                              color: AppColors.textSecondary,
-                              fontWeight: FontWeight.w600,
-                            ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          dateText,
+                          style: TextStyle(
+                            fontSize: 13,
+                            letterSpacing: 1.1,
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Hi, $greetingDisplayName! 👋',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: false,
-                            style: TextStyle(
-                              fontSize: 18,
-                              letterSpacing: 1.1,
-                              color: AppColors.textTitleStrong,
-                              fontWeight: FontWeight.w900,
-                            ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Hi, $greetingDisplayName! 👋',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          style: TextStyle(
+                            fontSize: 18,
+                            letterSpacing: 1.1,
+                            color: AppColors.textTitleStrong,
+                            fontWeight: FontWeight.w900,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        color: AppColors.surfaceSoft,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.notifications,
-                        color: AppColors.textTitleStrong,
-                      ),
+                  ),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: const BoxDecoration(
+                      color: AppColors.surfaceSoft,
+                      shape: BoxShape.circle,
                     ),
-                  ],
-                ),
+                    child: Icon(
+                      Icons.notifications,
+                      color: AppColors.textTitleStrong,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 24),
-              //Ready to study?
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -351,8 +344,8 @@ class HomePage extends ConsumerWidget {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

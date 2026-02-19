@@ -20,56 +20,45 @@ class UpdatePage extends StatelessWidget {
               colors: [AppColors.cFFFDF8F2, AppColors.cFFFFFAF5],
             ),
           ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const _CheckMarkBadge(),
-                        const SizedBox(height: 24),
-                        const Text(
-                          'Password Updated!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.cFF8B6A5E,
-                          ),
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(24, 56, 24, 0),
+                child: _PasswordUpdatedHeader(),
+              ),
+              const SizedBox(height: 28),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Your password has been successfully updated.\nYou can now log in to manage your assignments.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            height: 1.4,
-                            color: AppColors.cFFA48C7E,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                        AuthPrimaryButton(
-                          label: 'Back To Login',
-                          onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (_) => const LoginPage(),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Column(
+                            children: [
+                              AuthPrimaryButton(
+                                label: 'Back To Login',
+                                onPressed: () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (_) => const LoginPage(),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
+                              const SizedBox(height: 32),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 32),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ],
           ),
         ),
       ),
@@ -108,6 +97,40 @@ class _CheckMarkBadge extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _PasswordUpdatedHeader extends StatelessWidget {
+  const _PasswordUpdatedHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _CheckMarkBadge(),
+        SizedBox(height: 24),
+        Text(
+          'Password Updated!',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w700,
+            color: AppColors.cFF8B6A5E,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Your password has been successfully updated.\nYou can now log in to manage your assignments.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            height: 1.4,
+            color: AppColors.cFFA48C7E,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }
