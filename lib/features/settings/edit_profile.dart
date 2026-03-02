@@ -8,6 +8,11 @@ import 'package:my_first_app/shared/providers/nav_provider.dart';
 import 'widgets/edit_profile_avatar_section.dart';
 import 'widgets/edit_profile_form_field.dart';
 
+import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:my_first_app/features/settings/data/models/profile_row.dart';
+import 'package:my_first_app/features/settings/presentation/providers/settings_providers.dart';
+
+
 class EditProfilePage extends ConsumerStatefulWidget {
   const EditProfilePage({super.key, this.withNavBar = true});
 
@@ -21,15 +26,16 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
   late final TextEditingController _bioController;
+  //เพิ่ม state กัน controller โดน set ซ้ำ
+  bool _didSeedInitialValues = false; //ใช้เติมค่าจาก database เข้า controller แค่ครั้งเดียว
+  bool _isSaving = false; //ใช้ disable ปุ่มตอนกำลังบันทึก
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: 'Jane Doe');
-    _emailController = TextEditingController(text: 'jane.doe@student.com');
-    _bioController = TextEditingController(
-      text: 'Student at Dek-D High School. Love math and science!',
-    );
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _bioController = TextEditingController();
   }
 
   @override
@@ -43,6 +49,18 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
+    final profileAsync = ref.watch(profileProvider);
+    final authSessionAsync = ref.watch(authSessionProvider);
+
+    final profile = profileAsync.valueOrNull;
+    final authUser = authSessionAsync.valueOrNull;
+    //data มาแล้วหรือยัง แล้วค่อย seed ค่า
+    if (!_didSeedInitialValues && profile != null ) {
+      _nameController.text = profile.displayName?.trim() ?? '';
+      _bioController.text = profile.bio?.trim() ?? '';
+      _emailController.text = authUser?.email.trim() ?? '';
+      _didSeedInitialValues = true;
+    }
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -83,7 +101,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     const SizedBox(height: 36),
                     AuthPrimaryButton(
                       label: 'Save Changes',
-                      onPressed: _onSaveChanges,
+                      onPressed: _isSaving ? null : _onSaveChanges,
                     ),
                     const SizedBox(height: 12),
                     Center(

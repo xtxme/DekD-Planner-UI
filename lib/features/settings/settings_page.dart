@@ -79,7 +79,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       onEditProfile: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const EditProfilePage(),
+                            builder: (_) => const EditProfilePage(withNavBar: false,),
                           ),
                         );
                       },
