@@ -45,11 +45,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     _bioController.dispose();
     super.dispose();
   }
+  //profileProvider = ดึงข้อมูลโปรไฟล์จริง
+  //_didSeedInitialValues ... = เอาข้อมูลจริงมาแสดงในฟอร์ม
+  //profileDaoProvider.upsert(...) = เซฟกลับ database
 
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
-    final profileAsync = ref.watch(profileProvider);
+    final profileAsync = ref.watch(profileProvider); //อ่านข้อมูลโปรไฟล์จาก provider
     final authSessionAsync = ref.watch(authSessionProvider);
 
     final profile = profileAsync.valueOrNull;
@@ -176,7 +179,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     );
   }
 
-  void _onSaveChanges() {
+  Future<void> _onSaveChanges() async{
+    final profile = ref.read(profileProvider).valueOrNull;
+    if (profile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile is not ready yet.')),
+    );
+    return;
+    }
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Profile changes saved.')));
