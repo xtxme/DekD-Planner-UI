@@ -14,10 +14,20 @@ class SubjectGridItem {
 }
 
 class SubjectsGrid extends StatelessWidget {
-  const SubjectsGrid({super.key, required this.items, required this.onItemTap});
+  const SubjectsGrid({
+    super.key,
+    required this.items,
+    required this.onItemTap,
+    this.padding = const EdgeInsets.fromLTRB(20, 20, 20, 100),
+    this.physics,
+    this.shrinkWrap = false,
+  });
 
   final List<SubjectGridItem> items;
   final ValueChanged<SubjectGridItem> onItemTap;
+  final EdgeInsets padding;
+  final ScrollPhysics? physics;
+  final bool shrinkWrap;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +41,9 @@ class SubjectsGrid extends StatelessWidget {
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+      padding: padding,
+      physics: physics,
+      shrinkWrap: shrinkWrap,
       itemCount: items.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -80,6 +92,8 @@ class SubjectCard extends StatelessWidget {
               const SizedBox(height: 14),
               Text(
                 item.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
@@ -98,6 +112,8 @@ class SubjectCard extends StatelessWidget {
                 ),
                 child: Text(
                   item.subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

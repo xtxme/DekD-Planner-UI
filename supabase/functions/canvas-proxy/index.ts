@@ -35,8 +35,10 @@ deno.serve(async (req: Request) => {
       );
     }
 
-    // ตัวอย่าง endpoint: ดึงข้อมูล user ของ token นี้
-    const canvasRes = await fetch(`${canvasBaseUrl}/api/v1/users/self`, {
+    const coursesUrl = new URL(`${canvasBaseUrl}/api/v1/courses`);
+    coursesUrl.searchParams.set("per_page", "100");
+
+    const canvasRes = await fetch(coursesUrl, {
       headers: {
         Authorization: `Bearer ${canvasToken}`,
         "Content-Type": "application/json",

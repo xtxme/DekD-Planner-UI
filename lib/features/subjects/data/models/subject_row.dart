@@ -1,4 +1,8 @@
 class SubjectRow {
+  static const int _signedInt32Max = 0x7FFFFFFF;
+  static const int _unsignedInt32Mask = 0xFFFFFFFF;
+  static const int _unsignedInt32Range = 0x100000000;
+
   const SubjectRow({
     this.id,
     required this.name,
@@ -22,7 +26,7 @@ class SubjectRow {
     'name': name,
     'code': code,
     'description': description,
-    'color_value': colorValue,
+    'color_value': _encodeColorValue(colorValue),
     'icon_codepoint': iconCodepoint,
     'is_archived': isArchived,
   };
@@ -31,18 +35,28 @@ class SubjectRow {
     'name': name,
     'code': code,
     'description': description,
-    'color_value': colorValue,
+    'color_value': _encodeColorValue(colorValue),
     'icon_codepoint': iconCodepoint,
     'is_archived': isArchived,
   };
 
   factory SubjectRow.fromMap(Map<String, dynamic> map) => SubjectRow(
-    id: map['id'] as String?, 
-    name: map['name'] as String? ?? '', 
-    code: map['code'] as String? ?? '', 
+    id: map['id'] as String?,
+    name: map['name'] as String? ?? '',
+    code: map['code'] as String? ?? '',
     description: map['description'] as String? ?? '',
-    colorValue: map['color_value'] as int? ?? 0, 
+    colorValue: _decodeColorValue(map['color_value'] as int? ?? 0),
     iconCodepoint: map['icon_codepoint'] as int? ?? 0,
     isArchived: map['is_archived'] as bool? ?? false,
-    );
+  );
+
+  static int _encodeColorValue(int value) {
+    final normalized = value & _unsignedInt32Mask;
+    if (normalized > _signedInt32Max) {
+      return normalized - _unsignedInt32Range;
+    }
+    return normalized;
+  }
+
+  static int _decodeColorValue(int value) => value & _unsignedInt32Mask;
 }
