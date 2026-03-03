@@ -6,6 +6,7 @@ class SettingsAccountCard extends StatelessWidget {
     super.key,
     required this.name,
     required this.email,
+    this.avatarUrl,
     this.onTapProfile,
     this.onEditProfile,
     this.onSignOut,
@@ -13,6 +14,7 @@ class SettingsAccountCard extends StatelessWidget {
 
   final String name;
   final String email;
+  final String? avatarUrl;
   final VoidCallback? onTapProfile;
   final VoidCallback? onEditProfile;
   final VoidCallback? onSignOut;
@@ -39,15 +41,44 @@ class SettingsAccountCard extends StatelessWidget {
                     Container(
                       width: 65,
                       height: 65,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.cFFF7CDC5,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.person_4_rounded,
-                        size: 42,
-                        color: AppColors.cFF8B6758,
-                      ),
+                      child: avatarUrl != null && avatarUrl!.isNotEmpty
+                          ? ClipOval(
+                              child: Image.network(
+                                avatarUrl!,
+                                width: 65,
+                                height: 65,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.person_4_rounded,
+                                    size: 42,
+                                    color: AppColors.cFF8B6758,
+                                  );
+                                },
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                AppColors.cFF8B6758,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                              ),
+                            )
+                          : const Icon(
+                              Icons.person_4_rounded,
+                              size: 42,
+                              color: AppColors.cFF8B6758,
+                            ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(

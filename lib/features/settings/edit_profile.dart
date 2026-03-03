@@ -1,17 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_first_app/shared/theme/app_colors.dart';
-
-import '../auth/widgets/auth_primary_button.dart';
-import '../../shared/widgets/navbar/app_navbar.dart';
-import 'package:my_first_app/shared/providers/nav_provider.dart';
-import 'widgets/edit_profile_avatar_section.dart';
-import 'widgets/edit_profile_form_field.dart';
-
+import 'package:image_picker/image_picker.dart';
 import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:my_first_app/features/settings/data/models/profile_row.dart';
 import 'package:my_first_app/features/settings/presentation/providers/settings_providers.dart';
+import 'package:my_first_app/shared/theme/app_colors.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 
+import '../../shared/widgets/navbar/app_navbar.dart';
+import '../auth/widgets/auth_primary_button.dart';
+import 'widgets/edit_profile_avatar_section.dart';
+import 'widgets/edit_profile_form_field.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   const EditProfilePage({super.key, this.withNavBar = true});
@@ -26,9 +27,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
   late final TextEditingController _bioController;
-  //เพิ่ม state กัน controller โดน set ซ้ำ
-  bool _didSeedInitialValues = false; //ใช้เติมค่าจาก database เข้า controller แค่ครั้งเดียว
-  bool _isSaving = false; //ใช้ disable ปุ่มตอนกำลังบันทึก
+  bool _didSeedInitialValues = false;
+  bool _isSaving = false;
+
+  final ImagePicker _imagePicker = ImagePicker();
+  File? _selectedAvatarFile;
+  String? _avatarUrl;
 
   @override
   void initState() {
@@ -45,23 +49,29 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     _bioController.dispose();
     super.dispose();
   }
-  //profileProvider = ดึงข้อมูลโปรไฟล์จริง
-  //_didSeedInitialValues ... = เอาข้อมูลจริงมาแสดงในฟอร์ม
-  //profileDaoProvider.upsert(...) = เซฟกลับ database
 
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
-    final profileAsync = ref.watch(profileProvider); //อ่านข้อมูลโปรไฟล์จาก provider
+    final profileAsync = ref.watch(profileProvider);
     final authSessionAsync = ref.watch(authSessionProvider);
+    final isLoading = profileAsync.isLoading || authSessionAsync.isLoading;
+    final hasError = profileAsync.hasError || authSessionAsync.hasError;
+
+    final ImageProvider<Object>? avatarImageProvider =
+        _selectedAvatarFile != null
+        ? FileImage(_selectedAvatarFile!)
+        : (_avatarUrl != null && _avatarUrl!.isNotEmpty
+              ? NetworkImage(_avatarUrl!)
+              : null);
 
     final profile = profileAsync.valueOrNull;
     final authUser = authSessionAsync.valueOrNull;
-    //data มาแล้วหรือยัง แล้วค่อย seed ค่า
-    if (!_didSeedInitialValues && profile != null ) {
+    if (!_didSeedInitialValues && !isLoading && !hasError && profile != null) {
       _nameController.text = profile.displayName?.trim() ?? '';
       _bioController.text = profile.bio?.trim() ?? '';
       _emailController.text = authUser?.email.trim() ?? '';
+      _avatarUrl = profile.avatarUrl;
       _didSeedInitialValues = true;
     }
 
@@ -72,57 +82,97 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           children: [
             _buildHeader(context),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    EditProfileAvatarSection(onTapChangePhoto: _onChangePhoto),
-                    const SizedBox(height: 18),
-                    EditProfileFormField(
-                      label: 'Name',
-                      controller: _nameController,
-                      trailingIcon: Icons.person_rounded,
-                    ),
-                    const SizedBox(height: 16),
-                    EditProfileFormField(
-                      label: 'Email',
-                      controller: _emailController,
-                      readOnly: true,
-                      keyboardType: TextInputType.emailAddress,
-                      trailingIcon: Icons.email_rounded,
-                      helperText: 'Contact support to change email address.',
-                    ),
-                    const SizedBox(height: 16),
-                    EditProfileFormField(
-                      label: 'Bio',
-                      controller: _bioController,
-                      maxLines: 3,
-                      minLines: 3,
-                      textInputAction: TextInputAction.newline,
-                    ),
-                    const SizedBox(height: 36),
-                    AuthPrimaryButton(
-                      label: 'Save Changes',
-                      onPressed: _isSaving ? null : _onSaveChanges,
-                    ),
-                    const SizedBox(height: 12),
-                    Center(
-                      child: TextButton(
-                        onPressed: () => Navigator.of(context).maybePop(),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.cFFA48C7E,
-                          ),
+              child: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.cFFDEAF5F,
+                      ),
+                    )
+                  : hasError
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Failed to load profile.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.cFF8B6758,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextButton(
+                              onPressed: () {
+                                ref.invalidate(profileProvider);
+                                ref.invalidate(authSessionProvider);
+                                _didSeedInitialValues = false;
+                              },
+                              child: const Text('Try Again'),
+                            ),
+                          ],
                         ),
                       ),
+                    )
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          EditProfileAvatarSection(
+                            onTapChangePhoto: _isSaving ? null : _onChangePhoto,
+                            imageProvider: avatarImageProvider,
+                          ),
+                          const SizedBox(height: 18),
+                          EditProfileFormField(
+                            label: 'Name',
+                            controller: _nameController,
+                            trailingIcon: Icons.person_rounded,
+                          ),
+                          const SizedBox(height: 16),
+                          EditProfileFormField(
+                            label: 'Email',
+                            controller: _emailController,
+                            readOnly: true,
+                            keyboardType: TextInputType.emailAddress,
+                            trailingIcon: Icons.email_rounded,
+                            helperText:
+                                'Contact support to change email address.',
+                          ),
+                          const SizedBox(height: 16),
+                          EditProfileFormField(
+                            label: 'Bio',
+                            controller: _bioController,
+                            maxLines: 3,
+                            minLines: 3,
+                            textInputAction: TextInputAction.newline,
+                          ),
+                          const SizedBox(height: 36),
+                          AuthPrimaryButton(
+                            label: _isSaving ? 'Saving...' : 'Save Changes',
+                            onPressed: _isSaving ? null : _onSaveChanges,
+                          ),
+                          const SizedBox(height: 12),
+                          Center(
+                            child: TextButton(
+                              onPressed: _isSaving
+                                  ? null
+                                  : () => Navigator.of(context).maybePop(),
+                              child: const Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.cFFA48C7E,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),
@@ -173,22 +223,67 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     );
   }
 
-  void _onChangePhoto() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Change photo action not connected yet.')),
+  Future<void> _onChangePhoto() async {
+    final pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+      maxWidth: 1200,
     );
+
+    if (pickedFile == null || !mounted) return;
+
+    setState(() {
+      _selectedAvatarFile = File(pickedFile.path);
+    });
   }
 
-  Future<void> _onSaveChanges() async{
-    final profile = ref.read(profileProvider).valueOrNull;
-    if (profile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile is not ready yet.')),
-    );
-    return;
+  Future<void> _onSaveChanges() async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final profile = await ref.read(profileProvider.future);
+      var nextAvatarUrl = _avatarUrl;
+
+      if (_selectedAvatarFile != null) {
+        nextAvatarUrl = await ref
+            .read(profileDaoProvider)
+            .uploadAvatar(userId: profile.userId, file: _selectedAvatarFile!);
+      }
+
+      final updatedRow = ProfileRow(
+        userId: profile.userId,
+        displayName: _nameController.text.trim(),
+        bio: _bioController.text.trim(),
+        avatarUrl: nextAvatarUrl,
+      );
+
+      await ref.read(profileDaoProvider).upsert(updatedRow);
+      ref.invalidate(profileProvider);
+
+      if (!mounted) return;
+      setState(() {
+        _avatarUrl = nextAvatarUrl;
+        _selectedAvatarFile = null;
+      });
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Profile changes saved.')),
+      );
+      Navigator.of(context).maybePop();
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Failed to save profile.')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Profile changes saved.')));
   }
 }

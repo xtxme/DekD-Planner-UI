@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:my_first_app/features/settings/presentation/providers/settings_providers.dart';
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'models/task_item.dart';
@@ -90,12 +91,16 @@ class HomePage extends ConsumerWidget {
     final now = DateTime.now();
     final dateText = DateFormat('EEEE, MMM d').format(now).toUpperCase();
     final authSession = ref.watch(authSessionProvider);
-    final displayName = authSession.valueOrNull?.displayName?.trim();
-    final greetingName = (displayName != null && displayName.isNotEmpty)
-        ? displayName
-        : 'Alex';
+    final profileAsync = ref.watch(profileProvider);
+    final trimmedEmail = authSession.valueOrNull?.email.trim();
+    final email = (trimmedEmail?.isNotEmpty ?? false) ? trimmedEmail! : '-';
+    final profileDisplayName = profileAsync.valueOrNull?.displayName?.trim();
+    final greetingName = (profileDisplayName?.isNotEmpty ?? false)
+        ? profileDisplayName!
+        : authSession.valueOrNull?.displayName?.trim() ?? 'Alex';
     final firstName = greetingName.split(RegExp(r'\s+')).first.trim();
     final greetingDisplayName = firstName.isNotEmpty ? firstName : 'Alex';
+    final avatarUrl = profileAsync.valueOrNull?.avatarUrl;
     return Scaffold(
       //วางโครงพื้นฐานของหน้า
       backgroundColor: AppColors.background,
@@ -109,13 +114,19 @@ class HomePage extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: Row(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 22,
                     backgroundColor: Colors.white,
                     child: CircleAvatar(
                       radius: 19,
                       backgroundColor: AppColors.background,
-                      child: Icon(Icons.person, color: AppColors.textPrimary),
+                      backgroundImage:
+                          avatarUrl != null && avatarUrl!.isNotEmpty
+                          ? NetworkImage(avatarUrl!)
+                          : null,
+                      child: avatarUrl == null || avatarUrl!.isEmpty
+                          ? Icon(Icons.person, color: AppColors.textPrimary)
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 12),

@@ -11,18 +11,19 @@ import 'app_navbar.dart';
 class NavbarShell extends ConsumerWidget {
   const NavbarShell({super.key});
 
-  static const List<Widget> _pages = [
-    HomePage(),
-    SubjectsPage(withNavBar: false),
-    AssignmentsPage(withNavBar: false),
-    SettingsPage(withNavBar: false),
-  ];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentNavIndexProvider);
     return Scaffold(
-      body: IndexedStack(index: currentIndex, children: _pages),
+      body: IndexedStack(
+        index: currentIndex,
+        children: const [
+          HomePage(),
+          SubjectsPage(withNavBar: false),
+          AssignmentsPage(withNavBar: false),
+          SettingsPage(withNavBar: false),
+        ],
+      ),
       bottomNavigationBar: AppNavBar(
         currentIndex: currentIndex,
         onTap: (index) =>

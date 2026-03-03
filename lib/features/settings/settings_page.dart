@@ -11,7 +11,7 @@ import 'widgets/account_section_card.dart';
 import 'widgets/app_preferences_card.dart';
 
 import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
-
+import 'package:my_first_app/features/settings/presentation/providers/settings_providers.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key, this.withNavBar = true});
@@ -43,17 +43,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
-    //เพิ่มการอ่าน session
     final authSession = ref.watch(authSessionProvider);
-    final user = authSession.valueOrNull;
-
-    final trimmedDisplayName = user?.displayName?.trim();
-    final displayName = (trimmedDisplayName?.isNotEmpty ?? false)
-        ? trimmedDisplayName!
-        : 'Unknown User';
-
-    final trimmedEmail = user?.email.trim();
+    final profileAsync = ref.watch(profileProvider);
+    final trimmedEmail = authSession.valueOrNull?.email.trim();
     final email = (trimmedEmail?.isNotEmpty ?? false) ? trimmedEmail! : '-';
+    final profileDisplayName = profileAsync.valueOrNull?.displayName?.trim();
+    final finalDisplayName = (profileDisplayName?.isNotEmpty ?? false)
+        ? profileDisplayName!
+        : 'Unknown User';
+    final avatarUrl = profileAsync.valueOrNull?.avatarUrl;
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -73,13 +71,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     _buildSectionTitle('ACCOUNT'),
                     const SizedBox(height: 12),
                     SettingsAccountCard(
-                      name: displayName,
+                      name: finalDisplayName,
                       email: email,
+                      avatarUrl: avatarUrl,
                       onTapProfile: () {},
                       onEditProfile: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const EditProfilePage(withNavBar: false,),
+                            builder: (_) =>
+                                const EditProfilePage(withNavBar: false),
                           ),
                         );
                       },
