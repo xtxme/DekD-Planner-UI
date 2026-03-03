@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'package:my_first_app/shared/widgets/navbar/navbar_shell.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'forgot_page.dart';
 import 'register_page.dart';
@@ -55,14 +56,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         MaterialPageRoute(builder: (_) => const NavbarShell()),
         (route) => false,
       );
-    } catch (_) {
+    } on AuthException catch (error) {
       if (!mounted) {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login failed. Please check your credentials.'),
-        ),
+        SnackBar(content: Text(error.message)),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login failed: $error')),
       );
     } finally {
       if (mounted) {
