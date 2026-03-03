@@ -11,6 +11,9 @@ import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../add_subjects/add_subjects.dart';
 import '../subjects_detail/subjects_detail.dart';
 import 'widgets/header.dart';
+import 'widgets/subjects_tab_switch.dart';
+
+enum SubjectsTab { mySubjects, canvasCourses }
 
 class SubjectsPage extends ConsumerStatefulWidget {
   const SubjectsPage({super.key, this.withNavBar = true});
@@ -23,6 +26,7 @@ class SubjectsPage extends ConsumerStatefulWidget {
 
 class _SubjectsPageState extends ConsumerState<SubjectsPage> {
   String _query = '';
+  SubjectsTab _activeTab = SubjectsTab.mySubjects;
   final Set<int> _importingCourseIds = <int>{};
   final Set<int> _dismissedCourseIds = <int>{};
 
@@ -54,57 +58,37 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
                 children: [
                   SingleChildScrollView(
                     physics: _scrollPhysics(context),
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 144),
+                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 144),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        subjectsAsync.when(
-                          data: _buildSubjectsSection,
-                          loading: () => const _SectionLoadingCard(
-                            message: 'Loading your subjects...',
-                          ),
-                          error: (error, _) => _MessageCard(
-                            title: 'Could not load subjects',
-                            message: '$error',
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        _buildCanvasSectionHeader(),
-                        const SizedBox(height: 14),
-                        canvasCoursesAsync.when(
-                          data: (courses) => _buildCanvasCoursesSection(
-                            courses: courses,
-                            importedNames: importedNames,
-                          ),
-                          loading: () => const _SectionLoadingCard(
-                            message: 'Syncing Canvas courses...',
-                          ),
-                          error: (error, _) => _MessageCard(
-                            title: 'Canvas sync failed',
-                            message: '$error',
-                            actionLabel: 'Retry',
-                            onAction: _syncCanvasCourses,
-                          ),
+                        _buildTabToggle(),
+                        const SizedBox(height: 22),
+                        _buildActiveTabContent(
+                          subjectsAsync: subjectsAsync,
+                          canvasCoursesAsync: canvasCoursesAsync,
+                          importedNames: importedNames,
                         ),
                       ],
                     ),
                   ),
-                  AddButton(
-                    right: 24,
-                    bottom: widget.withNavBar ? 28 : 20,
-                    size: 60,
-                    iconSize: 32,
-                    shadowBlur: 18,
-                    shadowOffset: const Offset(0, 8),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              const AddSubjectsPage(withNavBar: false),
-                        ),
-                      );
-                    },
-                  ),
+                  if (_activeTab == SubjectsTab.mySubjects)
+                    AddButton(
+                      right: 24,
+                      bottom: widget.withNavBar ? 28 : 20,
+                      size: 60,
+                      iconSize: 32,
+                      shadowBlur: 18,
+                      shadowOffset: const Offset(0, 8),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const AddSubjectsPage(withNavBar: false),
+                          ),
+                        );
+                      },
+                    ),
                 ],
               ),
             ),
@@ -122,101 +106,175 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
     );
   }
 
-  Widget _buildSubjectsSection(List<SubjectRow> subjects) {
+  Widget _buildTabToggle() {
+    return SubjectsTabSwitch(
+      selectedIndex: _activeTab == SubjectsTab.mySubjects ? 0 : 1,
+      onSelected: (index) {
+        setState(() {
+          _activeTab = index == 0
+              ? SubjectsTab.mySubjects
+              : SubjectsTab.canvasCourses;
+        });
+      },
+    );
+  }
+
+  Widget _buildActiveTabContent({
+    required AsyncValue<List<SubjectRow>> subjectsAsync,
+    required AsyncValue<List<CanvasCourse>> canvasCoursesAsync,
+    required Set<String> importedNames,
+  }) {
+    switch (_activeTab) {
+      case SubjectsTab.mySubjects:
+        return subjectsAsync.when(
+          data: _buildMySubjectsTab,
+          loading: () =>
+              const _SectionLoadingCard(message: 'Loading your subjects...'),
+          error: (error, _) =>
+              _MessageCard(title: 'Could not load subjects', message: '$error'),
+        );
+      case SubjectsTab.canvasCourses:
+        return canvasCoursesAsync.when(
+          data: (courses) => _buildCanvasCoursesTab(
+            courses: courses,
+            importedNames: importedNames,
+          ),
+          loading: () => _buildCanvasTabShell(
+            child: const _SectionLoadingCard(
+              message: 'Syncing Canvas courses...',
+            ),
+          ),
+          error: (error, _) => _buildCanvasTabShell(
+            child: _MessageCard(
+              title: 'Canvas sync failed',
+              message: '$error',
+              actionLabel: 'Retry',
+              onAction: _syncCanvasCourses,
+            ),
+          ),
+        );
+    }
+  }
+
+  Widget _buildMySubjectsTab(List<SubjectRow> subjects) {
     final filteredSubjects = _filterSubjects(subjects);
-    final title = _normalizedQuery.isEmpty
-        ? 'MY SUBJECTS'
-        : 'MATCHING SUBJECTS';
-
-    if (subjects.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader(title: title, count: 0),
-          const SizedBox(height: 14),
-          const _MessageCard(
-            title: 'No subjects yet',
-            message:
-                'Create one manually or pull in a course from Canvas below to start your collection.',
-          ),
-        ],
-      );
-    }
-
-    if (filteredSubjects.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader(title: title, count: 0),
-          const SizedBox(height: 14),
-          const _MessageCard(
-            title: 'No subjects match your search',
-            message:
-                'Try a different subject name or course code to narrow the list.',
-          ),
-        ],
-      );
-    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(title: title, count: filteredSubjects.length),
-        const SizedBox(height: 14),
-        SizedBox(
-          height: 186,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            physics: _scrollPhysics(context),
-            itemCount: filteredSubjects.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 14),
-            itemBuilder: (context, index) {
-              final subject = filteredSubjects[index];
-              return _SubjectHighlightCard(
-                subject: subject,
-                subtitle: _subjectSubtitle(subject),
-                icon: _subjectIcon(subject),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const SubjectsDetailPage(withNavBar: false),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+        _buildSectionHeader(
+          title: 'MY SUBJECTS',
+          count: filteredSubjects.length,
         ),
+        const SizedBox(height: 14),
+        if (subjects.isEmpty)
+          const _MessageCard(
+            title: 'No subjects yet',
+            message:
+                'Create one manually or pull in a course from Canvas to start your collection.',
+          )
+        else if (filteredSubjects.isEmpty)
+          const _MessageCard(
+            title: 'No subjects match your search',
+            message:
+                'Try a different subject name or course code to narrow the list.',
+          )
+        else
+          Column(
+            children: filteredSubjects
+                .map(
+                  (subject) => Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: _SubjectListCard(
+                      subject: subject,
+                      subtitle: _subjectSubtitle(subject),
+                      icon: _subjectIcon(subject),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const SubjectsDetailPage(withNavBar: false),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
       ],
     );
   }
 
-  Widget _buildCanvasSectionHeader() {
+  Widget _buildCanvasCoursesTab({
+    required List<CanvasCourse> courses,
+    required Set<String> importedNames,
+  }) {
+    final searchedCourses = _filterCourses(courses);
+    final visibleCourses = searchedCourses
+        .where((course) => !_dismissedCourseIds.contains(course.id))
+        .toList();
+
+    Widget child;
+    if (courses.isEmpty) {
+      child = const _MessageCard(
+        title: 'No Canvas courses found',
+        message: 'Try syncing again or check your Canvas connection settings.',
+      );
+    } else if (searchedCourses.isEmpty) {
+      child = const _MessageCard(
+        title: 'No Canvas courses to show',
+        message:
+            'Nothing matches the current search. Try another keyword or course code.',
+      );
+    } else if (visibleCourses.isEmpty) {
+      child = const _MessageCard(
+        title: 'Canvas list cleared for now',
+        message:
+            'You hid every visible Canvas course. Tap Sync Canvas to show dismissed courses again.',
+      );
+    } else {
+      child = Column(
+        children: visibleCourses
+            .map(
+              (course) => Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: _CanvasCourseCard(
+                  course: course,
+                  isImported: importedNames.contains(
+                    course.name.trim().toLowerCase(),
+                  ),
+                  isImporting: _importingCourseIds.contains(course.id),
+                  onImport: () => _handleImportCourse(course),
+                  onDismiss: () => _dismissCanvasCourse(course),
+                ),
+              ),
+            )
+            .toList(),
+      );
+    }
+
+    return _buildCanvasTabShell(count: visibleCourses.length, child: child);
+  }
+
+  Widget _buildCanvasTabShell({int? count, required Widget child}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Expanded(child: _buildSectionHeader(title: 'CANVAS COURSES')),
-            TextButton.icon(
-              onPressed: _syncCanvasCourses,
-              icon: const Icon(Icons.sync_rounded, size: 18),
-              label: const Text('Sync Canvas'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.cFF7A5A4A,
-                backgroundColor: AppColors.cFFFFFAF5,
-                textStyle: const TextStyle(fontWeight: FontWeight.w800),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
-                  side: const BorderSide(color: AppColors.cFFE6DBD2),
+            const Expanded(
+              child: Text(
+                'CANVAS COURSES',
+                style: TextStyle(
+                  letterSpacing: 1.3,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.cFF9A7E70,
                 ),
               ),
             ),
+            if (count != null) _CountPill(count: count),
           ],
         ),
         const SizedBox(height: 6),
@@ -228,59 +286,28 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
             color: AppColors.cFFA48C7E,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildCanvasCoursesSection({
-    required List<CanvasCourse> courses,
-    required Set<String> importedNames,
-  }) {
-    final searchedCourses = _filterCourses(courses);
-    final visibleCourses = searchedCourses
-        .where((course) => !_dismissedCourseIds.contains(course.id))
-        .toList();
-
-    if (courses.isEmpty) {
-      return const _MessageCard(
-        title: 'No Canvas courses found',
-        message: 'Try syncing again or check your Canvas connection settings.',
-      );
-    }
-
-    if (searchedCourses.isEmpty) {
-      return const _MessageCard(
-        title: 'No Canvas courses to show',
-        message:
-            'Nothing matches the current search. Try another keyword or course code.',
-      );
-    }
-
-    if (visibleCourses.isEmpty) {
-      return const _MessageCard(
-        title: 'Canvas list cleared for now',
-        message:
-            'You hid every visible Canvas course. Tap Sync Canvas to show dismissed courses again.',
-      );
-    }
-
-    return Column(
-      children: visibleCourses
-          .map(
-            (course) => Padding(
-              padding: const EdgeInsets.only(bottom: 14),
-              child: _CanvasCourseCard(
-                course: course,
-                isImported: importedNames.contains(
-                  course.name.trim().toLowerCase(),
-                ),
-                isImporting: _importingCourseIds.contains(course.id),
-                onImport: () => _handleImportCourse(course),
-                onDismiss: () => _dismissCanvasCourse(course),
+        const SizedBox(height: 14),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: _syncCanvasCourses,
+            icon: const Icon(Icons.sync_rounded, size: 18),
+            label: const Text('Sync Canvas'),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.cFF7A5A4A,
+              backgroundColor: AppColors.cFFFFFAF5,
+              textStyle: const TextStyle(fontWeight: FontWeight.w800),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(999),
+                side: const BorderSide(color: AppColors.cFFE6DBD2),
               ),
             ),
-          )
-          .toList(),
+          ),
+        ),
+        const SizedBox(height: 16),
+        child,
+      ],
     );
   }
 
@@ -377,9 +404,9 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'You can remove this course from the current Canvas list for now. It will come back the next time you sync Canvas.',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   height: 1.45,
                   color: AppColors.cFFA48C7E,
@@ -433,7 +460,7 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text(
                         'Hidden for now. Sync Canvas anytime to bring it back.',
                       ),
@@ -570,25 +597,24 @@ class _CanvasCourseCard extends StatelessWidget {
     final subtitle = code.isNotEmpty ? code : 'Canvas course';
     final canDismiss = !isImporting;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final stackedActions = constraints.maxWidth >= 360;
-
-        return Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: AppColors.cFFFFFCF8,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.cFFE6DBD2),
-            boxShadow: const [
-              BoxShadow(
-                color: AppColors.c1A000000,
-                blurRadius: 22,
-                offset: Offset(0, 12),
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.cFFFFFCF8,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.cFFE6DBD2),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.c1A000000,
+            blurRadius: 22,
+            offset: Offset(0, 12),
           ),
-          child: Row(
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
@@ -635,46 +661,29 @@ class _CanvasCourseCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 14),
-              if (stackedActions)
-                SizedBox(
-                  width: 96,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      _ImportButton(
-                        isImported: isImported,
-                        isImporting: isImporting,
-                        onPressed: onImport,
-                      ),
-                      const SizedBox(height: 12),
-                      _DismissButton(enabled: canDismiss, onPressed: onDismiss),
-                    ],
-                  ),
-                )
-              else
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _ImportButton(
-                      isImported: isImported,
-                      isImporting: isImporting,
-                      onPressed: onImport,
-                    ),
-                    const SizedBox(height: 18),
-                    _DismissButton(enabled: canDismiss, onPressed: onDismiss),
-                  ],
-                ),
             ],
           ),
-        );
-      },
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              _ImportButton(
+                isImported: isImported,
+                isImporting: isImporting,
+                onPressed: onImport,
+              ),
+              const SizedBox(width: 12),
+              _DismissButton(enabled: canDismiss, onPressed: onDismiss),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _SubjectHighlightCard extends StatelessWidget {
-  const _SubjectHighlightCard({
+class _SubjectListCard extends StatelessWidget {
+  const _SubjectListCard({
     required this.subject,
     required this.subtitle,
     required this.icon,
@@ -689,103 +698,107 @@ class _SubjectHighlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subjectColor = Color(subject.colorValue);
+    final cardColor = Color.alphaBlend(
+      AppColors.cFFFFFCF8.withValues(alpha: 0.92),
+      subjectColor.withValues(alpha: 0.18),
+    );
+    final badgeColor = Color.alphaBlend(
+      AppColors.cFFFFFAF5,
+      subjectColor.withValues(alpha: 0.12),
+    );
 
-    return SizedBox(
-      width: 262,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(28),
-          onTap: onTap,
-          child: Ink(
-            decoration: BoxDecoration(
-              color: Color.alphaBlend(
-                AppColors.cFFFFFCF8.withValues(alpha: 0.86),
-                subjectColor,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(28),
+        onTap: onTap,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: subjectColor.withValues(alpha: 0.24)),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.c1A000000,
+                blurRadius: 12,
+                offset: Offset(0, 5),
               ),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: subjectColor.withValues(alpha: 0.26)),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.c1A000000,
-                  blurRadius: 22,
-                  offset: Offset(0, 12),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Row(
+              children: [
+                Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: AppColors.cFFFFFCF8.withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Icon(icon, color: AppColors.cFF7A5A4A, size: 28),
                 ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 7,
+                      Text(
+                        subject.name,
+                        softWrap: true,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          height: 1.16,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.cFF7A5A4A,
+                        ),
+                      ),
+                      if (subtitle.trim().isNotEmpty) ...[
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 7,
+                          ),
+                          decoration: BoxDecoration(
+                            color: badgeColor,
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: subjectColor.withValues(alpha: 0.18),
                             ),
-                            decoration: BoxDecoration(
-                              color: AppColors.cFFFFFAF5.withValues(
-                                alpha: 0.78,
-                              ),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: const Text(
-                              'LOCAL SUBJECT',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 11,
-                                letterSpacing: 1.1,
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.cFF9A8476,
-                              ),
+                          ),
+                          child: Text(
+                            subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              height: 1,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2,
+                              color: AppColors.cFF9A8476,
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppColors.cFFFFFCF8.withValues(alpha: 0.84),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Icon(icon, color: AppColors.cFF7A5A4A, size: 24),
-                      ),
+                      ],
                     ],
                   ),
-                  const Spacer(),
-                  Text(
-                    subject.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      height: 1.08,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.cFF7A5A4A,
-                    ),
+                ),
+                const SizedBox(width: 10),
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: AppColors.cFFFFFAF5.withValues(alpha: 0.78),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    subtitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      height: 1.35,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.cFF9A8476,
-                    ),
+                  child: const Icon(
+                    Icons.arrow_forward_rounded,
+                    color: AppColors.cFF9A8476,
+                    size: 20,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
