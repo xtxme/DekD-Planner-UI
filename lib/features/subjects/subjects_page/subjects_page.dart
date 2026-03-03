@@ -706,6 +706,7 @@ class _SubjectListCard extends StatelessWidget {
       AppColors.cFFFFFAF5,
       subjectColor.withValues(alpha: 0.12),
     );
+    final badgeParts = _subjectBadgeParts(subtitle);
 
     return Material(
       color: Colors.transparent,
@@ -755,30 +756,24 @@ class _SubjectListCard extends StatelessWidget {
                       ),
                       if (subtitle.trim().isNotEmpty) ...[
                         const SizedBox(height: 10),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: badgeColor,
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(
-                              color: subjectColor.withValues(alpha: 0.18),
-                            ),
-                          ),
-                          child: Text(
-                            subtitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              height: 1,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.2,
-                              color: AppColors.cFF9A8476,
-                            ),
-                          ),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (var index = 0; index < badgeParts.length; index++)
+                              _SubjectMetaBadge(
+                                label: badgeParts[index],
+                                backgroundColor: index == 0
+                                    ? badgeColor
+                                    : AppColors.cFFFFFCF8,
+                                borderColor: subjectColor.withValues(
+                                  alpha: index == 0 ? 0.18 : 0.12,
+                                ),
+                                textColor: index == 0
+                                    ? AppColors.cFF8B6758
+                                    : AppColors.cFFA48C7E,
+                              ),
+                          ],
                         ),
                       ],
                     ],
@@ -801,6 +796,65 @@ class _SubjectListCard extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  List<String> _subjectBadgeParts(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      return const <String>[];
+    }
+
+    final pattern = RegExp(r'^([A-Za-z0-9]+)\s*[-–]\s*([A-Za-z0-9.]+)$');
+    final match = pattern.firstMatch(trimmed);
+    if (match == null) {
+      return <String>[trimmed];
+    }
+
+    final leading = match.group(1)?.trim() ?? '';
+    final trailing = match.group(2)?.trim() ?? '';
+    if (leading.isEmpty || trailing.isEmpty) {
+      return <String>[trimmed];
+    }
+
+    return <String>[leading, trailing];
+  }
+}
+
+class _SubjectMetaBadge extends StatelessWidget {
+  const _SubjectMetaBadge({
+    required this.label,
+    required this.backgroundColor,
+    required this.borderColor,
+    required this.textColor,
+  });
+
+  final String label;
+  final Color backgroundColor;
+  final Color borderColor;
+  final Color textColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: borderColor),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          fontSize: 12,
+          height: 1,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
+          color: textColor,
         ),
       ),
     );

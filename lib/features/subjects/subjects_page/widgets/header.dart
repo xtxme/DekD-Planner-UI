@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
-class SubjectsHeader extends StatelessWidget {
+class SubjectsHeader extends StatefulWidget {
   const SubjectsHeader({
     super.key,
     required this.onQueryChanged,
@@ -11,6 +11,36 @@ class SubjectsHeader extends StatelessWidget {
 
   final ValueChanged<String> onQueryChanged;
   final String subtitle;
+
+  @override
+  State<SubjectsHeader> createState() => _SubjectsHeaderState();
+}
+
+class _SubjectsHeaderState extends State<SubjectsHeader> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController()..addListener(_handleTextChanged);
+  }
+
+  @override
+  void dispose() {
+    _controller
+      ..removeListener(_handleTextChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handleTextChanged() {
+    setState(() {});
+  }
+
+  void _clearQuery() {
+    _controller.clear();
+    widget.onQueryChanged('');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +65,7 @@ class SubjectsHeader extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              subtitle,
+              widget.subtitle,
               style: const TextStyle(
                 fontSize: 15,
                 height: 1.45,
@@ -59,13 +89,14 @@ class SubjectsHeader extends StatelessWidget {
               child: SizedBox(
                 height: 56,
                 child: TextField(
+                  controller: _controller,
                   keyboardType: TextInputType.text,
                   textInputAction: TextInputAction.search,
                   textCapitalization: TextCapitalization.none,
                   enableSuggestions: true,
                   autocorrect: true,
                   textAlignVertical: TextAlignVertical.center,
-                  onChanged: onQueryChanged,
+                  onChanged: widget.onQueryChanged,
                   decoration: InputDecoration(
                     isDense: true,
                     filled: true,
@@ -79,6 +110,16 @@ class SubjectsHeader extends StatelessWidget {
                       minWidth: 56,
                       minHeight: 56,
                     ),
+                    suffixIcon: _controller.text.isEmpty
+                        ? null
+                        : IconButton(
+                            onPressed: _clearQuery,
+                            icon: const Icon(
+                              Icons.close_rounded,
+                              color: AppColors.cFFA9998B,
+                            ),
+                            splashRadius: 18,
+                          ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20),
                       borderSide: const BorderSide(color: AppColors.cFFE3DBD2),
@@ -94,7 +135,7 @@ class SubjectsHeader extends StatelessWidget {
                         width: 1.6,
                       ),
                     ),
-                    hintText: 'Search subjects, codes, or Canvas courses',
+                    hintText: 'search subjects, codes',
                     hintStyle: const TextStyle(
                       color: AppColors.cFFB8A99A,
                       fontWeight: FontWeight.w500,

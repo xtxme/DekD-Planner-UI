@@ -9,3 +9,9 @@ entrypoint = "./functions/canvas-proxy/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/canvas-proxy/*.html" ]
+
+[functions.canvas-assignments-proxy]
+enabled = true
+verify_jwt = true
+import_map = "./functions/canvas-assignments-proxy/deno.json"
+entrypoint = "./functions/canvas-assignments-proxy/index.ts"

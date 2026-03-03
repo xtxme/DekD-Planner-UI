@@ -3,64 +3,80 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
+import 'package:my_first_app/features/home/data/remote/canvas_assignment_remote_data_source.dart';
 import 'package:my_first_app/features/settings/presentation/providers/settings_providers.dart';
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
-import 'models/task_item.dart';
+import 'package:my_first_app/features/home/presentation/home_assignment_ui_mapper.dart';
+import 'package:my_first_app/features/home/presentation/providers/home_tasks_provider.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
-  static const List<TaskItem> _todayTasks = [
-    TaskItem(
-      subject: 'MATH',
-      title: 'Algebra Worksheet 4.2',
-      subtitle: 'Chapter 4: Polynomials ',
-      tagBg: AppColors.cFFE7F0FF,
-      tagColor: AppColors.cFF2E7CF6,
-      dueText: 'Due 16:00 PM',
-      dueBg: AppColors.cFFFFE7E7,
-      dueColor: AppColors.cFFE05A5A,
-      showDuePill: true,
-      showShadow: true,
-    ),
-    TaskItem(
-      subject: 'HISTORY',
-      title: 'Algebra Worksheet 4.2',
-      subtitle: 'Chapter 4: Polynomials ',
-      tagBg: AppColors.cFFFBF7F1,
-      tagColor: AppColors.cFFE0B66B,
-      dueText: 'Due 11:59 PM',
-      dueColor: AppColors.cFFA48C7E,
-      showDuePill: false,
-      showShadow: true,
-    ),
-  ];
+  @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
 
-  static const List<TaskItem> _tomorrowTasks = [
-    TaskItem(
-      subject: 'CHEMISTRY',
-      title: 'Algebra Worksheet 4.2',
-      subtitle: 'Chapter 4: Polynomials',
-      tagBg: AppColors.c335FAF97,
-      tagColor: AppColors.cFF5FAF97,
-      dueText: 'Due 11:59 PM',
-      dueColor: AppColors.cFFA48C7E,
-      showDuePill: false,
-    ),
-    TaskItem(
-      subject: 'CHEMISTRY',
-      title: 'Lab Report Draft',
-      subtitle: 'Experiment 12: Titration',
-      tagBg: AppColors.c335FAF97,
-      tagColor: AppColors.cFF5FAF97,
-      dueText: 'Due 11:59 PM',
-      dueColor: AppColors.cFFA48C7E,
-      showDuePill: false,
-    ),
-  ];
+class _HomePageState extends ConsumerState<HomePage> {
+  ProviderSubscription<AsyncValue<HomeAssignmentSections>>?
+  _assignmentsSubscription;
+  bool _isRedirectingToLogin = false;
 
-  List<Widget> _buildTaskCards(List<TaskItem> items) {
+  @override
+  void initState() {
+    super.initState();
+    _assignmentsSubscription = ref
+        .listenManual<AsyncValue<HomeAssignmentSections>>(
+          homeCanvasAssignmentSectionsProvider,
+          (previous, next) {
+            next.whenOrNull(
+              error: (error, _) {
+                if (error is CanvasSessionExpiredException) {
+                  _handleExpiredSession();
+                }
+              },
+            );
+          },
+        );
+  }
+
+  @override
+  void dispose() {
+    _assignmentsSubscription?.close();
+    super.dispose();
+  }
+
+  Future<void> _handleExpiredSession() async {
+    if (_isRedirectingToLogin) {
+      return;
+    }
+    _isRedirectingToLogin = true;
+
+    try {
+      await ref.read(authRemoteServiceProvider).signOut();
+    } catch (_) {
+      // The session may already be invalid; local cleanup still needs to happen.
+    }
+
+    await ref.read(authLocalCacheDaoProvider).clearSession();
+    ref.invalidate(authSessionProvider);
+    ref.invalidate(profileProvider);
+    ref.invalidate(homeCanvasAssignmentsProvider);
+    ref.invalidate(homeCanvasAssignmentSectionsProvider);
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Your session expired. Please sign in again.'),
+      ),
+    );
+    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+  }
+
+  List<Widget> _buildTaskCards(List<HomeAssignmentCardData> items) {
     final widgets = <Widget>[];
     for (var i = 0; i < items.length; i++) {
       final item = items[i];
@@ -85,15 +101,119 @@ class HomePage extends ConsumerWidget {
     return widgets;
   }
 
+  Widget _buildSectionHeader({
+    required String title,
+    required int count,
+    required Color accentColor,
+  }) {
+    return Row(
+      children: [
+        Container(
+          width: 6,
+          height: 28,
+          decoration: BoxDecoration(
+            color: accentColor,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+            color: AppColors.textTitleStrong,
+          ),
+        ),
+        const Spacer(),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: AppColors.headerSurface,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            '$count Tasks',
+            style: const TextStyle(
+              fontSize: 15,
+              color: AppColors.textTitleStrong,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyAssignmentsState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.cFFF0E6DE),
+      ),
+      child: const Text(
+        'No assignments due today or tomorrow.',
+        style: TextStyle(
+          fontSize: 15,
+          color: AppColors.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingAssignmentsState() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 24),
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildErrorAssignmentsState({
+    required String message,
+    required VoidCallback onRetry,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.cFFF0E6DE),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Canvas sync failed',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textTitleStrong,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 12),
+          TextButton(onPressed: onRetry, child: const Text('Try again')),
+        ],
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final now = DateTime.now();
     final dateText = DateFormat('EEEE, MMM d').format(now).toUpperCase();
     final authSession = ref.watch(authSessionProvider);
     final profileAsync = ref.watch(profileProvider);
-    final trimmedEmail = authSession.valueOrNull?.email.trim();
-    final email = (trimmedEmail?.isNotEmpty ?? false) ? trimmedEmail! : '-';
     final profileDisplayName = profileAsync.valueOrNull?.displayName?.trim();
     final greetingName = (profileDisplayName?.isNotEmpty ?? false)
         ? profileDisplayName!
@@ -101,6 +221,21 @@ class HomePage extends ConsumerWidget {
     final firstName = greetingName.split(RegExp(r'\s+')).first.trim();
     final greetingDisplayName = firstName.isNotEmpty ? firstName : 'Alex';
     final avatarUrl = profileAsync.valueOrNull?.avatarUrl;
+    final assignmentsAsync = ref.watch(homeCanvasAssignmentSectionsProvider);
+
+    const uiMapper = HomeAssignmentUiMapper();
+    final summaryText = assignmentsAsync.when(
+      data: (sections) {
+        final total = sections.today.length + sections.tomorrow.length;
+        if (total == 0) {
+          return 'No assignments due today or tomorrow.';
+        }
+        return 'You have $total assignments due today or tomorrow.';
+      },
+      loading: () => 'Loading assignments...',
+      error: (error, _) => '$error',
+    );
+
     return Scaffold(
       //วางโครงพื้นฐานของหน้า
       backgroundColor: AppColors.background,
@@ -120,11 +255,10 @@ class HomePage extends ConsumerWidget {
                     child: CircleAvatar(
                       radius: 19,
                       backgroundColor: AppColors.background,
-                      backgroundImage:
-                          avatarUrl != null && avatarUrl!.isNotEmpty
-                          ? NetworkImage(avatarUrl!)
+                      backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
+                          ? NetworkImage(avatarUrl)
                           : null,
-                      child: avatarUrl == null || avatarUrl!.isEmpty
+                      child: avatarUrl == null || avatarUrl.isEmpty
                           ? Icon(Icons.person, color: AppColors.textPrimary)
                           : null,
                     ),
@@ -204,7 +338,7 @@ class HomePage extends ConsumerWidget {
                     ),
                     SizedBox(height: 6),
                     Text(
-                      "You have 5 assignments pending this week.",
+                      summaryText,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -284,74 +418,66 @@ class HomePage extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    //หัวข้อ “Today” + badge จำนวนงาน
                     const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Container(
-                          width: 6,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: AppColors.accentSoft,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Today',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.textTitleStrong,
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.headerSurface,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            '3 Tasks',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: AppColors.textTitleStrong,
-                              fontWeight: FontWeight.w800,
+                    ...assignmentsAsync.when(
+                      data: (sections) {
+                        final todayCards = sections.today
+                            .map(
+                              (assignment) => uiMapper.mapAssignment(
+                                assignment,
+                                isDueToday: true,
+                              ),
+                            )
+                            .toList();
+
+                        final tomorrowCards = sections.tomorrow
+                            .map(
+                              (assignment) => uiMapper.mapAssignment(
+                                assignment,
+                                isDueToday: false,
+                              ),
+                            )
+                            .toList();
+
+                        if (todayCards.isEmpty && tomorrowCards.isEmpty) {
+                          return [_buildEmptyAssignmentsState()];
+                        }
+
+                        return [
+                          if (todayCards.isNotEmpty) ...[
+                            _buildSectionHeader(
+                              title: 'Today',
+                              count: todayCards.length,
+                              accentColor: AppColors.accentSoft,
                             ),
-                          ),
+                            const SizedBox(height: 12),
+                            ..._buildTaskCards(todayCards),
+                            const SizedBox(height: 24),
+                          ],
+                          if (tomorrowCards.isNotEmpty) ...[
+                            _buildSectionHeader(
+                              title: 'Tomorrow',
+                              count: tomorrowCards.length,
+                              accentColor: AppColors.border,
+                            ),
+                            const SizedBox(height: 12),
+                            ..._buildTaskCards(tomorrowCards),
+                          ],
+                        ];
+                      },
+                      loading: () => [_buildLoadingAssignmentsState()],
+                      error: (error, _) => [
+                        _buildErrorAssignmentsState(
+                          message: '$error',
+                          onRetry: () {
+                            ref.invalidate(homeCanvasAssignmentsProvider);
+                            ref.invalidate(
+                              homeCanvasAssignmentSectionsProvider,
+                            );
+                          },
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    ..._buildTaskCards(_todayTasks),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Container(
-                          width: 6,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: AppColors.border,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Tomorrow',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.textTitleStrong,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    ..._buildTaskCards(_tomorrowTasks),
                   ],
                 ),
               ),
