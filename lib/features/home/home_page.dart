@@ -21,53 +21,100 @@ class _HomePageState extends ConsumerState<HomePage> {
   ProviderSubscription<AsyncValue<HomeAssignmentSections>>?
   _assignmentsSubscription;
   bool _isRedirectingToLogin = false;
+  bool _hasLoggedAuthError = false;
+  bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    debugPrint(
+      'HOME_DEBUG: ==================================================',
+    );
+    debugPrint('HOME_DEBUG: initState() called');
+    debugPrint(
+      'HOME_DEBUG: ==================================================',
+    );
+
     _assignmentsSubscription = ref
         .listenManual<AsyncValue<HomeAssignmentSections>>(
           homeCanvasAssignmentSectionsProvider,
           (previous, next) {
-            next.whenOrNull(
+            debugPrint('HOME_DEBUG: Assignment provider changed');
+            debugPrint('HOME_DEBUG: Previous: ${previous?.valueOrNull}');
+            debugPrint('HOME_DEBUG: Next: ${next?.valueOrNull}');
+
+            next?.whenOrNull(
               error: (error, _) {
+                debugPrint('HOME_DEBUG: Error in assignments: $error');
+                debugPrint('HOME_DEBUG: Error type: ${error.runtimeType}');
                 if (error is CanvasSessionExpiredException) {
+                  debugPrint(
+                    'HOME_DEBUG: ❌ CanvasSessionExpiredException caught!',
+                  );
                   _handleExpiredSession();
                 }
               },
             );
           },
         );
+
+    _hasInitialized = true;
   }
 
   @override
   void dispose() {
+    debugPrint('HOME_DEBUG: dispose() called');
     _assignmentsSubscription?.close();
     super.dispose();
   }
 
   Future<void> _handleExpiredSession() async {
+    debugPrint('HOME_DEBUG: _handleExpiredSession() called');
+    debugPrint('HOME_DEBUG: _isRedirectingToLogin = $_isRedirectingToLogin');
+
     if (_isRedirectingToLogin) {
+      debugPrint('HOME_DEBUG: Already redirecting, skipping');
       return;
     }
     _isRedirectingToLogin = true;
 
+    // ✅ Check mounted before using ref
+    if (!mounted) {
+      debugPrint('HOME_DEBUG: Widget not mounted, skipping cleanup');
+      return;
+    }
+
     try {
+      debugPrint('HOME_DEBUG: Signing out...');
       await ref.read(authRemoteServiceProvider).signOut();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('HOME_DEBUG: Sign out error: $e');
       // The session may already be invalid; local cleanup still needs to happen.
     }
 
+    // ✅ Check mounted again before using ref
+    if (!mounted) {
+      debugPrint(
+        'HOME_DEBUG: Widget not mounted after sign out, skipping cleanup',
+      );
+      return;
+    }
+
+    debugPrint('HOME_DEBUG: Clearing local session...');
     await ref.read(authLocalCacheDaoProvider).clearSession();
+
+    debugPrint('HOME_DEBUG: Invalidating auth session provider...');
     ref.invalidate(authSessionProvider);
     ref.invalidate(profileProvider);
     ref.invalidate(homeCanvasAssignmentsProvider);
     ref.invalidate(homeCanvasAssignmentSectionsProvider);
 
     if (!mounted) {
+      debugPrint('HOME_DEBUG: Widget not mounted, skipping navigation');
       return;
     }
 
+    debugPrint('HOME_DEBUG: Showing snack bar and navigating to login...');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Your session expired. Please sign in again.'),
@@ -209,12 +256,90 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('HOME_DEBUG: build() called');
+    debugPrint('HOME_DEBUG: _hasInitialized = $_hasInitialized');
+
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final now = DateTime.now();
     final dateText = DateFormat('EEEE, MMM d').format(now).toUpperCase();
     final authSession = ref.watch(authSessionProvider);
     final profileAsync = ref.watch(profileProvider);
     final profileDisplayName = profileAsync.valueOrNull?.displayName?.trim();
+
+    debugPrint('HOME_DEBUG: authSession.hasValue = ${authSession.hasValue}');
+    debugPrint('HOME_DEBUG: authSession.value = ${authSession.value}');
+    debugPrint('HOME_DEBUG: authSession.isLoading = ${authSession.isLoading}');
+
+    // ✅ ถ้า session ยัง loading ให้แสดง loading state
+    if (authSession.isLoading) {
+      debugPrint('HOME_DEBUG: Showing loading state (auth session is loading)');
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text(
+                  'Loading...',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // ✅ ถ้าไม่มี session แต่อยู่ใน home page → redirect ไป login
+    if (!authSession.hasValue || authSession.value == null) {
+      if (!_hasLoggedAuthError) {
+        debugPrint('HOME_DEBUG: ❌ No session found, redirecting to login');
+        _hasLoggedAuthError = true;
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        debugPrint('HOME_DEBUG: PostFrameCallback: redirecting to login');
+        if (mounted && !_isRedirectingToLogin) {
+          _isRedirectingToLogin = true;
+          debugPrint('HOME_DEBUG: Actually navigating to login page...');
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil('/login', (route) => false);
+        }
+      });
+
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                Text(
+                  'Redirecting to login...',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    debugPrint('HOME_DEBUG: ✅ Session exists, showing home page');
+    _hasLoggedAuthError = false;
+
     final greetingName = (profileDisplayName?.isNotEmpty ?? false)
         ? profileDisplayName!
         : authSession.valueOrNull?.displayName?.trim() ?? 'Alex';
@@ -222,6 +347,14 @@ class _HomePageState extends ConsumerState<HomePage> {
     final greetingDisplayName = firstName.isNotEmpty ? firstName : 'Alex';
     final avatarUrl = profileAsync.valueOrNull?.avatarUrl;
     final assignmentsAsync = ref.watch(homeCanvasAssignmentSectionsProvider);
+
+    debugPrint(
+      'HOME_DEBUG: assignmentsAsync state = ${assignmentsAsync.isLoading
+          ? "loading"
+          : assignmentsAsync.hasError
+          ? "error"
+          : "data"}',
+    );
 
     const uiMapper = HomeAssignmentUiMapper();
     final summaryText = assignmentsAsync.when(

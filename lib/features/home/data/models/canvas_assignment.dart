@@ -46,3 +46,51 @@ class CanvasAssignment {
     );
   }
 }
+
+/// Response จาก Edge Function ที่รวมข้อมูล user และ assignments
+class CanvasAssignmentsResponse {
+  const CanvasAssignmentsResponse({
+    required this.user,
+    required this.assignments,
+  });
+
+  final CanvasUserResponse user;
+  final List<CanvasAssignment> assignments;
+
+  factory CanvasAssignmentsResponse.fromMap(Map<String, dynamic> map) {
+    final rawUser = map['user'];
+    final user = rawUser is Map<String, dynamic>
+        ? CanvasUserResponse.fromMap(rawUser)
+        : const CanvasUserResponse(id: '', email: '');
+
+    final rawAssignments = map['assignments'];
+    final assignments = rawAssignments is List
+        ? rawAssignments
+              .whereType<Map>()
+              .map(
+                (item) =>
+                    CanvasAssignment.fromMap(Map<String, dynamic>.from(item)),
+              )
+              .toList()
+        : <CanvasAssignment>[];
+
+    return CanvasAssignmentsResponse(user: user, assignments: assignments);
+  }
+}
+
+class CanvasUserResponse {
+  const CanvasUserResponse({required this.id, required this.email});
+
+  final String id;
+  final String email;
+
+  factory CanvasUserResponse.fromMap(Map<String, dynamic> map) {
+    final rawId = map['id'];
+    final id = rawId is String ? rawId : '';
+
+    final rawEmail = map['email'];
+    final email = rawEmail is String ? rawEmail : '';
+
+    return CanvasUserResponse(id: id, email: email);
+  }
+}

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:my_first_app/features/auth/domain/models/auth_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
 
@@ -39,7 +41,14 @@ class SupabaseAuthService implements AuthRemoteService {
       email: email,
       password: password,
     );
-    return _mapUser(response.user);
+
+    final session = response.session;
+    if (session == null) {
+      throw const AuthException('Login completed without an active session.');
+    }
+
+    final userResponse = await _client.auth.getUser(session.accessToken);
+    return _mapUser(userResponse.user);
   }
 
   @override
@@ -62,7 +71,41 @@ class SupabaseAuthService implements AuthRemoteService {
   Future<void> signOut() => _client.auth.signOut();
 
   @override
-  Future<AuthUser?> currentUser() async => _mapUser(_client.auth.currentUser);
+  Future<AuthUser?> currentUser() async {
+    final session = _client.auth.currentSession;
+    if (session == null) {
+      _logCurrentUserCheck('AUTH_DEBUG', 'currentUser(): no current session');
+      return null;
+    }
+
+    final payload = _decodeJwtPayload(session.accessToken);
+    final sessionId = payload['session_id']?.toString() ?? '';
+    _logCurrentUserCheck(
+      'AUTH_DEBUG',
+      'currentUser(): validating remote user '
+          'userId=${session.user.id} sessionId=$sessionId expiresAt=${session.expiresAt}',
+    );
+
+    try {
+      final userResponse = await _client.auth.getUser(session.accessToken);
+      _logCurrentUserCheck(
+        'AUTH_DEBUG',
+        'currentUser(): getUser succeeded userId=${userResponse.user?.id}',
+      );
+      return _mapUser(userResponse.user);
+    } on AuthException catch (error) {
+      _logCurrentUserCheck(
+        'AUTH_DEBUG',
+        'currentUser(): getUser failed '
+            'message=${error.message} '
+            'userId=${session.user.id} '
+            'sessionId=$sessionId '
+            'expiresAt=${session.expiresAt}',
+      );
+      await _client.auth.signOut(scope: SignOutScope.local);
+      return null;
+    }
+  }
 
   @override
   Future<void> sendPasswordResetEmail({
@@ -88,5 +131,28 @@ class SupabaseAuthService implements AuthRemoteService {
       email: user.email ?? '',
       displayName: displayName,
     );
+  }
+
+  Map<String, dynamic> _decodeJwtPayload(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) {
+        return const {};
+      }
+
+      final normalized = base64Url.normalize(parts[1]);
+      final payload = utf8.decode(base64Url.decode(normalized));
+      final decoded = jsonDecode(payload);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+    } catch (_) {}
+
+    return const {};
+  }
+
+  void _logCurrentUserCheck(String tag, String message) {
+    // ignore: avoid_print
+    print('$tag: $message');
   }
 }

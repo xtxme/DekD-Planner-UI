@@ -19,10 +19,17 @@ final authSessionProvider = FutureProvider<AuthUser?>(
     final remote = ref.watch(authRemoteServiceProvider);
 
     final cached = await local.readSession();
-    if (cached != null) return cached;
-
     final user = await remote.currentUser();
-    if (user != null) {
+    if (user == null) {
+      if (cached != null) {
+        await local.clearSession();
+      }
+      return null;
+    }
+
+    if (cached?.uid != user.uid ||
+        cached?.email != user.email ||
+        cached?.displayName != user.displayName) {
       await local.saveSession(user);
     }
     return user;

@@ -24,70 +24,6 @@ class CanvasAssignmentRemoteDataSource {
 
   final SupabaseClient _client;
 
-  void _logSessionState(String label) {
-    final session = _client.auth.currentSession;
-    debugPrint(
-      'CANVAS_DEBUG: --------------------------------------------------',
-    );
-    debugPrint('CANVAS_DEBUG: $label');
-    debugPrint(
-      'CANVAS_DEBUG: --------------------------------------------------',
-    );
-    debugPrint('CANVAS_DEBUG: Session exists: ${session != null}');
-
-    if (session != null) {
-      _logSessionDetails(session);
-    } else {
-      debugPrint('CANVAS_DEBUG: Session is NULL');
-    }
-    debugPrint(
-      'CANVAS_DEBUG: --------------------------------------------------',
-    );
-  }
-
-  void _logSessionDetails(Session session) {
-    debugPrint('CANVAS_DEBUG: User ID: ${session.user.id}');
-    debugPrint('CANVAS_DEBUG: User Email: ${session.user.email}');
-    debugPrint(
-      'CANVAS_DEBUG: Session ID: ${_getSessionId(session.accessToken)}',
-    );
-    debugPrint('CANVAS_DEBUG: Expires At: ${session.expiresAt}');
-    debugPrint(
-      'CANVAS_DEBUG: Access Token (first 50 chars): ${session.accessToken.substring(0, 50)}...',
-    );
-
-    if (session.expiresAt != null) {
-      final expiresAt = DateTime.fromMillisecondsSinceEpoch(
-        session.expiresAt! * 1000,
-      );
-      final now = DateTime.now();
-      final timeLeft = expiresAt.difference(now);
-
-      debugPrint(
-        'CANVAS_DEBUG: Time until expiry: ${timeLeft.inMinutes} minutes',
-      );
-      debugPrint('CANVAS_DEBUG: Is expired: ${timeLeft.isNegative}');
-    }
-  }
-
-  String _getSessionId(String token) {
-    try {
-      final parts = token.split('.');
-      if (parts.length < 2) return 'N/A';
-
-      final normalized = base64Url.normalize(parts[1]);
-      final payload = utf8.decode(base64Url.decode(normalized));
-      final decoded = jsonDecode(payload);
-
-      if (decoded is Map<String, dynamic>) {
-        return decoded['session_id']?.toString() ?? 'N/A';
-      }
-    } catch (e) {
-      debugPrint('CANVAS_DEBUG: Failed to decode session_id: $e');
-    }
-    return 'N/A';
-  }
-
   /// ✅ ดึงข้อมูล Canvas assignments พร้อมข้อมูล user
   Future<CanvasAssignmentsResponse> fetchAssignmentsWithUser() async {
     debugPrint(
@@ -315,5 +251,67 @@ class CanvasAssignmentRemoteDataSource {
 
     debugPrint('CANVAS_DEBUG: Is session not found (text): $isSessionNotFound');
     return isSessionNotFound;
+  }
+
+  void _logSessionState(String label) {
+    final session = _client.auth.currentSession;
+    debugPrint(
+      'CANVAS_DEBUG: --------------------------------------------------',
+    );
+    debugPrint('CANVAS_DEBUG: $label');
+    debugPrint(
+      'CANVAS_DEBUG: --------------------------------------------------',
+    );
+    debugPrint('CANVAS_DEBUG: Session exists: ${session != null}');
+
+    if (session != null) {
+      _logSessionDetails(session);
+    } else {
+      debugPrint('CANVAS_DEBUG: Session is NULL');
+    }
+    debugPrint(
+      'CANVAS_DEBUG: --------------------------------------------------',
+    );
+  }
+
+  void _logSessionDetails(Session session) {
+    debugPrint('CANVAS_DEBUG: User ID: ${session.user.id}');
+    debugPrint('CANVAS_DEBUG: User Email: ${session.user.email}');
+    debugPrint(
+      'CANVAS_DEBUG: Session ID: ${_getSessionId(session.accessToken)}',
+    );
+    debugPrint('CANVAS_DEBUG: Expires At: ${session.expiresAt}');
+    debugPrint(
+      'CANVAS_DEBUG: Access Token (first 50 chars): ${session.accessToken.substring(0, 50)}...',
+    );
+
+    final expiresAt = DateTime.fromMillisecondsSinceEpoch(
+      session.expiresAt! * 1000,
+    );
+    final now = DateTime.now();
+    final timeLeft = expiresAt.difference(now);
+
+    debugPrint(
+      'CANVAS_DEBUG: Time until expiry: ${timeLeft.inMinutes} minutes',
+    );
+    debugPrint('CANVAS_DEBUG: Is expired: ${timeLeft.isNegative}');
+  }
+
+  String _getSessionId(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) return 'N/A';
+
+      final normalized = base64Url.normalize(parts[1]);
+      final payload = utf8.decode(base64Url.decode(normalized));
+      final decoded = jsonDecode(payload);
+
+      if (decoded is Map<String, dynamic>) {
+        return decoded['session_id']?.toString() ?? 'N/A';
+      }
+    } catch (e) {
+      debugPrint('CANVAS_DEBUG: Failed to decode session_id: $e');
+    }
+    return 'N/A';
   }
 }
