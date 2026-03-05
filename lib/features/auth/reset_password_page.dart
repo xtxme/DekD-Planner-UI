@@ -28,31 +28,24 @@ class _ResetPasswordPageState extends ConsumerState<ResetPasswordPage> {
   }
 
   Future<void> _onResetPressed() async {
-    if (_isSubmitting) return; //ป้องกันกดซ้ำ
+    if (_isSubmitting) return;
     if (_formKey.currentState?.validate() != true) return;
 
-    setState(() => _isSubmitting = true); //เปลี่ยนสถานะเป็นกำลังโหลด
+    setState(() => _isSubmitting = true);
     try {
-      //ใช้จับ error ถ้า server ล้ม / network fail
       await ref
           .read(authRemoteServiceProvider)
-          .updatePassword(
-            //เรียก service เปลี่ยน password
-            newPassword: _newPasswordController.text.trim(),
-          );
+          .updatePassword(newPassword: _newPasswordController.text.trim());
       if (!mounted) return;
       Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const UpdatePage()));
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Reset password error: $e');
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Unable to reset password right now. Please try again.',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

@@ -16,17 +16,16 @@ abstract class AuthRemoteService {
 
   Future<AuthUser?> currentUser();
 
-  Future<void> sendPasswordResetEmail({
+  Future<void> sendPasswordResetOTP({required String email});
+
+  Future<bool> verifyPasswordResetOTP({
     required String email,
-    required String redirectTo,
+    required String token,
   });
 
-  Future<void> updatePassword({
-    required String newPassword
-  });
+  Future<void> updatePassword({required String newPassword});
 }
 
-//ตัว service ที่เรียก Auth API จริง
 class SupabaseAuthService implements AuthRemoteService {
   SupabaseAuthService(this._client);
 
@@ -108,11 +107,25 @@ class SupabaseAuthService implements AuthRemoteService {
   }
 
   @override
-  Future<void> sendPasswordResetEmail({
-    required String email, 
-    required String redirectTo
-    }) async {
-      await _client.auth.resetPasswordForEmail(email, redirectTo: redirectTo);
+  Future<void> sendPasswordResetOTP({required String email}) async {
+    await _client.auth.resetPasswordForEmail(email);
+  }
+
+  @override
+  Future<bool> verifyPasswordResetOTP({
+    required String email,
+    required String token,
+  }) async {
+    try {
+      final response = await _client.auth.verifyOTP(
+        email: email,
+        token: token,
+        type: OtpType.recovery,
+      );
+      return response.session != null;
+    } catch (_) {
+      return false;
+    }
   }
 
   @override

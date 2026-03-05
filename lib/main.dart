@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/core/supabase/supabase_initializer.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'features/auth/check_page.dart';
-import 'features/auth/forgot_page.dart';
 import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
 import 'features/auth/reset_password_page.dart';
@@ -31,7 +28,7 @@ class AppScrollBehavior extends MaterialScrollBehavior {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SupabaseInitializer.initialize(); //เรียก initialize
+  await SupabaseInitializer.initialize();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -44,26 +41,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  StreamSubscription<AuthState>? _authStateSub;
 
-  @override
-  void initState() {
-    super.initState();
-    _authStateSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      final event = data.event;
-      if (event == AuthChangeEvent.passwordRecovery) {
-        _navigatorKey.currentState?.pushNamed('/reset-password');
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _authStateSub?.cancel();
-    super.dispose();
-  }
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -71,6 +49,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       scrollBehavior: const AppScrollBehavior(),
+      navigatorKey: _navigatorKey,
       builder: (context, child) {
         final mediaQuery = MediaQuery.of(context);
         return MediaQuery(
@@ -93,8 +72,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
-        '/forgot': (context) => const ForgotPage(),
-        '/check-email': (context) => const CheckPage(),
+        '/forgot': (context) => const ResetPasswordPage(),
         '/reset-password': (context) => const ResetPasswordPage(),
         '/password-updated': (context) => const UpdatePage(),
       },

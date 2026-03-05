@@ -17,12 +17,23 @@ class AppColors {
   static const primaryText = textPrimary;
   static const secondaryText = textSecondary;
 
-  static const accent = Color(0xFFD9A441);
+  static const accent = Color(0xFFE0B35D);
   static const accentSoft = Color(0xFFDBBA7C);
   static const iconMuted = Color(0xFFA9998B);
   static const lightSurface = surfaceSoft;
 
   static const error = Color(0xFFE65757);
+
+  // Design System Constants
+  static const spacing4 = 4.0;
+  static const spacing8 = 8.0;
+  static const spacing16 = 16.0;
+  static const spacing24 = 24.0;
+  static const spacing32 = 32.0;
+
+  static const borderRadiusCard = 20.0;
+  static const borderRadiusButton = 12.0;
+  static const borderRadiusInput = 12.0;
 
   // Generic tokens for migrating existing hardcoded colors in the project.
   static const c1A000000 = Color(0x1A000000);

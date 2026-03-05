@@ -42,18 +42,20 @@ class _FakeAuthRemoteService implements AuthRemoteService {
   }
 
   @override
-  Future<void> sendPasswordResetEmail({
+  Future<void> sendPasswordResetOTP({required String email}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> verifyPasswordResetOTP({
     required String email,
-    required String redirectTo,
+    required String token,
   }) {
     throw UnimplementedError();
   }
 
   @override
-  Future<AuthUser?> signIn({
-    required String email,
-    required String password,
-  }) {
+  Future<AuthUser?> signIn({required String email, required String password}) {
     throw UnimplementedError();
   }
 
@@ -96,32 +98,35 @@ void main() {
     },
   );
 
-  test('authSessionProvider refreshes cache when remote user is available', () async {
-    const cachedUser = AuthUser(
-      uid: 'user-1',
-      email: 'old@example.com',
-      displayName: 'Old Name',
-    );
-    const remoteUser = AuthUser(
-      uid: 'user-1',
-      email: 'tt.icy013@gmail.com',
-      displayName: 'Icy',
-    );
+  test(
+    'authSessionProvider refreshes cache when remote user is available',
+    () async {
+      const cachedUser = AuthUser(
+        uid: 'user-1',
+        email: 'old@example.com',
+        displayName: 'Old Name',
+      );
+      const remoteUser = AuthUser(
+        uid: 'user-1',
+        email: 'tt.icy013@gmail.com',
+        displayName: 'Icy',
+      );
 
-    final local = _FakeAuthLocalCacheDao(cachedUser);
-    final container = ProviderContainer(
-      overrides: [
-        authLocalCacheDaoProvider.overrideWithValue(local),
-        authRemoteServiceProvider.overrideWithValue(
-          _FakeAuthRemoteService(currentUserResult: remoteUser),
-        ),
-      ],
-    );
-    addTearDown(container.dispose);
+      final local = _FakeAuthLocalCacheDao(cachedUser);
+      final container = ProviderContainer(
+        overrides: [
+          authLocalCacheDaoProvider.overrideWithValue(local),
+          authRemoteServiceProvider.overrideWithValue(
+            _FakeAuthRemoteService(currentUserResult: remoteUser),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    final result = await container.read(authSessionProvider.future);
+      final result = await container.read(authSessionProvider.future);
 
-    expect(result, remoteUser);
-    expect(await local.readSession(), remoteUser);
-  });
+      expect(result, remoteUser);
+      expect(await local.readSession(), remoteUser);
+    },
+  );
 }

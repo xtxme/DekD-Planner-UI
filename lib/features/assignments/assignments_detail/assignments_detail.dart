@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:my_first_app/features/assignments/models/assignment_draft.dart';
+import 'package:my_first_app/features/assignments/models/assignments_feed_item.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
 import 'package:my_first_app/shared/providers/nav_provider.dart';
-import '../providers.dart';
 import '../edit_assignments/edit_assignments.dart';
 import 'widgets/assignment_detail_action_buttons.dart';
 import 'widgets/assignment_detail_header.dart';
@@ -14,17 +15,26 @@ import 'widgets/assignment_detail_overview_section.dart';
 import 'widgets/assignment_detail_stats_section.dart';
 
 class AssignmentsDetailPage extends ConsumerWidget {
-  const AssignmentsDetailPage({super.key, this.withNavBar = true});
+  const AssignmentsDetailPage({
+    super.key,
+    required this.item,
+    this.withNavBar = true,
+  });
 
   final bool withNavBar;
+  final AssignmentsFeedItem item;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(currentNavIndexProvider);
-    final draft = ref.watch(assignmentDraftProvider);
-    final dueText = draft == null
-        ? ''
-        : 'Due: ${DateFormat('MMM dd, yyyy | hh:mm a').format(draft.dueDateTime)}';
+    final isLocal = item.source == AssignmentFeedSource.local;
+    final localDraft = isLocal ? _toAssignmentDraft(item) : null;
+    final dueText =
+        'Due: ${DateFormat('MMM dd, yyyy | hh:mm a').format(item.dueAt)}';
+    final notesText = item.detailsText.trim().isEmpty
+        ? 'No notes or instructions.'
+        : item.detailsText;
+    final statusText = _formatStatus(item.status, item.source);
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -42,48 +52,30 @@ class AssignmentsDetailPage extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (draft == null) ...[
-                      const Text(
-                        'Assignment not found',
-                        style: TextStyle(
-                          fontSize: 26,
-                          height: 1.15,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'This assignment may have been deleted.',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ] else ...[
-                      AssignmentDetailOverviewSection(
-                        title: draft.title,
-                        dueText: dueText,
-                      ),
-                      const SizedBox(height: 28),
-                      AssignmentDetailStatsSection(
-                        subject: draft.subject,
-                        status: 'In Progress',
-                      ),
-                      const SizedBox(height: 28),
-                      AssignmentDetailNotesSection(notesText: draft.notes),
-                    ],
+                    AssignmentDetailOverviewSection(
+                      title: item.title,
+                      dueText: dueText,
+                    ),
+                    const SizedBox(height: 28),
+                    AssignmentDetailStatsSection(
+                      subject: item.subject,
+                      status: statusText,
+                    ),
+                    const SizedBox(height: 28),
+                    AssignmentDetailNotesSection(notesText: notesText),
                     const SizedBox(height: 22),
                     AssignmentDetailActionButtons(
                       onComplete: () {},
-                      onEdit: draft == null
+                      showEdit: isLocal,
+                      showDelete: isLocal,
+                      onEdit: localDraft == null
                           ? null
                           : () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      EditAssignmentsPage(initialDraft: draft),
+                                  builder: (_) => EditAssignmentsPage(
+                                    initialDraft: localDraft,
+                                  ),
                                 ),
                               );
                             },
@@ -105,5 +97,39 @@ class AssignmentsDetailPage extends ConsumerWidget {
             )
           : null,
     );
+  }
+
+  AssignmentDraft? _toAssignmentDraft(AssignmentsFeedItem item) {
+    if (item.source != AssignmentFeedSource.local) {
+      return null;
+    }
+
+    return AssignmentDraft(
+      id: item.localAssignmentId,
+      subjectId: item.subjectId,
+      title: item.title,
+      subject: item.subject,
+      dueDateTime: item.dueAt,
+      notes: item.detailsText,
+    );
+  }
+
+  String _formatStatus(String status, AssignmentFeedSource source) {
+    if (source == AssignmentFeedSource.canvas) {
+      return 'Canvas';
+    }
+
+    switch (status) {
+      case 'to_do':
+        return 'To Do';
+      case 'in_progress':
+        return 'In Progress';
+      case 'late':
+        return 'Late';
+      case 'completed':
+        return 'Completed';
+      default:
+        return status.trim().isEmpty ? 'Unknown' : status;
+    }
   }
 }

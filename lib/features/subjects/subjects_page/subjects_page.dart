@@ -58,12 +58,12 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
                 children: [
                   SingleChildScrollView(
                     physics: _scrollPhysics(context),
-                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 144),
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 144),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildTabToggle(),
-                        const SizedBox(height: 22),
+                        const SizedBox(height: 24),
                         _buildActiveTabContent(
                           subjectsAsync: subjectsAsync,
                           canvasCoursesAsync: canvasCoursesAsync,
@@ -128,8 +128,7 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
       case SubjectsTab.mySubjects:
         return subjectsAsync.when(
           data: _buildMySubjectsTab,
-          loading: () =>
-              const _SectionLoadingCard(message: 'Loading your subjects...'),
+          loading: () => const _SectionLoadingCard(),
           error: (error, _) =>
               _MessageCard(title: 'Could not load subjects', message: '$error'),
         );
@@ -139,11 +138,8 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
             courses: courses,
             importedNames: importedNames,
           ),
-          loading: () => _buildCanvasTabShell(
-            child: const _SectionLoadingCard(
-              message: 'Syncing Canvas courses...',
-            ),
-          ),
+          loading: () =>
+              _buildCanvasTabShell(child: const _SectionLoadingCard()),
           error: (error, _) => _buildCanvasTabShell(
             child: _MessageCard(
               title: 'Canvas sync failed',
@@ -166,25 +162,32 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
           title: 'MY SUBJECTS',
           count: filteredSubjects.length,
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 16),
         if (subjects.isEmpty)
-          const _MessageCard(
+          _MessageCard(
             title: 'No subjects yet',
             message:
-                'Create one manually or pull in a course from Canvas to start your collection.',
+                'Create your first subject to start tracking assignments and deadlines.',
+            actionLabel: 'Add Subject',
+            onAction: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AddSubjectsPage(withNavBar: false),
+              ),
+            ),
+            actionType: 'create',
           )
         else if (filteredSubjects.isEmpty)
           const _MessageCard(
-            title: 'No subjects match your search',
+            title: 'No results found',
             message:
-                'Try a different subject name or course code to narrow the list.',
+                'Try adjusting your search or clearing filters to see all subjects.',
           )
         else
           Column(
             children: filteredSubjects
                 .map(
                   (subject) => Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
+                    padding: const EdgeInsets.only(bottom: 16),
                     child: _SubjectListCard(
                       subject: subject,
                       subtitle: _subjectSubtitle(subject),
@@ -217,9 +220,12 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
 
     Widget child;
     if (courses.isEmpty) {
-      child = const _MessageCard(
-        title: 'No Canvas courses found',
-        message: 'Try syncing again or check your Canvas connection settings.',
+      child = _MessageCard(
+        title: 'No Canvas courses',
+        message: 'Sync with Canvas to import your courses and assignments.',
+        actionLabel: 'Sync Canvas',
+        onAction: _syncCanvasCourses,
+        actionType: 'import',
       );
     } else if (searchedCourses.isEmpty) {
       child = const _MessageCard(
@@ -238,7 +244,7 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
         children: visibleCourses
             .map(
               (course) => Padding(
-                padding: const EdgeInsets.only(bottom: 14),
+                padding: const EdgeInsets.only(bottom: 16),
                 child: _CanvasCourseCard(
                   course: course,
                   isImported: importedNames.contains(
@@ -275,34 +281,36 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
               ),
             ),
             if (count != null) _CountPill(count: count),
+            const SizedBox(width: 12),
+            FilledButton.icon(
+              onPressed: _syncCanvasCourses,
+              icon: const Icon(Icons.sync_rounded, size: 18),
+              label: const Text('Sync Canvas'),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.cFFE0B35D,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         const Text(
           'Available from your Canvas account',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: AppColors.cFFA48C7E,
-          ),
-        ),
-        const SizedBox(height: 14),
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton.icon(
-            onPressed: _syncCanvasCourses,
-            icon: const Icon(Icons.sync_rounded, size: 18),
-            label: const Text('Sync Canvas'),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.cFF7A5A4A,
-              backgroundColor: AppColors.cFFFFFAF5,
-              textStyle: const TextStyle(fontWeight: FontWeight.w800),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(999),
-                side: const BorderSide(color: AppColors.cFFE6DBD2),
-              ),
-            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -598,83 +606,90 @@ class _CanvasCourseCard extends StatelessWidget {
     final canDismiss = !isImporting;
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cFFFFFCF8,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.cFFE6DBD2),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
         boxShadow: const [
           BoxShadow(
             color: AppColors.c1A000000,
-            blurRadius: 22,
-            offset: Offset(0, 12),
+            blurRadius: 12,
+            offset: Offset(0, 4),
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: AppColors.cFFF3ECE5,
-                  borderRadius: BorderRadius.circular(18),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceSoft,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.school_rounded,
+              color: AppColors.textPrimary,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  course.name,
+                  softWrap: true,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    height: 1.2,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.school_rounded,
-                  color: AppColors.cFF7A5A4A,
-                  size: 28,
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceSoft,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      height: 1,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      course.name,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        height: 1.25,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.cFF8B6758,
-                      ),
+                    _ImportButton(
+                      isImported: isImported,
+                      isImporting: isImporting,
+                      onPressed: onImport,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        height: 1.4,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.cFFA48C7E,
-                      ),
-                    ),
+                    if (canDismiss) ...[
+                      const SizedBox(width: 8),
+                      _DismissButton(enabled: true, onPressed: onDismiss),
+                    ],
                   ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _ImportButton(
-                isImported: isImported,
-                isImporting: isImporting,
-                onPressed: onImport,
-              ),
-              const SizedBox(width: 12),
-              _DismissButton(enabled: canDismiss, onPressed: onDismiss),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -697,47 +712,40 @@ class _SubjectListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subjectColor = Color(subject.colorValue);
-    final cardColor = Color.alphaBlend(
-      AppColors.cFFFFFCF8.withValues(alpha: 0.92),
-      subjectColor.withValues(alpha: 0.18),
-    );
-    final badgeColor = Color.alphaBlend(
-      AppColors.cFFFFFAF5,
-      subjectColor.withValues(alpha: 0.12),
-    );
     final badgeParts = _subjectBadgeParts(subtitle);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(20),
         onTap: onTap,
+        splashColor: AppColors.accent.withValues(alpha: 0.1),
+        highlightColor: AppColors.accent.withValues(alpha: 0.05),
         child: Ink(
           decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: subjectColor.withValues(alpha: 0.24)),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.border),
             boxShadow: const [
               BoxShadow(
                 color: AppColors.c1A000000,
                 blurRadius: 12,
-                offset: Offset(0, 5),
+                offset: Offset(0, 4),
               ),
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Container(
-                  width: 58,
-                  height: 58,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.cFFFFFCF8.withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(18),
+                    color: AppColors.surfaceSoft,
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(icon, color: AppColors.cFF7A5A4A, size: 28),
+                  child: Icon(icon, color: AppColors.textPrimary, size: 24),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -749,49 +757,28 @@ class _SubjectListCard extends StatelessWidget {
                         softWrap: true,
                         style: const TextStyle(
                           fontSize: 18,
-                          height: 1.16,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.cFF7A5A4A,
+                          height: 1.2,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
                         ),
                       ),
-                      if (subtitle.trim().isNotEmpty) ...[
-                        const SizedBox(height: 10),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (var index = 0; index < badgeParts.length; index++)
-                              _SubjectMetaBadge(
-                                label: badgeParts[index],
-                                backgroundColor: index == 0
-                                    ? badgeColor
-                                    : AppColors.cFFFFFCF8,
-                                borderColor: subjectColor.withValues(
-                                  alpha: index == 0 ? 0.18 : 0.12,
-                                ),
-                                textColor: index == 0
-                                    ? AppColors.cFF8B6758
-                                    : AppColors.cFFA48C7E,
-                              ),
-                          ],
+                      if (badgeParts.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        _SubjectMetaBadge(
+                          label: badgeParts[0],
+                          backgroundColor: AppColors.surfaceSoft,
+                          borderColor: AppColors.border,
+                          textColor: AppColors.textPrimary,
                         ),
                       ],
                     ],
                   ),
                 ),
-                const SizedBox(width: 10),
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                    color: AppColors.cFFFFFAF5.withValues(alpha: 0.78),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Icon(
-                    Icons.arrow_forward_rounded,
-                    color: AppColors.cFF9A8476,
-                    size: 20,
-                  ),
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.iconMuted,
+                  size: 20,
                 ),
               ],
             ),
@@ -867,65 +854,89 @@ class _MessageCard extends StatelessWidget {
     required this.message,
     this.actionLabel,
     this.onAction,
+    this.actionType,
   });
 
   final String title;
   final String message;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final String? actionType;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
-        color: AppColors.cFFFFFCF8,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.cFFE6DBD2),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
         boxShadow: const [
           BoxShadow(
             color: AppColors.c1A000000,
-            blurRadius: 18,
-            offset: Offset(0, 10),
+            blurRadius: 12,
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceSoft,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              actionType == 'create'
+                  ? Icons.add_circle_outline_rounded
+                  : Icons.inbox_outlined,
+              size: 32,
+              color: AppColors.accent,
+            ),
+          ),
+          const SizedBox(height: 16),
           Text(
             title,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: AppColors.cFF8B6758,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             message,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 15,
               height: 1.4,
-              color: AppColors.cFFA48C7E,
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
             ),
           ),
           if (actionLabel != null && onAction != null) ...[
-            const SizedBox(height: 16),
-            TextButton.icon(
+            const SizedBox(height: 20),
+            FilledButton.icon(
               onPressed: onAction,
-              icon: const Icon(Icons.sync_rounded, size: 18),
+              icon: const Icon(Icons.add_rounded, size: 18),
               label: Text(actionLabel!),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.cFF7A5A4A,
-                backgroundColor: AppColors.cFFFFFAF5,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
+                  horizontal: 20,
+                  vertical: 12,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
                 ),
               ),
             ),
@@ -937,46 +948,152 @@ class _MessageCard extends StatelessWidget {
 }
 
 class _SectionLoadingCard extends StatelessWidget {
-  const _SectionLoadingCard({required this.message});
+  const _SectionLoadingCard();
 
-  final String message;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'LOADING',
+                style: TextStyle(
+                  letterSpacing: 1.3,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.cFF9A7E70,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Column(
+          children: List.generate(
+            3,
+            (index) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: const _SkeletonLoadingCard(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SkeletonLoadingCard extends StatefulWidget {
+  const _SkeletonLoadingCard();
+
+  @override
+  State<_SkeletonLoadingCard> createState() => _SkeletonLoadingCardState();
+}
+
+class _SkeletonLoadingCardState extends State<_SkeletonLoadingCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+    _animation = Tween<double>(
+      begin: 0.3,
+      end: 0.7,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        final opacity = 0.3 + (_animation.value - 0.3) * 0.4;
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Row(
+            children: [
+              _SkeletonBox(
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                opacity: opacity,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SkeletonBox(
+                      width: double.infinity,
+                      height: 18,
+                      borderRadius: 4,
+                      opacity: opacity,
+                    ),
+                    const SizedBox(height: 8),
+                    _SkeletonBox(
+                      width: 80,
+                      height: 12,
+                      borderRadius: 4,
+                      opacity: opacity,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              _SkeletonBox(
+                width: 24,
+                height: 24,
+                borderRadius: 4,
+                opacity: opacity,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SkeletonBox extends StatelessWidget {
+  const _SkeletonBox({
+    required this.width,
+    required this.height,
+    required this.borderRadius,
+    required this.opacity,
+  });
+
+  final double width;
+  final double height;
+  final double borderRadius;
+  final double opacity;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      width: width,
+      height: height,
       decoration: BoxDecoration(
-        color: AppColors.cFFFFFCF8,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.cFFE6DBD2),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.c1A000000,
-            blurRadius: 18,
-            offset: Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2.4),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: AppColors.cFFA48C7E,
-              ),
-            ),
-          ),
-        ],
+        color: AppColors.surfaceSoft.withValues(alpha: opacity),
+        borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
   }
@@ -1019,18 +1136,18 @@ class _DismissButton extends StatelessWidget {
     return Tooltip(
       message: 'Hide this Canvas course',
       child: SizedBox(
-        width: 44,
-        height: 44,
+        width: 40,
+        height: 40,
         child: IconButton(
           onPressed: enabled ? onPressed : null,
           style: IconButton.styleFrom(
-            backgroundColor: AppColors.cFFFFFAF5,
-            disabledBackgroundColor: AppColors.cFFFFFAF5,
-            foregroundColor: AppColors.cFF9A8476,
-            disabledForegroundColor: AppColors.cFFB8A99A,
-            side: const BorderSide(color: AppColors.cFFE6DBD2),
+            backgroundColor: AppColors.surfaceSoft,
+            disabledBackgroundColor: AppColors.surfaceSoft,
+            foregroundColor: AppColors.iconMuted,
+            disabledForegroundColor: AppColors.iconMuted.withValues(alpha: 0.5),
+            side: const BorderSide(color: AppColors.border),
           ),
-          icon: const Icon(Icons.close_rounded, size: 20),
+          icon: const Icon(Icons.close_rounded, size: 18),
         ),
       ),
     );
@@ -1053,24 +1170,21 @@ class _ImportButton extends StatelessWidget {
     return FilledButton(
       onPressed: isImported || isImporting ? null : onPressed,
       style: FilledButton.styleFrom(
-        minimumSize: const Size(96, 44),
-        backgroundColor: isImported ? AppColors.cFFD9CEC3 : AppColors.cFFE0B35D,
-        foregroundColor: isImported ? AppColors.cFF876557 : Colors.white,
-        disabledBackgroundColor: isImported
-            ? AppColors.cFFD9CEC3
-            : AppColors.cFFE2D8CF,
-        disabledForegroundColor: isImported
-            ? AppColors.cFF876557
-            : AppColors.cFFB7A79D,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        minimumSize: const Size(44, 40),
+        backgroundColor: isImported ? AppColors.surfaceSoft : AppColors.accent,
+        foregroundColor: isImported ? AppColors.textSecondary : Colors.white,
+        disabledBackgroundColor: AppColors.surfaceSoft,
+        disabledForegroundColor: AppColors.iconMuted,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
       ),
       child: isImporting
           ? const SizedBox(
-              width: 18,
-              height: 18,
+              width: 16,
+              height: 16,
               child: CircularProgressIndicator(
-                strokeWidth: 2.2,
+                strokeWidth: 2,
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             )

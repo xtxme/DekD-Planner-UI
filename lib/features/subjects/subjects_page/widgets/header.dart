@@ -18,11 +18,13 @@ class SubjectsHeader extends StatefulWidget {
 
 class _SubjectsHeaderState extends State<SubjectsHeader> {
   late final TextEditingController _controller;
+  late final FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController()..addListener(_handleTextChanged);
+    _focusNode = FocusNode();
   }
 
   @override
@@ -30,6 +32,7 @@ class _SubjectsHeaderState extends State<SubjectsHeader> {
     _controller
       ..removeListener(_handleTextChanged)
       ..dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -46,50 +49,51 @@ class _SubjectsHeaderState extends State<SubjectsHeader> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.cFFEEE4DB,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
+        color: AppColors.background,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Subjects',
               style: TextStyle(
-                fontSize: 34,
-                height: 1,
-                fontWeight: FontWeight.w900,
-                color: AppColors.cFF7A5A4A,
+                fontSize: 28,
+                height: 1.1,
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
               widget.subtitle,
               style: const TextStyle(
-                fontSize: 15,
-                height: 1.45,
-                fontWeight: FontWeight.w600,
-                color: AppColors.cFF9A8476,
+                fontSize: 14,
+                height: 1.4,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
                 color: AppColors.cFFFFFCF8,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: const [
                   BoxShadow(
-                    color: AppColors.c22000000,
-                    blurRadius: 20,
-                    offset: Offset(0, 12),
+                    color: AppColors.c1A000000,
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
               child: SizedBox(
-                height: 56,
+                height: 48,
                 child: TextField(
                   controller: _controller,
+                  focusNode: _focusNode,
                   keyboardType: TextInputType.text,
                   textInputAction: TextInputAction.search,
                   textCapitalization: TextCapitalization.none,
@@ -101,14 +105,17 @@ class _SubjectsHeaderState extends State<SubjectsHeader> {
                     isDense: true,
                     filled: true,
                     fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
                     prefixIcon: const Icon(
                       Icons.search_rounded,
-                      color: AppColors.cFFA9998B,
+                      color: AppColors.iconMuted,
                     ),
                     prefixIconConstraints: const BoxConstraints(
-                      minWidth: 56,
-                      minHeight: 56,
+                      minWidth: 48,
+                      minHeight: 48,
                     ),
                     suffixIcon: _controller.text.isEmpty
                         ? null
@@ -116,28 +123,29 @@ class _SubjectsHeaderState extends State<SubjectsHeader> {
                             onPressed: _clearQuery,
                             icon: const Icon(
                               Icons.close_rounded,
-                              color: AppColors.cFFA9998B,
+                              color: AppColors.iconMuted,
                             ),
                             splashRadius: 18,
                           ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: const BorderSide(color: AppColors.cFFE3DBD2),
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: const BorderSide(color: AppColors.cFFE3DBD2),
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(
-                        color: AppColors.cFF8B6758,
+                        color: AppColors.accent,
                         width: 1.6,
                       ),
                     ),
-                    hintText: 'search subjects, codes',
+                    focusColor: AppColors.accent.withValues(alpha: 0.1),
+                    hintText: 'Search...',
                     hintStyle: const TextStyle(
-                      color: AppColors.cFFB8A99A,
+                      color: AppColors.iconMuted,
                       fontWeight: FontWeight.w500,
                     ),
                   ),

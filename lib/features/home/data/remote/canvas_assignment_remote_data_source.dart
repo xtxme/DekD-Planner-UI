@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:my_first_app/features/home/data/models/canvas_assignment.dart';
@@ -88,7 +87,6 @@ class CanvasAssignmentRemoteDataSource {
     return 'N/A';
   }
 
-  /// ✅ ดึงข้อมูล Canvas assignments พร้อมข้อมูล user
   Future<CanvasAssignmentsResponse> fetchAssignmentsWithUser() async {
     debugPrint(
       'CANVAS_DEBUG: ==================================================',
@@ -98,12 +96,10 @@ class CanvasAssignmentRemoteDataSource {
       'CANVAS_DEBUG: ==================================================',
     );
 
-    // ✅ DEBUG: Log session state BEFORE requireActiveSession
     _logSessionState('BEFORE requireActiveSession');
 
     await requireActiveSession();
 
-    // ✅ DEBUG: Log session state AFTER requireActiveSession
     _logSessionState('AFTER requireActiveSession');
 
     try {
@@ -178,8 +174,6 @@ class CanvasAssignmentRemoteDataSource {
     }
   }
 
-  /// ✅ เก็บไว้เพื่อ backward compatibility
-  /// ใช้ fetchAssignmentsWithUser() แทนเพื่อรับข้อมูล user ด้วย
   @Deprecated('Use fetchAssignmentsWithUser() instead')
   Future<List<CanvasAssignment>> fetchAssignments() async {
     final response = await fetchAssignmentsWithUser();
@@ -209,7 +203,6 @@ class CanvasAssignmentRemoteDataSource {
       }
 
       if (attempt % 10 == 0 && attempt > 0) {
-        // Log every 1 second
         debugPrint(
           'CANVAS_DEBUG: Still waiting... (${attempt * _sessionPropagationDelay.inMilliseconds}ms elapsed)',
         );
@@ -227,8 +220,6 @@ class CanvasAssignmentRemoteDataSource {
     throw const CanvasSessionExpiredException();
   }
 
-  /// ✅ Supabase Flutter SDK จะใส่ auth header อัตโนมัติ
-  /// ถ้ามี session อยู่แล้ว ไม่ต้องใส่ authorization header เอง
   Future<FunctionResponse> invokeAssignmentsProxy() {
     debugPrint(
       'CANVAS_DEBUG: invokeAssignmentsProxy() - calling Supabase Edge Function',

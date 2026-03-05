@@ -7,11 +7,15 @@ class AssignmentDetailActionButtons extends StatelessWidget {
     this.onComplete,
     this.onEdit,
     this.onDelete,
+    this.showEdit = true,
+    this.showDelete = true,
   });
 
   final VoidCallback? onComplete;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final bool showEdit;
+  final bool showDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -34,30 +38,32 @@ class AssignmentDetailActionButtons extends StatelessWidget {
                 onTap: onComplete,
               ),
             ),
-            SizedBox(
-              width: itemWidth,
-              child: _ActionItem(
-                icon: Icons.edit_rounded,
-                label: 'Edit',
-                labelColor: AppColors.textSecondary,
-                iconColor: AppColors.textPrimary,
-                bgColor: AppColors.surface,
-                borderColor: AppColors.border,
-                onTap: onEdit,
+            if (showEdit)
+              SizedBox(
+                width: itemWidth,
+                child: _ActionItem(
+                  icon: Icons.edit_rounded,
+                  label: 'Edit',
+                  labelColor: AppColors.textSecondary,
+                  iconColor: AppColors.textPrimary,
+                  bgColor: AppColors.surface,
+                  borderColor: AppColors.border,
+                  onTap: onEdit,
+                ),
               ),
-            ),
-            SizedBox(
-              width: itemWidth,
-              child: _ActionItem(
-                icon: Icons.delete_rounded,
-                label: 'Delete',
-                labelColor: AppColors.cFFE65757,
-                iconColor: AppColors.cFFE65757,
-                bgColor: AppColors.surface,
-                borderColor: AppColors.cFFF9DDE0,
-                onTap: onDelete,
+            if (showDelete)
+              SizedBox(
+                width: itemWidth,
+                child: _ActionItem(
+                  icon: Icons.delete_rounded,
+                  label: 'Delete',
+                  labelColor: AppColors.cFFE65757,
+                  iconColor: AppColors.cFFE65757,
+                  bgColor: AppColors.surface,
+                  borderColor: AppColors.cFFF9DDE0,
+                  onTap: onDelete,
+                ),
               ),
-            ),
           ],
         );
       },
