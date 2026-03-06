@@ -9,9 +9,10 @@ import 'package:my_first_app/features/settings/presentation/providers/settings_p
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'package:my_first_app/features/home/presentation/home_assignment_ui_mapper.dart';
-import 'package:my_first_app/features/home/presentation/providers/home_tasks_provider_fixed.dart';
+import 'package:my_first_app/features/home/presentation/providers/home_tasks_provider.dart';
 import 'package:my_first_app/features/assignments/add_assignments/add_assignments.dart';
 import 'package:my_first_app/features/subjects/providers.dart';
+import 'package:my_first_app/shared/providers/nav_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -612,8 +613,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // นำทางไปหน้า All Assignments
-                              Navigator.of(context).pushNamed('/assignments');
+                              ref.read(currentNavIndexProvider.notifier).state =
+                                  2;
                             },
                             icon: const Icon(
                               Icons.folder_rounded,

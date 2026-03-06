@@ -20,7 +20,7 @@ class EditNotificationPage extends ConsumerStatefulWidget {
 
 class _EditNotificationPageState extends ConsumerState<EditNotificationPage> {
   bool _allNotificationsEnabled = true;
-  ReminderPreset _selectedPreset = ReminderPreset.oneDayBefore;
+  final Set<ReminderPreset> _selectedPresets = {ReminderPreset.oneDayBefore};
   int _selectedAmount = 1;
   ReminderUnit _selectedUnit = ReminderUnit.daysBefore;
 
@@ -54,10 +54,14 @@ class _EditNotificationPageState extends ConsumerState<EditNotificationPage> {
                       child: IgnorePointer(
                         ignoring: !_allNotificationsEnabled,
                         child: NotificationReminderCard(
-                          selectedPreset: _selectedPreset,
-                          onPresetChanged: (preset) {
+                          selectedPresets: _selectedPresets,
+                          onPresetToggled: (preset) {
                             setState(() {
-                              _selectedPreset = preset;
+                              if (_selectedPresets.contains(preset)) {
+                                _selectedPresets.remove(preset);
+                              } else {
+                                _selectedPresets.add(preset);
+                              }
                             });
                           },
                           selectedAmount: _selectedAmount,

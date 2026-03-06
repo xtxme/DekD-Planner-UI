@@ -29,7 +29,7 @@ Future<T> retryWithExponentialBackoff<T>({
     try {
       debugPrint('RETRY_DEBUG: Attempt $attempt/$maxAttempts');
       return await operation();
-    } catch (error, stackTrace) {
+    } catch (error) {
       final shouldRetryThis = shouldRetry?.call(error) ?? false;
 
       if (attempt >= maxAttempts || !shouldRetryThis) {

@@ -17,7 +17,7 @@ class _TestCanvasAssignmentRemoteDataSource
   Future<void> requireActiveSession() async {}
 
   @override
-  Future<FunctionResponse> invokeAssignmentsProxy() async {
+  Future<FunctionResponse> invokeAssignmentsProxy({int retryCount = 0}) async {
     if (error != null) {
       throw error!;
     }
@@ -40,12 +40,12 @@ void main() {
     );
 
     await expectLater(
-      dataSource.fetchAssignments(),
+      dataSource.fetchAssignmentsWithUser(),
       throwsA(isA<CanvasSessionExpiredException>()),
     );
   });
 
-  test('maps 403 session_not_found function exception to CanvasSessionExpiredException', () async {
+  test('rethrows 403 session_not_found function exception for retry handling', () async {
     final dataSource = _TestCanvasAssignmentRemoteDataSource(
       error: const FunctionException(
         status: 403,
@@ -59,8 +59,8 @@ void main() {
     );
 
     await expectLater(
-      dataSource.fetchAssignments(),
-      throwsA(isA<CanvasSessionExpiredException>()),
+      dataSource.fetchAssignmentsWithUser(),
+      throwsA(isA<FunctionException>()),
     );
   });
 }

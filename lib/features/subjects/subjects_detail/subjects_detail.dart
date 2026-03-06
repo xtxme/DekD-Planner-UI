@@ -5,8 +5,10 @@ import 'package:my_first_app/features/assignments/data/models/assignment_row.dar
 import 'package:my_first_app/features/assignments/presentation/providers/assignment_list_provider.dart';
 import 'package:my_first_app/features/home/data/models/canvas_assignment.dart';
 import 'package:my_first_app/features/home/presentation/providers/home_tasks_provider.dart';
+import 'package:my_first_app/features/subjects/data/models/canvas_course.dart';
 import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
 import 'package:my_first_app/features/subjects/presentation/providers/subject_providers.dart';
+import 'package:my_first_app/features/subjects/subjects_detail/subject_detail_info.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
@@ -69,6 +71,16 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     final currentIndex = ref.watch(currentNavIndexProvider);
     final localAssignmentsAsync = ref.watch(assignmentListProvider);
     final canvasAssignmentsAsync = ref.watch(canvasAssignmentsWithUserProvider);
+    final canvasCourses = ref
+        .watch(canvasCoursesProvider)
+        .maybeWhen(
+          data: (courses) => courses,
+          orElse: () => const <CanvasCourse>[],
+        );
+    final subjectDetailInfo = resolveSubjectDetailInfo(
+      subject: _subject,
+      canvasCourses: canvasCourses,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -89,8 +101,8 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                     SubjectInfoCard(
                       title: _subject.name,
                       code: _subject.code,
-                      teacherInfo: '',
-                      description: _subject.description,
+                      teacherInfo: subjectDetailInfo.teacherInfo,
+                      description: subjectDetailInfo.description,
                       icon: _subject.iconCodepoint == 0
                           ? Icons.menu_book_rounded
                           : IconData(

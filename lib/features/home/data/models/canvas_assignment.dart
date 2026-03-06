@@ -138,8 +138,7 @@ class CanvasAssignmentDetails {
         ? rawSubmissionTypes
         : [];
 
-    final rawRubric = map['rubric'];
-    final rubric = rawRubric != null ? rawRubric : null;
+    final rubric = map['rubric'];
 
     final rawDueAt = map['due_at'];
     final dueAt = rawDueAt is String && rawDueAt.isNotEmpty

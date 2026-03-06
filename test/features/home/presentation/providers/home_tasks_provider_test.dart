@@ -9,18 +9,19 @@ import 'package:supabase_flutter/supabase_flutter.dart' show SupabaseClient;
 
 class _FakeCanvasAssignmentRemoteDataSource
     extends CanvasAssignmentRemoteDataSource {
-  _FakeCanvasAssignmentRemoteDataSource(this._assignments)
+  _FakeCanvasAssignmentRemoteDataSource(this._response)
     : super(client: SupabaseClient('https://example.com', 'anon-key'));
 
-  final List<CanvasAssignment> _assignments;
+  final CanvasAssignmentsResponse _response;
 
   @override
-  Future<List<CanvasAssignment>> fetchAssignments() async => _assignments;
+  Future<CanvasAssignmentsResponse> fetchAssignmentsWithUser() async =>
+      _response;
 }
 
 void main() {
   test(
-    'homeCanvasAssignmentsProvider does not treat a transient null auth provider as an expired session',
+    'canvasAssignmentsWithUserProvider does not treat a transient null auth provider as an expired session',
     () async {
       final assignment = CanvasAssignment(
         id: 1,
@@ -40,15 +41,25 @@ void main() {
             ),
           ),
           canvasAssignmentRemoteDataSourceProvider.overrideWithValue(
-            _FakeCanvasAssignmentRemoteDataSource([assignment]),
+            _FakeCanvasAssignmentRemoteDataSource(
+              CanvasAssignmentsResponse(
+                user: const CanvasUserResponse(
+                  id: 'user-1',
+                  email: 'student@example.com',
+                ),
+                assignments: [assignment],
+              ),
+            ),
           ),
         ],
       );
       addTearDown(container.dispose);
 
-      final result = await container.read(homeCanvasAssignmentsProvider.future);
+      final result = await container.read(
+        canvasAssignmentsWithUserProvider.future,
+      );
 
-      expect(result, [assignment]);
+      expect(result.assignments, [assignment]);
     },
   );
 }

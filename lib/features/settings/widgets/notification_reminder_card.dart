@@ -32,16 +32,16 @@ extension ReminderUnitLabel on ReminderUnit {
 class NotificationReminderCard extends StatelessWidget {
   const NotificationReminderCard({
     super.key,
-    required this.selectedPreset,
-    required this.onPresetChanged,
+    required this.selectedPresets,
+    required this.onPresetToggled,
     required this.selectedAmount,
     required this.selectedUnit,
     required this.onAmountChanged,
     required this.onUnitChanged,
   });
 
-  final ReminderPreset selectedPreset;
-  final ValueChanged<ReminderPreset> onPresetChanged;
+  final Set<ReminderPreset> selectedPresets;
+  final ValueChanged<ReminderPreset> onPresetToggled;
   final int selectedAmount;
   final ReminderUnit selectedUnit;
   final ValueChanged<int> onAmountChanged;
@@ -49,9 +49,9 @@ class NotificationReminderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCustom = selectedPreset == ReminderPreset.custom;
-    final selectedLabel = _formatSelectedReminder(
-      preset: selectedPreset,
+    final isCustom = selectedPresets.contains(ReminderPreset.custom);
+    final selectedLabel = _formatSelectedReminders(
+      presets: selectedPresets,
       amount: selectedAmount,
       unit: selectedUnit,
     );
@@ -90,20 +90,20 @@ class NotificationReminderCard extends StatelessWidget {
             const SizedBox(height: 16),
             _ReminderChoiceTile(
               title: '1 day before',
-              selected: selectedPreset == ReminderPreset.oneDayBefore,
-              onTap: () => onPresetChanged(ReminderPreset.oneDayBefore),
+              selected: selectedPresets.contains(ReminderPreset.oneDayBefore),
+              onTap: () => onPresetToggled(ReminderPreset.oneDayBefore),
             ),
             const SizedBox(height: 12),
             _ReminderChoiceTile(
               title: '6 hours before',
-              selected: selectedPreset == ReminderPreset.sixHoursBefore,
-              onTap: () => onPresetChanged(ReminderPreset.sixHoursBefore),
+              selected: selectedPresets.contains(ReminderPreset.sixHoursBefore),
+              onTap: () => onPresetToggled(ReminderPreset.sixHoursBefore),
             ),
             const SizedBox(height: 12),
             _ReminderChoiceTile(
               title: 'Custom reminder',
               selected: isCustom,
-              onTap: () => onPresetChanged(ReminderPreset.custom),
+              onTap: () => onPresetToggled(ReminderPreset.custom),
             ),
             const SizedBox(height: 14),
             Text(
@@ -180,7 +180,7 @@ class _ReminderChoiceTile extends StatelessWidget {
                 ),
               ),
             ),
-            _RadioIndicator(selected: selected),
+            _CheckboxIndicator(selected: selected),
           ],
         ),
       ),
@@ -188,8 +188,8 @@ class _ReminderChoiceTile extends StatelessWidget {
   }
 }
 
-class _RadioIndicator extends StatelessWidget {
-  const _RadioIndicator({required this.selected});
+class _CheckboxIndicator extends StatelessWidget {
+  const _CheckboxIndicator({required this.selected});
 
   final bool selected;
 
@@ -200,22 +200,18 @@ class _RadioIndicator extends StatelessWidget {
       width: 30,
       height: 30,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(9),
         border: Border.all(
-          width: 3,
+          width: 2.5,
           color: selected ? AppColors.cFFDEAF5F : AppColors.cFFD9CEC5,
         ),
+        color: selected ? AppColors.cFFDEAF5F : Colors.transparent,
       ),
       child: selected
-          ? Center(
-              child: Container(
-                width: 11,
-                height: 11,
-                decoration: const BoxDecoration(
-                  color: AppColors.cFFDEAF5F,
-                  shape: BoxShape.circle,
-                ),
-              ),
+          ? const Icon(
+              Icons.check_rounded,
+              size: 20,
+              color: Colors.white,
             )
           : null,
     );
@@ -352,17 +348,23 @@ class _CustomReminderPicker extends StatelessWidget {
   }
 }
 
-String _formatSelectedReminder({
-  required ReminderPreset preset,
+String _formatSelectedReminders({
+  required Set<ReminderPreset> presets,
   required int amount,
   required ReminderUnit unit,
 }) {
-  switch (preset) {
-    case ReminderPreset.oneDayBefore:
-      return '1 day before';
-    case ReminderPreset.sixHoursBefore:
-      return '6 hours before';
-    case ReminderPreset.custom:
-      return '$amount ${unit.countLabel(amount)} before';
+  if (presets.isEmpty) return 'None';
+
+  final labels = <String>[];
+  if (presets.contains(ReminderPreset.oneDayBefore)) {
+    labels.add('1 day before');
   }
+  if (presets.contains(ReminderPreset.sixHoursBefore)) {
+    labels.add('6 hours before');
+  }
+  if (presets.contains(ReminderPreset.custom)) {
+    labels.add('$amount ${unit.countLabel(amount)} before');
+  }
+
+  return labels.join(', ');
 }

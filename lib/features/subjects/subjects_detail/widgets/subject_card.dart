@@ -27,6 +27,11 @@ class SubjectInfoCard extends StatelessWidget {
     final iconColor = subjectColor.computeLuminance() > 0.6
         ? Colors.black87
         : Colors.white;
+    final infoLines = [
+      if (teacherInfo.trim().isNotEmpty) teacherInfo.trim(),
+      if (description.trim().isNotEmpty) description.trim(),
+    ];
+    final infoText = infoLines.join('\n');
 
     return Container(
       decoration: BoxDecoration(
@@ -111,7 +116,7 @@ class SubjectInfoCard extends StatelessWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            '$teacherInfo\n$description',
+                            infoText,
                             style: const TextStyle(
                               fontSize: 16,
                               height: 1.45,

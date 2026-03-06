@@ -107,58 +107,68 @@ class AssignmentsPage extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(22, 14, 22, 18),
               child: Row(
                 children: [
-                  const Text(
-                    'Assignments',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: AppColors.cFF8B6758,
-                      fontWeight: FontWeight.w900,
+                  const Expanded(
+                    child: Text(
+                      'Assignments',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: AppColors.cFF8B6758,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
-                  const Spacer(),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(24),
-                      onTap: () => _showSubjectFilterSheet(
-                        context,
-                        ref,
-                        filterSubjectsAsync,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 10,
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(24),
+                        onTap: () => _showSubjectFilterSheet(
+                          context,
+                          ref,
+                          filterSubjectsAsync,
                         ),
-                        decoration: BoxDecoration(
-                          color: AppColors.cFFF7F2EE,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: AppColors.cFFE5DBCF),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.tune_rounded,
-                              size: 20,
-                              color: AppColors.cFF8B6758,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              selectedSubject ?? 'Subject',
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.cFFF7F2EE,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: AppColors.cFFE5DBCF),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.tune_rounded,
+                                size: 20,
                                 color: AppColors.cFF8B6758,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              color: AppColors.cFF8B6758,
-                              size: 20,
-                            ),
-                          ],
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  selectedSubject ?? 'Subject',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: AppColors.cFF8B6758,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: AppColors.cFF8B6758,
+                                size: 20,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

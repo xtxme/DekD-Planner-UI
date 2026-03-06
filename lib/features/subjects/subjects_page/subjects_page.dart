@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:my_first_app/features/subjects/data/models/canvas_course.dart';
-import 'package:my_first_app/features/subjects/data/remote/canvas_course_remote_data_source.dart';
 import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
 import 'package:my_first_app/features/subjects/presentation/providers/subject_providers.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
@@ -27,73 +25,18 @@ class SubjectsPage extends ConsumerStatefulWidget {
 }
 
 class _SubjectsPageState extends ConsumerState<SubjectsPage> {
-  ProviderSubscription<AsyncValue<List<CanvasCourse>>>? _canvasCoursesSub;
-  bool _isRedirectingToLogin = false;
   String _query = '';
   SubjectsTab _activeTab = SubjectsTab.mySubjects;
   final Set<int> _importingCourseIds = <int>{};
   final Set<int> _dismissedCourseIds = <int>{};
 
   @override
-  void initState() {
-    super.initState();
-    _canvasCoursesSub = ref.listenManual<AsyncValue<List<CanvasCourse>>>(
-      canvasCoursesProvider,
-      (previous, next) {
-        next.whenOrNull(
-          error: (error, _) {
-            if (error is CanvasSessionExpiredException) {
-              _handleExpiredSession();
-            }
-          },
-        );
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _canvasCoursesSub?.close();
-    super.dispose();
-  }
-
-  Future<void> _handleExpiredSession() async {
-    if (_isRedirectingToLogin || !mounted) {
-      return;
-    }
-    _isRedirectingToLogin = true;
-
-    try {
-      await ref.read(authRemoteServiceProvider).signOut();
-    } catch (_) {
-      // Session might already be invalid on the server.
-    }
-
-    if (!mounted) {
-      return;
-    }
-
-    await ref.read(authLocalCacheDaoProvider).clearSession();
-    ref.invalidate(authSessionProvider);
-    ref.invalidate(canvasCoursesProvider);
-
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Your session expired. Please sign in again.'),
-      ),
-    );
-    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
     final subjectsAsync = ref.watch(subjectListProvider);
-    final canvasCoursesAsync = ref.watch(canvasCoursesProvider);
+    final canvasCoursesAsync = _activeTab == SubjectsTab.canvasCourses
+        ? ref.watch(canvasCoursesProvider)
+        : const AsyncData<List<CanvasCourse>>(<CanvasCourse>[]);
     final importedNames =
         subjectsAsync.valueOrNull
             ?.map((subject) => subject.name.trim().toLowerCase())
