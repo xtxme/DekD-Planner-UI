@@ -56,6 +56,13 @@ class SubjectsDetailPage extends ConsumerStatefulWidget {
 
 class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
   bool _showUpcoming = true;
+  late SubjectRow _subject;
+
+  @override
+  void initState() {
+    super.initState();
+    _subject = widget.subject;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,16 +87,17 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SubjectInfoCard(
-                      title: widget.subject.name,
-                      code: widget.subject.code,
+                      title: _subject.name,
+                      code: _subject.code,
                       teacherInfo: '',
-                      description: widget.subject.description,
-                      icon: widget.subject.iconCodepoint == 0
+                      description: _subject.description,
+                      icon: _subject.iconCodepoint == 0
                           ? Icons.menu_book_rounded
                           : IconData(
-                              widget.subject.iconCodepoint,
+                              _subject.iconCodepoint,
                               fontFamily: 'MaterialIcons',
                             ),
+                      subjectColor: Color(_subject.colorValue),
                     ),
                     const SizedBox(height: 16),
                     SubjectSegmentedTabs(
@@ -184,8 +192,8 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     required List<AssignmentRow> localRows,
     required List<CanvasAssignment> canvasAssignments,
   }) {
-    final subjectId = widget.subject.id;
-    final subjectNameNormalized = widget.subject.name.trim().toLowerCase();
+    final subjectId = _subject.id;
+    final subjectNameNormalized = _subject.name.trim().toLowerCase();
 
     final localItems = localRows
         .where((row) {
@@ -450,11 +458,19 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
   }
 
   Future<void> _openEditSubjectsPage() async {
-    await Navigator.of(context).push(
+    final updated = await Navigator.of(context).push<SubjectRow>(
       MaterialPageRoute(
-        builder: (_) => const EditSubjectsPage(withNavBar: false),
+        builder: (_) => EditSubjectsPage(withNavBar: false, subject: _subject),
       ),
     );
+
+    if (!mounted || updated == null) {
+      return;
+    }
+
+    setState(() {
+      _subject = updated;
+    });
   }
 
   Future<void> _showDeleteDialog() async {
@@ -463,9 +479,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Delete Subject'),
-          content: Text(
-            'Are you sure you want to delete "${widget.subject.name}"?',
-          ),
+          content: Text('Are you sure you want to delete "${_subject.name}"?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -484,7 +498,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     );
 
     if (confirmed == true && mounted) {
-      final subjectId = widget.subject.id;
+      final subjectId = _subject.id;
       if (subjectId != null && subjectId.isNotEmpty) {
         await ref.read(subjectDeleterProvider).delete(subjectId);
         if (mounted) {

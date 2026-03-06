@@ -19,7 +19,13 @@ final authSessionProvider = FutureProvider<AuthUser?>(
     final remote = ref.watch(authRemoteServiceProvider);
 
     final cached = await local.readSession();
-    final user = await remote.currentUser();
+    AuthUser? user;
+    try {
+      user = await remote.currentUser();
+    } catch (_) {
+      // If remote check fails unexpectedly, keep cached auth state.
+      user = cached;
+    }
     if (user == null) {
       if (cached != null) {
         await local.clearSession();

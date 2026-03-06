@@ -156,10 +156,15 @@ class CanvasAssignmentRemoteDataSource {
       debugPrint('CANVAS_DEBUG: Status: ${error.status}');
       debugPrint('CANVAS_DEBUG: Details: ${error.details}');
 
+      // RETHROW to let invokeAssignmentsProxy() retry logic handle auth failures
+      // Only throw CanvasSessionExpiredException if retries were exhausted
       if (_isAuthFailure(error)) {
         debugPrint('CANVAS_DEBUG: ❌ AUTH FAILURE FROM EXCEPTION');
-        throw const CanvasSessionExpiredException();
+        debugPrint('CANVAS_DEBUG: ⚠️  Rethrowing to allow retry');
+        rethrow;
       }
+
+      // For non-auth errors, wrap in a regular Exception
       throw Exception(_extractErrorMessage(error.details));
     } on AuthException catch (error) {
       debugPrint('CANVAS_DEBUG: ❌ AuthException caught');
@@ -178,6 +183,48 @@ class CanvasAssignmentRemoteDataSource {
   Future<List<CanvasAssignment>> fetchAssignments() async {
     final response = await fetchAssignmentsWithUser();
     return response.assignments;
+  }
+
+  Future<CanvasAssignmentDetails> fetchAssignmentDetails({
+    required int assignmentId,
+    required int courseId,
+  }) async {
+    await requireActiveSession();
+
+    try {
+      final response = await _client.functions.invoke(
+        'canvas-assignment-details-proxy',
+        method: HttpMethod.get,
+        queryParameters: {
+          'assignment_id': assignmentId.toString(),
+          'course_id': courseId.toString(),
+        },
+      );
+
+      if (_isAuthFailureStatus(response.status, response.data)) {
+        throw const CanvasSessionExpiredException();
+      }
+
+      if (response.status >= 400) {
+        throw Exception(_extractErrorMessage(response.data));
+      }
+
+      final data = response.data;
+      if (data is! Map) {
+        throw const FormatException(
+          'Canvas assignment details proxy returned an invalid response.',
+        );
+      }
+
+      return CanvasAssignmentDetails.fromMap(Map<String, dynamic>.from(data));
+    } on FunctionException catch (error) {
+      if (_isAuthFailure(error)) {
+        throw const CanvasSessionExpiredException();
+      }
+      throw Exception(_extractErrorMessage(error.details));
+    } on AuthException {
+      throw const CanvasSessionExpiredException();
+    }
   }
 
   Future<void> requireActiveSession() async {
@@ -220,7 +267,7 @@ class CanvasAssignmentRemoteDataSource {
     throw const CanvasSessionExpiredException();
   }
 
-  Future<FunctionResponse> invokeAssignmentsProxy() {
+  Future<FunctionResponse> invokeAssignmentsProxy({int retryCount = 0}) async {
     debugPrint(
       'CANVAS_DEBUG: invokeAssignmentsProxy() - calling Supabase Edge Function',
     );
@@ -236,7 +283,29 @@ class CanvasAssignmentRemoteDataSource {
       debugPrint('CANVAS_DEBUG: ⚠️  SENDING REQUEST WITHOUT SESSION!');
     }
 
-    return _client.functions.invoke('canvas-assignments-proxy');
+    try {
+      final response = await _client.functions.invoke(
+        'canvas-assignments-proxy',
+      );
+
+      debugPrint('CANVAS_DEBUG: Proxy response status: ${response.status}');
+
+      // Retry on temporary auth failures (token sync issues)
+      if (_isAuthFailureStatus(response.status, response.data) &&
+          retryCount < 3) {
+        debugPrint(
+          'CANVAS_DEBUG: ⚠️  Got auth failure, retrying... (${retryCount + 1}/3)',
+        );
+        await Future.delayed(Duration(milliseconds: 200 * (retryCount + 1)));
+
+        return invokeAssignmentsProxy(retryCount: retryCount + 1);
+      }
+
+      return response;
+    } catch (e) {
+      debugPrint('CANVAS_DEBUG: ❌ Error invoking proxy: $e');
+      rethrow;
+    }
   }
 
   String _extractErrorMessage(dynamic data) {
@@ -259,13 +328,8 @@ class CanvasAssignmentRemoteDataSource {
     debugPrint('CANVAS_DEBUG: Reason phrase: $reasonPhrase');
 
     final isAuthError =
-        details.contains('invalid jwt') ||
-        details.contains('session_not_found') ||
-        details.contains(
-          'session from session_id claim in jwt does not exist',
-        ) ||
-        details.contains('unauthorized') ||
-        reasonPhrase.contains('unauthorized');
+        _looksLikeSupabaseSessionError(details) ||
+        _looksLikeSupabaseSessionError(reasonPhrase);
 
     debugPrint('CANVAS_DEBUG: Is auth error: $isAuthError');
     return isAuthError;
@@ -277,8 +341,12 @@ class CanvasAssignmentRemoteDataSource {
     debugPrint('CANVAS_DEBUG: Details: $details');
 
     if (status == 401) {
-      debugPrint('CANVAS_DEBUG: ❌ Status 401 - Unauthorized');
-      return true;
+      final text = details?.toString().toLowerCase() ?? '';
+      final isSupabaseSessionFailure = _looksLikeSupabaseSessionError(text);
+      debugPrint(
+        'CANVAS_DEBUG: Status 401 detected, Supabase session failure = $isSupabaseSessionFailure',
+      );
+      return isSupabaseSessionFailure;
     }
 
     if (status != 403) {
@@ -300,11 +368,18 @@ class CanvasAssignmentRemoteDataSource {
     }
 
     final text = details?.toString().toLowerCase() ?? '';
-    final isSessionNotFound =
-        text.contains('session_not_found') ||
-        text.contains('session from session_id claim in jwt does not exist');
+    final isSessionNotFound = _looksLikeSupabaseSessionError(text);
 
     debugPrint('CANVAS_DEBUG: Is session not found (text): $isSessionNotFound');
     return isSessionNotFound;
+  }
+
+  bool _looksLikeSupabaseSessionError(String text) {
+    final normalized = text.toLowerCase();
+    return normalized.contains('session_not_found') ||
+        normalized.contains('invalid jwt') ||
+        normalized.contains(
+          'session from session_id claim in jwt does not exist',
+        );
   }
 }

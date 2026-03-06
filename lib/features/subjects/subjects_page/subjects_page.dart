@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:my_first_app/features/subjects/data/models/canvas_course.dart';
+import 'package:my_first_app/features/subjects/data/remote/canvas_course_remote_data_source.dart';
 import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
 import 'package:my_first_app/features/subjects/presentation/providers/subject_providers.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
@@ -25,10 +27,67 @@ class SubjectsPage extends ConsumerStatefulWidget {
 }
 
 class _SubjectsPageState extends ConsumerState<SubjectsPage> {
+  ProviderSubscription<AsyncValue<List<CanvasCourse>>>? _canvasCoursesSub;
+  bool _isRedirectingToLogin = false;
   String _query = '';
   SubjectsTab _activeTab = SubjectsTab.mySubjects;
   final Set<int> _importingCourseIds = <int>{};
   final Set<int> _dismissedCourseIds = <int>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _canvasCoursesSub = ref.listenManual<AsyncValue<List<CanvasCourse>>>(
+      canvasCoursesProvider,
+      (previous, next) {
+        next.whenOrNull(
+          error: (error, _) {
+            if (error is CanvasSessionExpiredException) {
+              _handleExpiredSession();
+            }
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _canvasCoursesSub?.close();
+    super.dispose();
+  }
+
+  Future<void> _handleExpiredSession() async {
+    if (_isRedirectingToLogin || !mounted) {
+      return;
+    }
+    _isRedirectingToLogin = true;
+
+    try {
+      await ref.read(authRemoteServiceProvider).signOut();
+    } catch (_) {
+      // Session might already be invalid on the server.
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    await ref.read(authLocalCacheDaoProvider).clearSession();
+    ref.invalidate(authSessionProvider);
+    ref.invalidate(canvasCoursesProvider);
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Your session expired. Please sign in again.'),
+      ),
+    );
+    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +173,17 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
           _activeTab = index == 0
               ? SubjectsTab.mySubjects
               : SubjectsTab.canvasCourses;
+
+          // ✅ Auto-sync เมื่อเปลี่ยนเป็น Canvas Courses tab
+          // ทำให้ user ไม่ต้องกดปุ่ม Sync Canvas แบบ manual
+          if (_activeTab == SubjectsTab.canvasCourses) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ref.invalidate(canvasCoursesProvider);
+              debugPrint(
+                'SUBJECTS_DEBUG: ✅ Auto-synced Canvas courses on tab switch',
+              );
+            });
+          }
         });
       },
     );
@@ -604,6 +674,7 @@ class _CanvasCourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final code = course.courseCode.trim();
+    final teacherName = course.teacherName.trim();
     final subtitle = code.isNotEmpty ? code : 'Canvas course';
     final canDismiss = !isImporting;
 
@@ -652,6 +723,19 @@ class _CanvasCourseCard extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
+                if (teacherName.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Instructor: $teacherName',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.cFFA48C7E,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -718,6 +802,10 @@ class _SubjectListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final badgeParts = _subjectBadgeParts(subtitle);
+    final subjectColor = Color(subject.colorValue);
+    final iconColor = subjectColor.computeLuminance() > 0.6
+        ? Colors.black87
+        : Colors.white;
 
     return Material(
       color: Colors.transparent,
@@ -748,10 +836,10 @@ class _SubjectListCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceSoft,
+                    color: subjectColor,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(icon, color: AppColors.textPrimary, size: 24),
+                  child: Icon(icon, color: iconColor, size: 24),
                 ),
                 const SizedBox(width: 14),
                 Expanded(

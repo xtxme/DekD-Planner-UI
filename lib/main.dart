@@ -11,6 +11,8 @@ import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
 import 'features/auth/reset_password_page.dart';
 import 'features/auth/update_page.dart';
+import 'features/home/home_page.dart';
+import 'features/assignments/assignments_page/assignments_page.dart';
 import 'shared/theme/app_theme.dart';
 
 class AppScrollBehavior extends MaterialScrollBehavior {
@@ -76,6 +78,8 @@ class _MyAppState extends State<MyApp> {
         '/forgot': (context) => const CheckPage(),
         '/reset-password': (context) => const ResetPasswordPage(),
         '/password-updated': (context) => const UpdatePage(),
+        '/home': (context) => const HomePage(),
+        '/assignments': (context) => const AssignmentsPage(),
       },
     );
   }

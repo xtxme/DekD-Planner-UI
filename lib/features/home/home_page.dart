@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,7 +9,9 @@ import 'package:my_first_app/features/settings/presentation/providers/settings_p
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'package:my_first_app/features/home/presentation/home_assignment_ui_mapper.dart';
-import 'package:my_first_app/features/home/presentation/providers/home_tasks_provider.dart';
+import 'package:my_first_app/features/home/presentation/providers/home_tasks_provider_fixed.dart';
+import 'package:my_first_app/features/assignments/add_assignments/add_assignments.dart';
+import 'package:my_first_app/features/subjects/providers.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -23,6 +26,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   bool _isRedirectingToLogin = false;
   bool _hasLoggedAuthError = false;
   bool _hasInitialized = false;
+  int _consecutiveAuthErrors = 0;
+  Timer? _authErrorResetTimer;
 
   @override
   void initState() {
@@ -36,27 +41,68 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
 
     _assignmentsSubscription = ref
-        .listenManual<AsyncValue<HomeAssignmentSections>>(
-          homeCanvasAssignmentSectionsProvider,
-          (previous, next) {
-            debugPrint('HOME_DEBUG: Assignment provider changed');
-            debugPrint('HOME_DEBUG: Previous: ${previous?.valueOrNull}');
-            debugPrint('HOME_DEBUG: Next: ${next?.valueOrNull}');
+        .listenManual<
+          AsyncValue<HomeAssignmentSections>
+        >(homeCanvasAssignmentSectionsProvider, (previous, next) {
+          debugPrint('HOME_DEBUG: Assignment provider changed');
+          debugPrint('HOME_DEBUG: Previous: ${previous?.valueOrNull}');
+          debugPrint('HOME_DEBUG: Next: ${next.valueOrNull}');
 
-            next?.whenOrNull(
-              error: (error, _) {
-                debugPrint('HOME_DEBUG: Error in assignments: $error');
-                debugPrint('HOME_DEBUG: Error type: ${error.runtimeType}');
-                if (error is CanvasSessionExpiredException) {
+          next.whenOrNull(
+            error: (error, _) {
+              debugPrint('HOME_DEBUG: Error in assignments: $error');
+              debugPrint('HOME_DEBUG: Error type: ${error.runtimeType}');
+              if (error is CanvasSessionExpiredException) {
+                debugPrint(
+                  'HOME_DEBUG: ❌ CanvasSessionExpiredException caught!',
+                );
+
+                // ✅ Only sign out after multiple consecutive auth errors
+                // This prevents false positives from transient network issues
+                _consecutiveAuthErrors++;
+                debugPrint(
+                  'HOME_DEBUG: Consecutive auth errors: $_consecutiveAuthErrors',
+                );
+
+                if (_consecutiveAuthErrors >= 3) {
                   debugPrint(
-                    'HOME_DEBUG: ❌ CanvasSessionExpiredException caught!',
+                    'HOME_DEBUG: Too many auth errors, signing out...',
                   );
                   _handleExpiredSession();
+                } else {
+                  // Reset the counter after 10 seconds
+                  _authErrorResetTimer?.cancel();
+                  _authErrorResetTimer = Timer(const Duration(seconds: 10), () {
+                    _consecutiveAuthErrors = 0;
+                    debugPrint('HOME_DEBUG: Auth error counter reset');
+                  });
+
+                  // Show a warning but don't sign out yet
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Connection issue detected. Retrying... ($_consecutiveAuthErrors/3)',
+                      ),
+                      duration: const Duration(seconds: 3),
+                      action: SnackBarAction(
+                        label: 'Retry Now',
+                        onPressed: () {
+                          ref.invalidate(canvasAssignmentsWithUserProvider);
+                          ref.invalidate(homeCanvasAssignmentSectionsProvider);
+                        },
+                      ),
+                    ),
+                  );
                 }
-              },
-            );
-          },
-        );
+              }
+            },
+            data: (_) {
+              // Reset counter on success
+              _consecutiveAuthErrors = 0;
+              _authErrorResetTimer?.cancel();
+            },
+          );
+        });
 
     _hasInitialized = true;
   }
@@ -64,6 +110,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void dispose() {
     debugPrint('HOME_DEBUG: dispose() called');
+    _authErrorResetTimer?.cancel();
     _assignmentsSubscription?.close();
     super.dispose();
   }
@@ -106,7 +153,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     debugPrint('HOME_DEBUG: Invalidating auth session provider...');
     ref.invalidate(authSessionProvider);
     ref.invalidate(profileProvider);
-    ref.invalidate(homeCanvasAssignmentsProvider);
+    ref.invalidate(canvasAssignmentsWithUserProvider);
     ref.invalidate(homeCanvasAssignmentSectionsProvider);
 
     if (!mounted) {
@@ -296,6 +343,38 @@ class _HomePageState extends ConsumerState<HomePage> {
       );
     }
 
+    if (authSession.hasError) {
+      debugPrint(
+        'HOME_DEBUG: authSessionProvider has error: ${authSession.error}',
+      );
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.wifi_off_rounded, size: 36),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Could not verify session right now.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () => ref.invalidate(authSessionProvider),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     // ✅ ถ้าไม่มี session แต่อยู่ใน home page → redirect ไป login
     if (!authSession.hasValue || authSession.value == null) {
       if (!_hasLoggedAuthError) {
@@ -347,6 +426,12 @@ class _HomePageState extends ConsumerState<HomePage> {
     final greetingDisplayName = firstName.isNotEmpty ? firstName : 'Alex';
     final avatarUrl = profileAsync.valueOrNull?.avatarUrl;
     final assignmentsAsync = ref.watch(homeCanvasAssignmentSectionsProvider);
+    // ดึงรายการวิชาที่มีเพื่อส่งให้หน้า Add Assignments
+    final subjectsAsync = ref.watch(subjectListProvider);
+    final availableSubjectNames = subjectsAsync.maybeWhen(
+      data: (rows) => rows.map((e) => e.name).toList(),
+      orElse: () => const <String>[],
+    );
 
     debugPrint(
       'HOME_DEBUG: assignmentsAsync state = ${assignmentsAsync.isLoading
@@ -484,7 +569,17 @@ class _HomePageState extends ConsumerState<HomePage> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              // นำทางไปหน้า Add Assignment
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => AddAssignmentsPage(
+                                    withNavBar: false,
+                                    availableSubjects: availableSubjectNames,
+                                  ),
+                                ),
+                              );
+                            },
                             icon: const Icon(Icons.add_circle, size: 22),
                             label: const Text(
                               'Add New',
@@ -516,7 +611,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              // นำทางไปหน้า All Assignments
+                              Navigator.of(context).pushNamed('/assignments');
+                            },
                             icon: const Icon(
                               Icons.folder_rounded,
                               size: 22,
@@ -603,7 +701,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         _buildErrorAssignmentsState(
                           message: '$error',
                           onRetry: () {
-                            ref.invalidate(homeCanvasAssignmentsProvider);
+                            ref.invalidate(canvasAssignmentsWithUserProvider);
                             ref.invalidate(
                               homeCanvasAssignmentSectionsProvider,
                             );

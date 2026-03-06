@@ -21,6 +21,26 @@ class SubjectRow {
   final int iconCodepoint;
   final bool isArchived;
 
+  SubjectRow copyWith({
+    String? id,
+    String? name,
+    String? code,
+    String? description,
+    int? colorValue,
+    int? iconCodepoint,
+    bool? isArchived,
+  }) {
+    return SubjectRow(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      code: code ?? this.code,
+      description: description ?? this.description,
+      colorValue: colorValue ?? this.colorValue,
+      iconCodepoint: iconCodepoint ?? this.iconCodepoint,
+      isArchived: isArchived ?? this.isArchived,
+    );
+  }
+
   Map<String, dynamic> toInsertMap({required String userId}) => {
     'user_id': userId,
     'name': name,

@@ -44,9 +44,7 @@ class AssignmentsUiMapper {
         !dueAt.isBefore(todayStart) && dueAt.isBefore(tomorrowStart);
     final isOverdue = dueAt.isBefore(now);
 
-    final subject = assignment.courseName.trim().isNotEmpty
-        ? assignment.courseName.trim()
-        : 'Unknown Subject';
+    final subject = _resolveSubject(courseName: assignment.courseName);
 
     final detailsText = _stripHtml(assignment.description).trim();
 
@@ -73,5 +71,16 @@ class AssignmentsUiMapper {
         .replaceAll(RegExp(r'<[^>]*>'), ' ')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
+  }
+
+  String _resolveSubject({
+    required String courseName,
+  }) {
+    final normalizedCourse = courseName.trim();
+    if (normalizedCourse.isNotEmpty) {
+      return normalizedCourse;
+    }
+
+    return 'Unknown Subject';
   }
 }

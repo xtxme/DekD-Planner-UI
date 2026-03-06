@@ -10,6 +10,7 @@ class SubjectInfoCard extends StatelessWidget {
     required this.teacherInfo,
     required this.description,
     required this.icon,
+    required this.subjectColor,
   });
 
   final String? category;
@@ -18,10 +19,14 @@ class SubjectInfoCard extends StatelessWidget {
   final String teacherInfo;
   final String description;
   final IconData icon;
+  final Color subjectColor;
 
   @override
   Widget build(BuildContext context) {
     final hasCategory = category != null && category!.trim().isNotEmpty;
+    final iconColor = subjectColor.computeLuminance() > 0.6
+        ? Colors.black87
+        : Colors.white;
 
     return Container(
       decoration: BoxDecoration(
@@ -33,7 +38,7 @@ class SubjectInfoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         child: Row(
           children: [
-            Container(width: 8, height: 260, color: AppColors.cFFE0B35D),
+            Container(width: 8, height: 260, color: subjectColor),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 18, 16),
@@ -66,14 +71,10 @@ class SubjectInfoCard extends StatelessWidget {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: subjectColor,
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Icon(
-                            icon,
-                            size: 34,
-                            color: AppColors.cFF8B6758,
-                          ),
+                          child: Icon(icon, size: 34, color: iconColor),
                         ),
                       ],
                     ),

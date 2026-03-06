@@ -3,6 +3,8 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
+import 'package:my_first_app/features/subjects/presentation/providers/subject_providers.dart';
 
 import '../../../shared/theme/app_colors.dart';
 import '../../../shared/widgets/navbar/app_navbar.dart';
@@ -13,9 +15,14 @@ import 'widgets/edit_subjects_field_shell.dart';
 import 'widgets/edit_subjects_section_label.dart';
 
 class EditSubjectsPage extends ConsumerStatefulWidget {
-  const EditSubjectsPage({super.key, this.withNavBar = true});
+  const EditSubjectsPage({
+    super.key,
+    this.withNavBar = true,
+    required this.subject,
+  });
 
   final bool withNavBar;
+  final SubjectRow subject;
 
   @override
   ConsumerState<EditSubjectsPage> createState() => _EditSubjectsPageState();
@@ -52,11 +59,21 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: 'Mathematics');
-    _codeController = TextEditingController(text: 'MATH101');
+    _nameController = TextEditingController(text: widget.subject.name);
+    _codeController = TextEditingController(text: widget.subject.code);
     _descriptionController = TextEditingController(
-      text: 'Mon/Wed 10:00 AM - Room 402',
+      text: widget.subject.description,
     );
+    _selectedColor = Color(widget.subject.colorValue);
+    _selectedIcon = widget.subject.iconCodepoint == 0
+        ? Icons.menu_book_rounded
+        : IconData(widget.subject.iconCodepoint, fontFamily: 'MaterialIcons');
+    if (!_colorChoices.contains(_selectedColor)) {
+      _colorChoices.add(_selectedColor);
+    }
+    if (!_iconChoices.contains(_selectedIcon)) {
+      _iconChoices.add(_selectedIcon);
+    }
     _nameFocusNode = FocusNode();
     _codeFocusNode = FocusNode();
     _descriptionFocusNode = FocusNode();
@@ -108,11 +125,13 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
                     TextField(
                       controller: _nameController,
                       focusNode: _nameFocusNode,
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.newline,
                       textCapitalization: TextCapitalization.none,
                       enableSuggestions: true,
                       autocorrect: true,
+                      minLines: 1,
+                      maxLines: null,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
@@ -302,12 +321,46 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
     );
   }
 
-  void _onUpdatePressed() {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(content: Text('Subject updated (UI preview).')),
-      );
+  Future<void> _onUpdatePressed() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('Subject name is required.')),
+        );
+      return;
+    }
+
+    final updated = widget.subject.copyWith(
+      name: name,
+      code: _codeController.text.trim(),
+      description: _descriptionController.text.trim(),
+      colorValue: _selectedColor.toARGB32(),
+      iconCodepoint: _selectedIcon.codePoint,
+    );
+
+    try {
+      await ref.read(subjectDaoProvider).update(updated);
+      ref.invalidate(subjectListProvider);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(content: Text('Subject updated successfully.')),
+          );
+        Navigator.of(context).pop(updated);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(content: Text('Failed to update subject: $e')),
+          );
+      }
+    }
   }
 
   void _onFocusChanged() {
@@ -319,11 +372,7 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
   Future<void> _onAddColorPressed() async {
     var tempColor = _selectedColor;
     final hexController = TextEditingController(
-      text: tempColor
-          .toARGB32()
-          .toRadixString(16)
-          .padLeft(8, '0')
-          .substring(2),
+      text: tempColor.toARGB32().toRadixString(16).padLeft(8, '0').substring(2),
     );
 
     final pickedColor = await showDialog<Color>(

@@ -15,6 +15,31 @@ type DenoLike = {
 
 const deno = (globalThis as unknown as { Deno: DenoLike }).Deno;
 
+function toNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string" && value.trim().length > 0) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return null;
+}
+
+function extractCourseIdFromUrl(value: unknown): number | null {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return null;
+  }
+
+  const match = /\/courses\/(\d+)(?:\/|$)/i.exec(value);
+  if (!match) {
+    return null;
+  }
+  return Number(match[1]);
+}
+
 function mapTodoItem(item: Record<string, unknown>) {
   const assignment = item.assignment;
   const course = item.course;
@@ -29,12 +54,29 @@ function mapTodoItem(item: Record<string, unknown>) {
       ? course as Record<string, unknown>
       : {};
 
+  const resolvedCourseId =
+    toNumber(courseMap.id) ??
+    toNumber(assignmentMap.course_id) ??
+    toNumber(item.course_id) ??
+    toNumber(item.context_id) ??
+    extractCourseIdFromUrl(assignmentMap.html_url) ??
+    extractCourseIdFromUrl(item.html_url);
+
+  const rawContextName = item.context_name;
+  const contextName =
+    typeof rawContextName === "string" ? rawContextName.trim() : "";
+  const rawCourseName = courseMap.name;
+  const courseName =
+    typeof rawCourseName === "string" && rawCourseName.trim().length > 0
+      ? rawCourseName.trim()
+      : contextName;
+
   return {
     id: typeof assignmentMap.id === "number" ? assignmentMap.id : 0,
     name: typeof assignmentMap.name === "string" ? assignmentMap.name : "",
     due_at: typeof assignmentMap.due_at === "string" ? assignmentMap.due_at : null,
-    course_id: typeof courseMap.id === "number" ? courseMap.id : null,
-    course_name: typeof courseMap.name === "string" ? courseMap.name : "",
+    course_id: resolvedCourseId,
+    course_name: courseName,
     description:
       typeof assignmentMap.description === "string" ? assignmentMap.description : "",
   };

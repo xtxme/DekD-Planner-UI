@@ -72,6 +72,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       debugPrint('AUTH_DEBUG: User ID: ${session.user.id}');
       debugPrint('AUTH_DEBUG: User Email: ${session.user.email}');
 
+      // Avoid eager Canvas prefetch during auth transition.
+      // Subjects page will sync courses when user opens Canvas tab.
+
       if (!mounted) {
         return;
       }

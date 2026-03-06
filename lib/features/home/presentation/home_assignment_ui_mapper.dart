@@ -36,9 +36,7 @@ class HomeAssignmentUiMapper {
     CanvasAssignment assignment, {
     required bool isDueToday,
   }) {
-    final subject = assignment.courseName.trim().isNotEmpty
-        ? assignment.courseName.trim()
-        : 'Unknown Subject';
+    final subject = _resolveSubject(courseName: assignment.courseName);
 
     final title = assignment.name.trim().isNotEmpty
         ? assignment.name.trim()
@@ -72,6 +70,17 @@ class HomeAssignmentUiMapper {
       showDuePill: isDueToday,
       showShadow: isDueToday,
     );
+  }
+
+  String _resolveSubject({
+    required String courseName,
+  }) {
+    final normalizedCourse = courseName.trim();
+    if (normalizedCourse.isNotEmpty) {
+      return normalizedCourse;
+    }
+
+    return 'Unknown Subject';
   }
 
   String _buildSubtitle({

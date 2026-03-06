@@ -31,7 +31,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   final ImagePicker _imagePicker = ImagePicker();
   File? _selectedAvatarFile;
-  String? _avatarUrl;
 
   @override
   void initState() {
@@ -55,19 +54,19 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final isLoading = profileAsync.isLoading || authSessionAsync.isLoading;
     final hasError = profileAsync.hasError || authSessionAsync.hasError;
 
+    final profile = profileAsync.valueOrNull;
+    final persistedAvatarUrl = profile?.avatarUrl;
     final ImageProvider<Object>? avatarImageProvider =
         _selectedAvatarFile != null
         ? FileImage(_selectedAvatarFile!)
-        : (_avatarUrl != null && _avatarUrl!.isNotEmpty
-              ? NetworkImage(_avatarUrl!)
+        : (persistedAvatarUrl != null && persistedAvatarUrl.isNotEmpty
+              ? NetworkImage(persistedAvatarUrl)
               : null);
 
-    final profile = profileAsync.valueOrNull;
     final authUser = authSessionAsync.valueOrNull;
     if (!_didSeedInitialValues && !isLoading && !hasError && profile != null) {
       _nameController.text = profile.displayName?.trim() ?? '';
       _emailController.text = authUser?.email.trim() ?? '';
-      _avatarUrl = profile.avatarUrl;
       _didSeedInitialValues = true;
     }
 
@@ -234,7 +233,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
     try {
       final profile = await ref.read(profileProvider.future);
-      var nextAvatarUrl = _avatarUrl;
+      var nextAvatarUrl = profile.avatarUrl;
 
       if (_selectedAvatarFile != null) {
         nextAvatarUrl = await ref
@@ -254,7 +253,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
       if (!mounted) return;
       setState(() {
-        _avatarUrl = nextAvatarUrl;
         _selectedAvatarFile = null;
       });
       messenger.showSnackBar(

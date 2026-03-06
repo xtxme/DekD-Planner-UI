@@ -88,6 +88,14 @@ class SupabaseAuthService implements AuthRemoteService {
       );
       return _mapUser(userResponse.user);
     } on AuthException catch (error) {
+      final message = error.message.toLowerCase();
+      final isInvalidSession = message.contains('invalid jwt') ||
+          message.contains('session_not_found') ||
+          message.contains(
+            'session from session_id claim in jwt does not exist',
+          ) ||
+          message.contains('invalid or expired token');
+
       _logCurrentUserCheck(
         'AUTH_DEBUG',
         'currentUser(): getUser failed '
@@ -96,8 +104,24 @@ class SupabaseAuthService implements AuthRemoteService {
             'sessionId=$sessionId '
             'expiresAt=${session.expiresAt}',
       );
-      await _client.auth.signOut(scope: SignOutScope.local);
-      return null;
+
+      if (isInvalidSession) {
+        await _client.auth.signOut(scope: SignOutScope.local);
+        return null;
+      }
+
+      // Keep user signed in on transient failures (network/backend hiccups).
+      _logCurrentUserCheck(
+        'AUTH_DEBUG',
+        'currentUser(): preserving local session user due to transient failure',
+      );
+      return _mapUser(session.user);
+    } catch (error) {
+      _logCurrentUserCheck(
+        'AUTH_DEBUG',
+        'currentUser(): unexpected error ($error), preserving local session user',
+      );
+      return _mapUser(session.user);
     }
   }
 

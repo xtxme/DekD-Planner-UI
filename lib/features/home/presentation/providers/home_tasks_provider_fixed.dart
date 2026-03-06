@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/core/supabase/supabase_client_provider.dart';
 import 'package:my_first_app/features/home/data/models/home_task_row.dart';
 import 'package:my_first_app/features/home/data/remote/supabase_home_dao.dart';
 import 'package:my_first_app/features/home/data/models/canvas_assignment.dart';
 import 'package:my_first_app/features/home/data/remote/canvas_assignment_remote_data_source.dart';
+import 'package:my_first_app/features/home/presentation/providers/canvas_assignments_retry_provider.dart';
 import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
 import 'package:my_first_app/features/subjects/providers.dart';
 
@@ -17,29 +17,13 @@ final homeTasksProvider = FutureProvider<List<HomeTask>>((ref) async {
   return dao.getAll();
 });
 
-final canvasAssignmentRemoteDataSourceProvider =
-    Provider<CanvasAssignmentRemoteDataSource>(
-      (ref) => CanvasAssignmentRemoteDataSource(
-        client: ref.watch(supabaseClientProvider),
-      ),
-    );
-
-/// ✅ ดึงข้อมูล Canvas assignments พร้อม user info
-/// ✅ Added retry logic to handle transient auth failures
+/// ✅ Provider that fetches Canvas assignments with automatic retry on auth failures
+/// This replaces the original canvasAssignmentsWithUserProvider to add resilience
 final canvasAssignmentsWithUserProvider =
     FutureProvider<CanvasAssignmentsResponse>((ref) async {
-      // Add a small delay to ensure JWT is fully propagated to backend
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      final remoteDataSource = ref.watch(
-        canvasAssignmentRemoteDataSourceProvider,
-      );
-
-      // Use retry logic to handle transient auth failures
-      final response = await _fetchWithRetry(
-        () => remoteDataSource.fetchAssignmentsWithUser(),
-        maxAttempts: 3,
-        initialDelay: const Duration(milliseconds: 500),
+      // Use the retry-enabled provider instead of direct call
+      final response = await ref.watch(
+        canvasAssignmentsWithRetryProvider.future,
       );
 
       final subjects = await ref.watch(subjectListProvider.future);
@@ -54,49 +38,7 @@ final canvasAssignmentsWithUserProvider =
       );
     });
 
-/// Helper function to retry operations with exponential backoff
-Future<T> _fetchWithRetry<T>(
-  Future<T> Function() operation, {
-  required int maxAttempts,
-  required Duration initialDelay,
-}) async {
-  int attempt = 0;
-  Duration delay = initialDelay;
-
-  while (true) {
-    attempt++;
-
-    try {
-      return await operation();
-    } catch (error) {
-      // Only retry on auth-related errors
-      final isAuthError =
-          error is CanvasSessionExpiredException ||
-          error.toString().toLowerCase().contains('invalid jwt') ||
-          error.toString().toLowerCase().contains('unauthorized');
-
-      if (attempt >= maxAttempts || !isAuthError) {
-        rethrow;
-      }
-
-      debugPrint(
-        'RETRY_DEBUG: Auth error on attempt $attempt/$maxAttempts, retrying in ${delay.inMilliseconds}ms...',
-      );
-
-      await Future.delayed(delay);
-
-      // Exponential backoff
-      delay = Duration(
-        milliseconds: (delay.inMilliseconds * 2).clamp(
-          initialDelay.inMilliseconds,
-          5000, // Max 5 seconds
-        ),
-      );
-    }
-  }
-}
-
-/// ✅ Provider เดิมสำหรับ backward compatibility
+/// ✅ Provider สำหรับ backward compatibility
 /// ใช้ canvasAssignmentsWithUserProvider แทน
 @Deprecated('Use canvasAssignmentsWithUserProvider instead')
 final homeCanvasAssignmentsProvider = FutureProvider<List<CanvasAssignment>>((
@@ -179,7 +121,7 @@ List<CanvasAssignment> _resolveAssignmentSubjects(
           id: assignment.id,
           name: assignment.name,
           dueAt: assignment.dueAt,
-          courseId: assignment.courseId,
+          courseId: courseId,
           courseName: subjectName,
           description: assignment.description,
         );
@@ -194,30 +136,4 @@ int? _extractCanvasCourseId(String description) {
   ).firstMatch(description);
   if (match == null) return null;
   return int.tryParse(match.group(1)!);
-}
-
-/// ✅ Provider สำหรับ Canvas Assignment Details (มากขึ้น)
-/// Fetch เมื่อ user กดดู assignment details
-final canvasAssignmentDetailsProvider =
-    FutureProvider.family<CanvasAssignmentDetails, AssignmentDetailsParams>((
-      ref,
-      params,
-    ) async {
-      return ref
-          .read(canvasAssignmentRemoteDataSourceProvider)
-          .fetchAssignmentDetails(
-            assignmentId: params.assignmentId,
-            courseId: params.courseId,
-          );
-    });
-
-/// ✅ Parameters สำหรับเรียก assignment details
-class AssignmentDetailsParams {
-  const AssignmentDetailsParams({
-    required this.assignmentId,
-    required this.courseId,
-  });
-
-  final int assignmentId;
-  final int courseId;
 }
