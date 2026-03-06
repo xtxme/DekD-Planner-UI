@@ -195,8 +195,10 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) =>
-                                const SubjectsDetailPage(withNavBar: false),
+                            builder: (_) => SubjectsDetailPage(
+                              withNavBar: false,
+                              subject: subject,
+                            ),
                           ),
                         );
                       },
@@ -674,19 +676,22 @@ class _CanvasCourseCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _ImportButton(
-                      isImported: isImported,
-                      isImporting: isImporting,
-                      onPressed: onImport,
-                    ),
-                    if (canDismiss) ...[
-                      const SizedBox(width: 8),
-                      _DismissButton(enabled: true, onPressed: onDismiss),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _ImportButton(
+                        isImported: isImported,
+                        isImporting: isImporting,
+                        onPressed: onImport,
+                      ),
+                      if (canDismiss) ...[
+                        const SizedBox(width: 8),
+                        _DismissButton(enabled: true, onPressed: onDismiss),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -729,8 +734,9 @@ class _SubjectListCard extends StatelessWidget {
             boxShadow: const [
               BoxShadow(
                 color: AppColors.c1A000000,
-                blurRadius: 12,
-                offset: Offset(0, 4),
+                blurRadius: 8,
+                offset: Offset(0, 2),
+                spreadRadius: -2,
               ),
             ],
           ),

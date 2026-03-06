@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/core/supabase/supabase_initializer.dart';
 
+import 'features/auth/check_page.dart';
 import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
 import 'features/auth/reset_password_page.dart';
@@ -72,7 +73,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
-        '/forgot': (context) => const ResetPasswordPage(),
+        '/forgot': (context) => const CheckPage(),
         '/reset-password': (context) => const ResetPasswordPage(),
         '/password-updated': (context) => const UpdatePage(),
       },

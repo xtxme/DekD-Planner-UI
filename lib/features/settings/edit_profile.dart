@@ -26,7 +26,6 @@ class EditProfilePage extends ConsumerStatefulWidget {
 class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
-  late final TextEditingController _bioController;
   bool _didSeedInitialValues = false;
   bool _isSaving = false;
 
@@ -39,14 +38,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     super.initState();
     _nameController = TextEditingController();
     _emailController = TextEditingController();
-    _bioController = TextEditingController();
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _bioController.dispose();
     super.dispose();
   }
 
@@ -69,7 +66,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final authUser = authSessionAsync.valueOrNull;
     if (!_didSeedInitialValues && !isLoading && !hasError && profile != null) {
       _nameController.text = profile.displayName?.trim() ?? '';
-      _bioController.text = profile.bio?.trim() ?? '';
       _emailController.text = authUser?.email.trim() ?? '';
       _avatarUrl = profile.avatarUrl;
       _didSeedInitialValues = true;
@@ -140,14 +136,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                             trailingIcon: Icons.email_rounded,
                             helperText:
                                 'Contact support to change email address.',
-                          ),
-                          const SizedBox(height: 16),
-                          EditProfileFormField(
-                            label: 'Bio',
-                            controller: _bioController,
-                            maxLines: 3,
-                            minLines: 3,
-                            textInputAction: TextInputAction.newline,
                           ),
                           const SizedBox(height: 36),
                           AuthPrimaryButton(
@@ -257,7 +245,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       final updatedRow = ProfileRow(
         userId: profile.userId,
         displayName: _nameController.text.trim(),
-        bio: _bioController.text.trim(),
+        bio: profile.bio,
         avatarUrl: nextAvatarUrl,
       );
 

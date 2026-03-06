@@ -82,3 +82,19 @@ class CanvasCourseImporter {
     _ref.invalidate(canvasCoursesProvider);
   }
 }
+
+final subjectDeleterProvider = Provider<SubjectDeleter>(
+  (ref) => SubjectDeleter(ref),
+);
+
+class SubjectDeleter {
+  SubjectDeleter(this._ref);
+
+  final Ref _ref;
+
+  Future<void> delete(String id) async {
+    await _ref.read(subjectDaoProvider).delete(id);
+    _ref.invalidate(subjectListProvider);
+    _ref.invalidate(canvasCoursesProvider);
+  }
+}

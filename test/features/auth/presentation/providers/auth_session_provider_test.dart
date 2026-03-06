@@ -42,15 +42,7 @@ class _FakeAuthRemoteService implements AuthRemoteService {
   }
 
   @override
-  Future<void> sendPasswordResetOTP({required String email}) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> verifyPasswordResetOTP({
-    required String email,
-    required String token,
-  }) {
+  Future<void> sendPasswordResetEmail(String email) {
     throw UnimplementedError();
   }
 

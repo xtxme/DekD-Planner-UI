@@ -142,9 +142,9 @@ class AssignmentsCard extends StatelessWidget {
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     color: AppColors.cFF826559,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 if (hasSubtitle) ...[

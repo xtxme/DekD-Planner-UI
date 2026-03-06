@@ -38,7 +38,7 @@ class HomeAssignmentUiMapper {
   }) {
     final subject = assignment.courseName.trim().isNotEmpty
         ? assignment.courseName.trim()
-        : 'Canvas';
+        : 'Unknown Subject';
 
     final title = assignment.name.trim().isNotEmpty
         ? assignment.name.trim()

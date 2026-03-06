@@ -4,6 +4,8 @@ import 'package:my_first_app/features/home/data/models/home_task_row.dart';
 import 'package:my_first_app/features/home/data/remote/supabase_home_dao.dart';
 import 'package:my_first_app/features/home/data/models/canvas_assignment.dart';
 import 'package:my_first_app/features/home/data/remote/canvas_assignment_remote_data_source.dart';
+import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
+import 'package:my_first_app/features/subjects/providers.dart';
 
 final homeDaoProvider = Provider<HomeDao>(
   (ref) => HomeDao(client: ref.watch(supabaseClientProvider)),
@@ -24,9 +26,20 @@ final canvasAssignmentRemoteDataSourceProvider =
 /// ✅ ดึงข้อมูล Canvas assignments พร้อม user info
 final canvasAssignmentsWithUserProvider =
     FutureProvider<CanvasAssignmentsResponse>((ref) async {
-      return ref
+      final response = await ref
           .watch(canvasAssignmentRemoteDataSourceProvider)
           .fetchAssignmentsWithUser();
+
+      final subjects = await ref.watch(subjectListProvider.future);
+      final resolvedAssignments = _resolveAssignmentSubjects(
+        response.assignments,
+        subjects,
+      );
+
+      return CanvasAssignmentsResponse(
+        user: response.user,
+        assignments: resolvedAssignments,
+      );
     });
 
 /// ✅ Provider เดิมสำหรับ backward compatibility
@@ -83,3 +96,47 @@ final canvasUserProvider = Provider<CanvasUserResponse>((ref) {
   }
   return response.user;
 });
+
+List<CanvasAssignment> _resolveAssignmentSubjects(
+  List<CanvasAssignment> assignments,
+  List<SubjectRow> subjects,
+) {
+  final subjectNameByCourseId = <int, String>{};
+
+  for (final subject in subjects) {
+    final courseId = _extractCanvasCourseId(subject.description);
+    if (courseId == null) continue;
+
+    final name = subject.name.trim();
+    if (name.isEmpty) continue;
+
+    subjectNameByCourseId.putIfAbsent(courseId, () => name);
+  }
+
+  return assignments.map((assignment) {
+    if (assignment.courseName.trim().isNotEmpty) return assignment;
+
+    final courseId = assignment.courseId;
+    if (courseId == null) return assignment;
+
+    final subjectName = subjectNameByCourseId[courseId];
+    if (subjectName == null || subjectName.isEmpty) return assignment;
+
+    return CanvasAssignment(
+      id: assignment.id,
+      name: assignment.name,
+      dueAt: assignment.dueAt,
+      courseId: assignment.courseId,
+      courseName: subjectName,
+      description: assignment.description,
+    );
+  }).toList(growable: false);
+}
+
+int? _extractCanvasCourseId(String description) {
+  final match = RegExp(r'course_id:\s*(\d+)', caseSensitive: false).firstMatch(
+    description,
+  );
+  if (match == null) return null;
+  return int.tryParse(match.group(1)!);
+}

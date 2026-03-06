@@ -31,7 +31,13 @@ void main() {
     required String name,
     required String code,
   }) {
-    return CanvasCourse(id: id, name: name, courseCode: code, sisCourseId: '');
+    return CanvasCourse(
+      id: id,
+      name: name,
+      courseCode: code,
+      sisCourseId: '',
+      teacherName: '',
+    );
   }
 
   SubjectRow buildSubject({

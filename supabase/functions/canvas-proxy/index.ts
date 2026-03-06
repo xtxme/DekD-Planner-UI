@@ -37,6 +37,7 @@ deno.serve(async (req: Request) => {
 
     const coursesUrl = new URL(`${canvasBaseUrl}/api/v1/courses`);
     coursesUrl.searchParams.set("per_page", "100");
+    coursesUrl.searchParams.append("include[]", "teachers");
 
     const canvasRes = await fetch(coursesUrl, {
       headers: {

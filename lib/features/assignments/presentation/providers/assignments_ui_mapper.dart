@@ -46,7 +46,7 @@ class AssignmentsUiMapper {
 
     final subject = assignment.courseName.trim().isNotEmpty
         ? assignment.courseName.trim()
-        : 'Canvas';
+        : 'Unknown Subject';
 
     final detailsText = _stripHtml(assignment.description).trim();
 

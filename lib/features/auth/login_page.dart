@@ -8,8 +8,8 @@ import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'package:my_first_app/shared/widgets/navbar/navbar_shell.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'check_page.dart';
 import 'register_page.dart';
-import 'reset_password_page.dart';
 import 'widgets/auth_primary_button.dart';
 import 'widgets/password_text_form_field.dart';
 
@@ -308,7 +308,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               onPressed: () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => const ResetPasswordPage(),
+                                    builder: (_) => const CheckPage(),
                                   ),
                                 );
                               },

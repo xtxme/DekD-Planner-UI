@@ -67,6 +67,12 @@ flutter run -d ios        # iOS simulator/device
 flutter run -d android    # Android emulator/device
 ```
 
+Quick cleanup (for disk-full/temp cache issues):
+
+```bash
+./tool/cleanup.sh && flutter run
+```
+
 ## 6. (Optional) Run Supabase locally
 
 If you want local backend + Edge Function testing:

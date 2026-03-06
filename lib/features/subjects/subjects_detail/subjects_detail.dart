@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:my_first_app/features/assignments/data/models/assignment_row.dart';
+import 'package:my_first_app/features/assignments/presentation/providers/assignment_list_provider.dart';
+import 'package:my_first_app/features/home/data/models/canvas_assignment.dart';
+import 'package:my_first_app/features/home/presentation/providers/home_tasks_provider.dart';
+import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
+import 'package:my_first_app/features/subjects/presentation/providers/subject_providers.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
 import '../../../shared/widgets/navbar/app_navbar.dart';
@@ -11,26 +18,37 @@ import 'widgets/top_bar.dart';
 
 enum _AssignmentStatus { toDo, inProgress, late, completed }
 
+enum _AssignmentSource { local, canvas }
+
 class _AssignmentItem {
   const _AssignmentItem({
     required this.title,
-    required this.dueText,
+    required this.dueAt,
+    required this.completedAt,
     required this.icon,
     required this.status,
-    required this.completed,
+    required this.source,
   });
 
   final String title;
-  final String dueText;
+  final DateTime dueAt;
+  final DateTime? completedAt;
   final IconData icon;
   final _AssignmentStatus status;
-  final bool completed;
+  final _AssignmentSource source;
+
+  bool get completed => status == _AssignmentStatus.completed;
 }
 
 class SubjectsDetailPage extends ConsumerStatefulWidget {
-  const SubjectsDetailPage({super.key, this.withNavBar = true});
+  const SubjectsDetailPage({
+    super.key,
+    this.withNavBar = true,
+    required this.subject,
+  });
 
   final bool withNavBar;
+  final SubjectRow subject;
 
   @override
   ConsumerState<SubjectsDetailPage> createState() => _SubjectsDetailPageState();
@@ -39,45 +57,11 @@ class SubjectsDetailPage extends ConsumerStatefulWidget {
 class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
   bool _showUpcoming = true;
 
-  static const List<_AssignmentItem> _allAssignments = [
-    _AssignmentItem(
-      title: 'Calculus Homework ...',
-      dueText: 'Due: Oct 12, 2023 | 14:00',
-      icon: Icons.assignment_outlined,
-      status: _AssignmentStatus.toDo,
-      completed: false,
-    ),
-    _AssignmentItem(
-      title: 'Midterm Project ...',
-      dueText: 'Due: Oct 19, 2023 | 23:59',
-      icon: Icons.menu_book_outlined,
-      status: _AssignmentStatus.inProgress,
-      completed: false,
-    ),
-    _AssignmentItem(
-      title: 'Quiz 3 Review',
-      dueText: 'Due: Oct 10, 2023 | 09:00',
-      icon: Icons.quiz_outlined,
-      status: _AssignmentStatus.late,
-      completed: false,
-    ),
-    _AssignmentItem(
-      title: 'Chapter Summary',
-      dueText: 'Submitted: Oct 01, 2023 | 10:00',
-      icon: Icons.check_circle_outline,
-      status: _AssignmentStatus.completed,
-      completed: true,
-    ),
-  ];
-
-  List<_AssignmentItem> get _visibleAssignments => _allAssignments
-      .where((item) => _showUpcoming ? !item.completed : item.completed)
-      .toList();
-
   @override
   Widget build(BuildContext context) {
     final currentIndex = ref.watch(currentNavIndexProvider);
-    final visibleAssignments = _visibleAssignments;
+    final localAssignmentsAsync = ref.watch(assignmentListProvider);
+    final canvasAssignmentsAsync = ref.watch(canvasAssignmentsWithUserProvider);
 
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
@@ -87,7 +71,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
             SubjectsDetailTopBar(
               onBack: () => Navigator.of(context).pop(),
               onEdit: _openEditSubjectsPage,
-              onDelete: _showDeletePlaceholderDialog,
+              onDelete: _showDeleteDialog,
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -95,33 +79,32 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SubjectInfoCard(
-                      title: 'Advanced Mathematics',
-                      code: 'MAT101',
-                      teacherInfo: 'Mr. Smith - Room 302.',
-                      description: 'Focus on Calculus and Linear Algebra.',
-                      icon: Icons.calculate_rounded,
+                    SubjectInfoCard(
+                      title: widget.subject.name,
+                      code: widget.subject.code,
+                      teacherInfo: '',
+                      description: widget.subject.description,
+                      icon: widget.subject.iconCodepoint == 0
+                          ? Icons.menu_book_rounded
+                          : IconData(
+                              widget.subject.iconCodepoint,
+                              fontFamily: 'MaterialIcons',
+                            ),
                     ),
                     const SizedBox(height: 16),
                     SubjectSegmentedTabs(
                       isUpcoming: _showUpcoming,
-                      onUpcomingTap: () =>
-                          setState(() => _showUpcoming = true),
+                      onUpcomingTap: () => setState(() => _showUpcoming = true),
                       onCompletedTap: () =>
                           setState(() => _showUpcoming = false),
                     ),
                     const SizedBox(height: 20),
                     _buildSectionTitle(),
                     const SizedBox(height: 14),
-                    if (visibleAssignments.isEmpty)
-                      _buildEmptyState()
-                    else
-                      ...visibleAssignments.map(
-                        (item) => Padding(
-                          padding: const EdgeInsets.only(bottom: 14),
-                          child: _buildAssignmentCard(item),
-                        ),
-                      ),
+                    _buildAssignmentsList(
+                      localAssignmentsAsync: localAssignmentsAsync,
+                      canvasAssignmentsAsync: canvasAssignmentsAsync,
+                    ),
                   ],
                 ),
               ),
@@ -140,6 +123,156 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     );
   }
 
+  Widget _buildAssignmentsList({
+    required AsyncValue<List<AssignmentRow>> localAssignmentsAsync,
+    required AsyncValue<CanvasAssignmentsResponse> canvasAssignmentsAsync,
+  }) {
+    return localAssignmentsAsync.when(
+      loading: _buildLoadingState,
+      error: (error, _) =>
+          _buildErrorState('Failed to load local assignments: $error'),
+      data: (localRows) {
+        return canvasAssignmentsAsync.when(
+          loading: _buildLoadingState,
+          error: (error, _) =>
+              _buildErrorState('Failed to load Canvas assignments: $error'),
+          data: (canvasResponse) {
+            final allItems = _buildItems(
+              localRows: localRows,
+              canvasAssignments: canvasResponse.assignments,
+            );
+
+            final upcomingItems =
+                allItems
+                    .where((item) => !item.completed)
+                    .toList(growable: false)
+                  ..sort((a, b) => a.dueAt.compareTo(b.dueAt));
+
+            final completedItems =
+                allItems.where((item) => item.completed).toList(growable: false)
+                  ..sort(
+                    (a, b) => (b.completedAt ?? b.dueAt).compareTo(
+                      a.completedAt ?? a.dueAt,
+                    ),
+                  );
+
+            final visibleAssignments = _showUpcoming
+                ? upcomingItems
+                : completedItems;
+
+            if (visibleAssignments.isEmpty) {
+              return _buildEmptyState();
+            }
+
+            return Column(
+              children: visibleAssignments
+                  .map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: _buildAssignmentCard(item),
+                    ),
+                  )
+                  .toList(growable: false),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  List<_AssignmentItem> _buildItems({
+    required List<AssignmentRow> localRows,
+    required List<CanvasAssignment> canvasAssignments,
+  }) {
+    final subjectId = widget.subject.id;
+    final subjectNameNormalized = widget.subject.name.trim().toLowerCase();
+
+    final localItems = localRows
+        .where((row) {
+          if (subjectId != null &&
+              subjectId.isNotEmpty &&
+              row.subjectId != null) {
+            return row.subjectId == subjectId;
+          }
+
+          return row.subject.trim().toLowerCase() == subjectNameNormalized;
+        })
+        .map(_mapLocalAssignment);
+
+    final canvasItems = canvasAssignments
+        .where((assignment) {
+          return assignment.dueAt != null &&
+              assignment.courseName.trim().toLowerCase() ==
+                  subjectNameNormalized;
+        })
+        .map(_mapCanvasAssignment);
+
+    return [...localItems, ...canvasItems];
+  }
+
+  _AssignmentItem _mapLocalAssignment(AssignmentRow row) {
+    final status = _mapLocalStatus(row.status);
+
+    return _AssignmentItem(
+      title: row.title.trim().isNotEmpty
+          ? row.title.trim()
+          : 'Untitled assignment',
+      dueAt: row.dueAt,
+      completedAt: row.completedAt,
+      icon: _iconForStatus(status, _AssignmentSource.local),
+      status: status,
+      source: _AssignmentSource.local,
+    );
+  }
+
+  _AssignmentItem _mapCanvasAssignment(CanvasAssignment assignment) {
+    return _AssignmentItem(
+      title: assignment.name.trim().isNotEmpty
+          ? assignment.name.trim()
+          : 'Untitled assignment',
+      dueAt: assignment.dueAt!,
+      completedAt: null,
+      icon: _iconForStatus(
+        _AssignmentStatus.inProgress,
+        _AssignmentSource.canvas,
+      ),
+      status: _AssignmentStatus.inProgress,
+      source: _AssignmentSource.canvas,
+    );
+  }
+
+  _AssignmentStatus _mapLocalStatus(String status) {
+    switch (status) {
+      case 'to_do':
+        return _AssignmentStatus.toDo;
+      case 'in_progress':
+        return _AssignmentStatus.inProgress;
+      case 'late':
+        return _AssignmentStatus.late;
+      case 'completed':
+        return _AssignmentStatus.completed;
+      default:
+        return _AssignmentStatus.inProgress;
+    }
+  }
+
+  IconData _iconForStatus(_AssignmentStatus status, _AssignmentSource source) {
+    if (source == _AssignmentSource.canvas) {
+      return Icons.cloud_done_outlined;
+    }
+
+    switch (status) {
+      case _AssignmentStatus.toDo:
+        return Icons.assignment_outlined;
+      case _AssignmentStatus.inProgress:
+        return Icons.menu_book_outlined;
+      case _AssignmentStatus.late:
+        return Icons.quiz_outlined;
+      case _AssignmentStatus.completed:
+        return Icons.check_circle_outline;
+    }
+  }
+
   Widget _buildSectionTitle() {
     return const Text(
       'ASSIGNMENTS FOR THIS SUBJECT',
@@ -156,6 +289,8 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     final dueColor = item.status == _AssignmentStatus.late
         ? AppColors.cFFE54A4A
         : AppColors.cFFA48C7E;
+
+    final dueLabel = _buildDueLabel(item);
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -204,7 +339,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        item.dueText,
+                        dueLabel,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -226,6 +361,12 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     );
   }
 
+  String _buildDueLabel(_AssignmentItem item) {
+    final date = item.completed ? (item.completedAt ?? item.dueAt) : item.dueAt;
+    final prefix = item.completed ? 'Submitted:' : 'Due:';
+    return '$prefix ${DateFormat('MMM d, y | HH:mm').format(date)}';
+  }
+
   Widget _buildStatusChip(_AssignmentItem item) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -239,6 +380,35 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
           fontSize: 16,
           fontWeight: FontWeight.w900,
           color: _statusFg(item.status),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: CircularProgressIndicator(color: AppColors.cFFE0B35D),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.cFFF0E6DE),
+      ),
+      child: Text(
+        message,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppColors.cFF8B6758,
         ),
       ),
     );
@@ -274,16 +444,6 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
               color: AppColors.cFF8B6758,
             ),
           ),
-          const SizedBox(height: 6),
-          const Text(
-            'Tap + to add your next assignment.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.cFFA48C7E,
-            ),
-          ),
         ],
       ),
     );
@@ -297,28 +457,41 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
     );
   }
 
-  Future<void> _showDeletePlaceholderDialog() async {
-    await showDialog<void>(
+  Future<void> _showDeleteDialog() async {
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Delete Subject'),
-          content: const Text(
-            'Delete flow is not available yet. This is a placeholder dialog.',
+          content: Text(
+            'Are you sure you want to delete "${widget.subject.name}"?',
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).pop(false),
               child: const Text('Cancel'),
             ),
             FilledButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Understood'),
+              onPressed: () => Navigator.of(context).pop(true),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.cFFE54A4A,
+              ),
+              child: const Text('Delete'),
             ),
           ],
         );
       },
     );
+
+    if (confirmed == true && mounted) {
+      final subjectId = widget.subject.id;
+      if (subjectId != null && subjectId.isNotEmpty) {
+        await ref.read(subjectDeleterProvider).delete(subjectId);
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    }
   }
 
   String _statusText(_AssignmentStatus status) {

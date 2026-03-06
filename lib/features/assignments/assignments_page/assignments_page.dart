@@ -38,7 +38,7 @@ class AssignmentsPage extends ConsumerWidget {
     final tagColors = _tagColorsFor(item.subject);
 
     Widget card = AssignmentsCard(
-      subject: item.subject.toUpperCase(),
+      subject: item.subject,
       title: item.title,
       subtitle: item.subtitle,
       tagBg: tagColors.background,
