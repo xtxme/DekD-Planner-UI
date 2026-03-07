@@ -8,12 +8,12 @@ import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../data/models/assignment_row.dart';
 import '../models/assignment_draft.dart';
 import '../providers.dart';
+import '../presentation/providers/assignment_reminder_provider.dart';
 import 'widgets/add_assignment_deadline_card.dart';
 import 'widgets/add_assignment_input_shell.dart';
 import 'widgets/add_assignment_section_label.dart';
 
 import 'package:my_first_app/features/subjects/providers.dart';
-
 
 class AddAssignmentsPage extends ConsumerStatefulWidget {
   const AddAssignmentsPage({
@@ -825,6 +825,9 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
           subjectId: matchedSubject.id,
         );
         ref.invalidate(assignmentListProvider);
+        await ref
+            .read(assignmentReminderSyncServiceProvider)
+            .resyncIfAuthenticated();
       }
 
       if (!mounted) {

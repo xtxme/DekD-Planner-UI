@@ -12,6 +12,7 @@ import '../../subjects/add_subjects/widgets/edit_assignment_section_label.dart';
 import '../../subjects/providers.dart';
 import '../data/models/assignment_row.dart';
 import '../models/assignment_draft.dart';
+import '../presentation/providers/assignment_reminder_provider.dart';
 import '../providers.dart';
 
 class EditAssignmentsPage extends ConsumerStatefulWidget {
@@ -352,7 +353,8 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
       _isSaving = true;
     });
 
-    final existingDraft = widget.initialDraft ?? ref.read(assignmentDraftProvider);
+    final existingDraft =
+        widget.initialDraft ?? ref.read(assignmentDraftProvider);
     final subjectDao = ref.read(subjectDaoProvider);
     final matchedSubject = await subjectDao.findByName(_selectedSubject);
     final resolvedSubjectId = matchedSubject?.id ?? existingDraft?.subjectId;
@@ -387,6 +389,9 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
 
       ref.read(assignmentDraftProvider.notifier).state = draft;
       ref.invalidate(assignmentListProvider);
+      await ref
+          .read(assignmentReminderSyncServiceProvider)
+          .resyncIfAuthenticated();
       widget.onSave?.call(draft);
 
       if (!mounted) {
@@ -437,7 +442,8 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
       return;
     }
 
-    final currentDraft = widget.initialDraft ?? ref.read(assignmentDraftProvider);
+    final currentDraft =
+        widget.initialDraft ?? ref.read(assignmentDraftProvider);
 
     setState(() => _isDeleting = true);
     try {
@@ -447,6 +453,9 @@ class _EditAssignmentsPageState extends ConsumerState<EditAssignmentsPage> {
       }
       ref.read(assignmentDraftProvider.notifier).state = null;
       ref.invalidate(assignmentListProvider);
+      await ref
+          .read(assignmentReminderSyncServiceProvider)
+          .resyncIfAuthenticated();
       if (!mounted) {
         return;
       }

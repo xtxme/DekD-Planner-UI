@@ -11,6 +11,7 @@ import 'features/auth/login_page.dart';
 import 'features/auth/register_page.dart';
 import 'features/auth/reset_password_page.dart';
 import 'features/auth/update_page.dart';
+import 'features/assignments/presentation/providers/assignment_reminder_provider.dart';
 import 'features/home/home_page.dart';
 import 'features/assignments/assignments_page/assignments_page.dart';
 import 'shared/theme/app_theme.dart';
@@ -35,15 +36,31 @@ Future<void> main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_bootstrapReminderSync());
+  }
+
+  Future<void> _bootstrapReminderSync() async {
+    try {
+      final syncService = ref.read(assignmentReminderSyncServiceProvider);
+      await syncService.initialize();
+      await syncService.resyncIfAuthenticated();
+    } catch (_) {
+      // Notification scheduling failures should not block app startup.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
