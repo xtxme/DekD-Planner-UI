@@ -35,9 +35,10 @@ class AssignmentsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasSubtitle = subtitle.trim().isNotEmpty;
     const subtitleBaseStyle = TextStyle(
-      fontSize: 14,
-      color: AppColors.cFFA48C7E,
-      fontWeight: FontWeight.w500,
+      fontSize: 18 / 1.15,
+      height: 1.45,
+      color: AppColors.textPrimary,
+      fontWeight: FontWeight.w600,
     );
     final subtitleBoldStyle = subtitleBaseStyle.copyWith(
       fontWeight: FontWeight.w900,
