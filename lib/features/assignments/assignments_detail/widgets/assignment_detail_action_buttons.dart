@@ -7,6 +7,7 @@ class AssignmentDetailActionButtons extends StatelessWidget {
     this.onComplete,
     this.onEdit,
     this.onDelete,
+    this.showComplete = true,
     this.showEdit = true,
     this.showDelete = true,
   });
@@ -14,8 +15,37 @@ class AssignmentDetailActionButtons extends StatelessWidget {
   final VoidCallback? onComplete;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final bool showComplete;
   final bool showEdit;
   final bool showDelete;
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    if (onDelete == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Assignment'),
+        content: const Text(
+          'Are you sure you want to delete this assignment?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      onDelete!();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,18 +56,19 @@ class AssignmentDetailActionButtons extends StatelessWidget {
           alignment: WrapAlignment.spaceBetween,
           runSpacing: 12,
           children: [
-            SizedBox(
-              width: itemWidth,
-              child: _ActionItem(
-                icon: Icons.check_rounded,
-                label: 'Complete',
-                labelColor: AppColors.cFF1C9E73,
-                iconColor: AppColors.cFF1C9E73,
-                bgColor: AppColors.cFFDFF2EA,
-                borderColor: AppColors.cFF5FAF97,
-                onTap: onComplete,
+            if (showComplete)
+              SizedBox(
+                width: itemWidth,
+                child: _ActionItem(
+                  icon: Icons.check_rounded,
+                  label: 'Complete',
+                  labelColor: AppColors.cFF1C9E73,
+                  iconColor: AppColors.cFF1C9E73,
+                  bgColor: AppColors.cFFDFF2EA,
+                  borderColor: AppColors.cFF5FAF97,
+                  onTap: onComplete,
+                ),
               ),
-            ),
             if (showEdit)
               SizedBox(
                 width: itemWidth,
@@ -61,7 +92,7 @@ class AssignmentDetailActionButtons extends StatelessWidget {
                   iconColor: AppColors.cFFE65757,
                   bgColor: AppColors.surface,
                   borderColor: AppColors.cFFF9DDE0,
-                  onTap: onDelete,
+                  onTap: () => _confirmDelete(context),
                 ),
               ),
           ],

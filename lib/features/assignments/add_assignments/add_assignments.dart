@@ -13,6 +13,7 @@ import 'widgets/add_assignment_deadline_card.dart';
 import 'widgets/add_assignment_input_shell.dart';
 import 'widgets/add_assignment_section_label.dart';
 
+import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
 import 'package:my_first_app/features/subjects/providers.dart';
 
 class AddAssignmentsPage extends ConsumerStatefulWidget {
@@ -803,7 +804,18 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
         await widget.onSave!(draft);
       } else {
         final subjectDao = ref.read(subjectDaoProvider);
-        final matchedSubject = await subjectDao.findByName(draft.subject);
+        final normalizedSubjectName = draft.subject.trim().toLowerCase();
+        SubjectRow? matchedSubject = await subjectDao.findByName(draft.subject);
+        if (matchedSubject == null) {
+          final allSubjects = await subjectDao.getAll();
+          for (final row in allSubjects) {
+            if (row.name.trim().toLowerCase() == normalizedSubjectName) {
+              matchedSubject = row;
+              break;
+            }
+          }
+        }
+
         if (matchedSubject == null || matchedSubject.id == null) {
           throw StateError('Subject not found');
         }
@@ -825,9 +837,17 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
           subjectId: matchedSubject.id,
         );
         ref.invalidate(assignmentListProvider);
-        await ref
-            .read(assignmentReminderSyncServiceProvider)
-            .resyncIfAuthenticated();
+
+        try {
+          await ref
+              .read(assignmentReminderSyncServiceProvider)
+              .resyncIfAuthenticated();
+        } catch (error, stackTrace) {
+          debugPrint(
+            'ADD_ASSIGNMENT_DEBUG: reminder resync failed after save: $error',
+          );
+          debugPrintStack(stackTrace: stackTrace);
+        }
       }
 
       if (!mounted) {
@@ -838,7 +858,10 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Assignment saved.')));
       Navigator.of(context).pop();
-    } catch (_) {
+    } catch (error, stackTrace) {
+      debugPrint('ADD_ASSIGNMENT_DEBUG: failed to save assignment: $error');
+      debugPrintStack(stackTrace: stackTrace);
+
       if (!mounted) {
         return;
       }
@@ -849,18 +872,12 @@ class _AddAssignmentsPageState extends ConsumerState<AddAssignmentsPage> {
           action: SnackBarAction(label: 'Retry', onPressed: _onSaveAssignment),
         ),
       );
-      setState(() {
-        _isSaving = false;
-      });
-      return;
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
     }
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _isSaving = false;
-    });
   }
 }
