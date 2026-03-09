@@ -1,5 +1,6 @@
 import 'package:my_first_app/features/assignments/data/models/assignment_row.dart';
 import 'package:my_first_app/features/assignments/models/assignments_feed_item.dart';
+import 'package:my_first_app/features/assignments/presentation/text/canvas_html_text_formatter.dart';
 import 'package:my_first_app/features/home/data/models/canvas_assignment.dart';
 
 class AssignmentsUiMapper {
@@ -26,6 +27,7 @@ class AssignmentsUiMapper {
           : 'Untitled assignment',
       subtitle: '',
       detailsText: row.notes.trim(),
+      detailsHtml: null,
       dueAt: row.dueAt,
       status: row.status,
       highlightLeftAccent: isToday || isOverdue,
@@ -43,10 +45,17 @@ class AssignmentsUiMapper {
     final isToday =
         !dueAt.isBefore(todayStart) && dueAt.isBefore(tomorrowStart);
     final isOverdue = dueAt.isBefore(now);
+    final status = assignment.isCompleted
+        ? 'completed'
+        : isOverdue
+        ? 'late'
+        : 'in_progress';
 
     final subject = _resolveSubject(courseName: assignment.courseName);
 
-    final detailsText = _stripHtml(assignment.description).trim();
+    final detailsText = canvasHtmlToReadableMultilineText(
+      assignment.description,
+    );
 
     return AssignmentsFeedItem(
       id: 'canvas-${assignment.id}',
@@ -60,22 +69,14 @@ class AssignmentsUiMapper {
           : 'Untitled assignment',
       subtitle: '',
       detailsText: detailsText,
+      detailsHtml: assignment.description,
       dueAt: dueAt,
-      status: 'canvas',
+      status: status,
       highlightLeftAccent: isToday || isOverdue,
     );
   }
 
-  String _stripHtml(String value) {
-    return value
-        .replaceAll(RegExp(r'<[^>]*>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
-  }
-
-  String _resolveSubject({
-    required String courseName,
-  }) {
+  String _resolveSubject({required String courseName}) {
     final normalizedCourse = courseName.trim();
     if (normalizedCourse.isNotEmpty) {
       return normalizedCourse;

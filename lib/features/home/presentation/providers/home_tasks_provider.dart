@@ -119,7 +119,9 @@ final homeCanvasAssignmentSectionsProvider =
       final response = await ref.watch(
         canvasAssignmentsWithUserProvider.future,
       );
-      final assignments = response.assignments;
+      final assignments = response.assignments
+          .where((assignment) => !assignment.isCompleted)
+          .toList(growable: false);
 
       final now = DateTime.now();
       final todayStart = DateTime(now.year, now.month, now.day);
@@ -182,6 +184,8 @@ List<CanvasAssignment> _resolveAssignmentSubjects(
           courseId: assignment.courseId,
           courseName: subjectName,
           description: assignment.description,
+          isCompleted: assignment.isCompleted,
+          submissionState: assignment.submissionState,
         );
       })
       .toList(growable: false);

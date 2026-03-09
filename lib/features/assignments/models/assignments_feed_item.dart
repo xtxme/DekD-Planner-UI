@@ -11,6 +11,7 @@ class AssignmentsFeedItem {
     required this.title,
     required this.subtitle,
     required this.detailsText,
+    this.detailsHtml,
     required this.dueAt,
     required this.status,
     required this.highlightLeftAccent,
@@ -25,6 +26,7 @@ class AssignmentsFeedItem {
   final String title;
   final String subtitle;
   final String detailsText;
+  final String? detailsHtml;
   final DateTime dueAt;
   final String status;
   final bool highlightLeftAccent;

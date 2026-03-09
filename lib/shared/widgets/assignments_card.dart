@@ -34,6 +34,19 @@ class AssignmentsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasSubtitle = subtitle.trim().isNotEmpty;
+    const subtitleBaseStyle = TextStyle(
+      fontSize: 14,
+      color: AppColors.cFFA48C7E,
+      fontWeight: FontWeight.w500,
+    );
+    final subtitleBoldStyle = subtitleBaseStyle.copyWith(
+      fontWeight: FontWeight.w900,
+    );
+    final subtitleSpans = _buildSubtitleSpans(
+      text: subtitle,
+      baseStyle: subtitleBaseStyle,
+      boldStyle: subtitleBoldStyle,
+    );
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -157,14 +170,15 @@ class AssignmentsCard extends StatelessWidget {
                 ),
                 if (hasSubtitle) ...[
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.cFFA48C7E,
-                      fontWeight: FontWeight.w500,
+                  if (subtitleSpans == null)
+                    Text(subtitle, softWrap: true, style: subtitleBaseStyle)
+                  else
+                    RichText(
+                      text: TextSpan(
+                        style: subtitleBaseStyle,
+                        children: subtitleSpans,
+                      ),
                     ),
-                  ),
                 ],
               ],
             ),
@@ -172,5 +186,73 @@ class AssignmentsCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<InlineSpan>? _buildSubtitleSpans({
+    required String text,
+    required TextStyle baseStyle,
+    required TextStyle boldStyle,
+  }) {
+    const openToken = '[[B]]';
+    const closeToken = '[[/B]]';
+
+    if (!text.contains(openToken) && !text.contains(closeToken)) {
+      return null;
+    }
+
+    final spans = <InlineSpan>[];
+    var cursor = 0;
+    var isBold = false;
+
+    while (cursor < text.length) {
+      final nextOpen = text.indexOf(openToken, cursor);
+      final nextClose = text.indexOf(closeToken, cursor);
+
+      final hasOpen = nextOpen >= 0;
+      final hasClose = nextClose >= 0;
+      int nextTokenIndex;
+      bool tokenIsOpen;
+
+      if (!hasOpen && !hasClose) {
+        final tail = text.substring(cursor);
+        if (tail.isNotEmpty) {
+          spans.add(
+            TextSpan(text: tail, style: isBold ? boldStyle : baseStyle),
+          );
+        }
+        break;
+      }
+
+      if (hasOpen && (!hasClose || nextOpen < nextClose)) {
+        nextTokenIndex = nextOpen;
+        tokenIsOpen = true;
+      } else {
+        nextTokenIndex = nextClose;
+        tokenIsOpen = false;
+      }
+
+      if (nextTokenIndex > cursor) {
+        final segment = text.substring(cursor, nextTokenIndex);
+        if (segment.isNotEmpty) {
+          spans.add(
+            TextSpan(text: segment, style: isBold ? boldStyle : baseStyle),
+          );
+        }
+      }
+
+      if (tokenIsOpen) {
+        isBold = true;
+        cursor = nextTokenIndex + openToken.length;
+      } else {
+        isBold = false;
+        cursor = nextTokenIndex + closeToken.length;
+      }
+    }
+
+    if (spans.isEmpty) {
+      return <InlineSpan>[TextSpan(text: text, style: baseStyle)];
+    }
+
+    return spans;
   }
 }

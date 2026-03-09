@@ -57,7 +57,8 @@ final assignmentsFeedSectionsProvider = FutureProvider<AssignmentsFeedSections>(
 
     final canvasItems = canvasResponse.assignments
         .map(mapper.fromCanvas)
-        .whereType<AssignmentsFeedItem>();
+        .whereType<AssignmentsFeedItem>()
+        .where((item) => item.status != 'completed');
 
     final merged = [...localItems, ...canvasItems].toList()
       ..sort((a, b) => a.dueAt.compareTo(b.dueAt));

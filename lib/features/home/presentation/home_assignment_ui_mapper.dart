@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_first_app/features/assignments/presentation/text/canvas_html_text_formatter.dart';
 import 'package:my_first_app/features/home/data/models/canvas_assignment.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
@@ -50,13 +51,9 @@ class HomeAssignmentUiMapper {
     final tagColors = _buildTagColors(subject);
     final dueText = _formatDueText(assignment.dueAt);
 
-    final dueBg = isDueToday
-        ? AppColors.cFFFFE7E7
-        : AppColors.cFFF0E6DE;
+    final dueBg = isDueToday ? AppColors.cFFFFE7E7 : AppColors.cFFF0E6DE;
 
-    final dueColor = isDueToday
-        ? AppColors.cFFE05A5A
-        : AppColors.cFFA48C7E;
+    final dueColor = isDueToday ? AppColors.cFFE05A5A : AppColors.cFFA48C7E;
 
     return HomeAssignmentCardData(
       subject: subject,
@@ -72,9 +69,7 @@ class HomeAssignmentUiMapper {
     );
   }
 
-  String _resolveSubject({
-    required String courseName,
-  }) {
+  String _resolveSubject({required String courseName}) {
     final normalizedCourse = courseName.trim();
     if (normalizedCourse.isNotEmpty) {
       return normalizedCourse;
@@ -87,18 +82,13 @@ class HomeAssignmentUiMapper {
     required String description,
     required String fallback,
   }) {
-    final cleaned = _stripHtml(description).trim();
+    final cleaned = canvasHtmlToReadableMultilineTextWithBoldMarkers(
+      description,
+    ).trim();
     if (cleaned.isNotEmpty) {
       return cleaned;
     }
     return fallback;
-  }
-
-  String _stripHtml(String value) {
-    return value
-        .replaceAll(RegExp(r'<[^>]*>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
   }
 
   String _formatDueText(DateTime? dueAt) {
@@ -134,10 +124,7 @@ class HomeAssignmentUiMapper {
 }
 
 class _TagColors {
-  const _TagColors({
-    required this.background,
-    required this.foreground,
-  });
+  const _TagColors({required this.background, required this.foreground});
 
   final Color background;
   final Color foreground;

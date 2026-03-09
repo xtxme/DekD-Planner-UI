@@ -4,9 +4,14 @@ import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'assignment_detail_notes_card.dart';
 
 class AssignmentDetailNotesSection extends StatelessWidget {
-  const AssignmentDetailNotesSection({super.key, required this.notesText});
+  const AssignmentDetailNotesSection({
+    super.key,
+    required this.notesText,
+    this.notesHtml,
+  });
 
   final String notesText;
+  final String? notesHtml;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,7 @@ class AssignmentDetailNotesSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        AssignmentDetailNotesCard(text: notesText),
+        AssignmentDetailNotesCard(text: notesText, htmlText: notesHtml),
       ],
     );
   }

@@ -8,10 +8,12 @@ class AssignmentDetailStatsSection extends StatelessWidget {
     super.key,
     required this.subject,
     required this.status,
+    required this.subjectIcon,
   });
 
   final String subject;
   final String status;
+  final IconData subjectIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class AssignmentDetailStatsSection extends StatelessWidget {
       children: [
         Expanded(
           child: AssignmentDetailStatCard(
-            icon: Icons.functions_rounded,
+            icon: subjectIcon,
             iconForeground: AppColors.cFF2E64D4,
             iconBackground: AppColors.cFFDCE7FF,
             label: 'SUBJECT',

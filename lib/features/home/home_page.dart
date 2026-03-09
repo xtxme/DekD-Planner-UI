@@ -6,6 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:my_first_app/features/home/data/remote/canvas_assignment_remote_data_source.dart';
 import 'package:my_first_app/features/settings/presentation/providers/settings_providers.dart';
+import 'package:my_first_app/features/assignments/assignments_detail/assignments_detail.dart';
+import 'package:my_first_app/features/assignments/models/assignments_feed_item.dart';
+import 'package:my_first_app/features/assignments/presentation/providers/assignments_ui_mapper.dart';
 import 'package:my_first_app/shared/widgets/assignments_card.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'package:my_first_app/features/home/presentation/home_assignment_ui_mapper.dart';
@@ -13,6 +16,13 @@ import 'package:my_first_app/features/home/presentation/providers/home_tasks_pro
 import 'package:my_first_app/features/assignments/add_assignments/add_assignments.dart';
 import 'package:my_first_app/features/subjects/providers.dart';
 import 'package:my_first_app/shared/providers/nav_provider.dart';
+
+class _HomeAssignmentCardItem {
+  const _HomeAssignmentCardItem({required this.ui, required this.detailItem});
+
+  final HomeAssignmentCardData ui;
+  final AssignmentsFeedItem detailItem;
+}
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -171,22 +181,41 @@ class _HomePageState extends ConsumerState<HomePage> {
     Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
   }
 
-  List<Widget> _buildTaskCards(List<HomeAssignmentCardData> items) {
+  List<Widget> _buildTaskCards(
+    BuildContext context,
+    List<_HomeAssignmentCardItem> items,
+  ) {
     final widgets = <Widget>[];
     for (var i = 0; i < items.length; i++) {
       final item = items[i];
       widgets.add(
-        AssignmentsCard(
-          subject: item.subject,
-          title: item.title,
-          subtitle: item.subtitle,
-          tagBg: item.tagBg,
-          tagColor: item.tagColor,
-          dueText: item.dueText,
-          dueColor: item.dueColor,
-          dueBg: item.dueBg,
-          showDuePill: item.showDuePill,
-          showShadow: item.showShadow,
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => AssignmentsDetailPage(
+                    item: item.detailItem,
+                    withNavBar: false,
+                  ),
+                ),
+              );
+            },
+            child: AssignmentsCard(
+              subject: item.ui.subject,
+              title: item.ui.title,
+              subtitle: item.ui.subtitle,
+              tagBg: item.ui.tagBg,
+              tagColor: item.ui.tagColor,
+              dueText: item.ui.dueText,
+              dueColor: item.ui.dueColor,
+              dueBg: item.ui.dueBg,
+              showDuePill: item.ui.showDuePill,
+              showShadow: item.ui.showShadow,
+            ),
+          ),
         ),
       );
       if (i != items.length - 1) {
@@ -443,6 +472,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
 
     const uiMapper = HomeAssignmentUiMapper();
+    const detailMapper = AssignmentsUiMapper();
     final summaryText = assignmentsAsync.when(
       data: (sections) {
         final total = sections.today.length + sections.tomorrow.length;
@@ -654,21 +684,41 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ...assignmentsAsync.when(
                       data: (sections) {
                         final todayCards = sections.today
-                            .map(
-                              (assignment) => uiMapper.mapAssignment(
+                            .map((assignment) {
+                              final detailItem = detailMapper.fromCanvas(
                                 assignment,
-                                isDueToday: true,
-                              ),
-                            )
+                              );
+                              if (detailItem == null) {
+                                return null;
+                              }
+                              return _HomeAssignmentCardItem(
+                                ui: uiMapper.mapAssignment(
+                                  assignment,
+                                  isDueToday: true,
+                                ),
+                                detailItem: detailItem,
+                              );
+                            })
+                            .whereType<_HomeAssignmentCardItem>()
                             .toList();
 
                         final tomorrowCards = sections.tomorrow
-                            .map(
-                              (assignment) => uiMapper.mapAssignment(
+                            .map((assignment) {
+                              final detailItem = detailMapper.fromCanvas(
                                 assignment,
-                                isDueToday: false,
-                              ),
-                            )
+                              );
+                              if (detailItem == null) {
+                                return null;
+                              }
+                              return _HomeAssignmentCardItem(
+                                ui: uiMapper.mapAssignment(
+                                  assignment,
+                                  isDueToday: false,
+                                ),
+                                detailItem: detailItem,
+                              );
+                            })
+                            .whereType<_HomeAssignmentCardItem>()
                             .toList();
 
                         if (todayCards.isEmpty && tomorrowCards.isEmpty) {
@@ -683,7 +733,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               accentColor: AppColors.accentSoft,
                             ),
                             const SizedBox(height: 12),
-                            ..._buildTaskCards(todayCards),
+                            ..._buildTaskCards(context, todayCards),
                             const SizedBox(height: 24),
                           ],
                           if (tomorrowCards.isNotEmpty) ...[
@@ -693,7 +743,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               accentColor: AppColors.border,
                             ),
                             const SizedBox(height: 12),
-                            ..._buildTaskCards(tomorrowCards),
+                            ..._buildTaskCards(context, tomorrowCards),
                           ],
                         ];
                       },

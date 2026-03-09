@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/features/subjects/data/models/canvas_course.dart';
 import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
+import 'package:my_first_app/features/subjects/presentation/subject_icon_resolver.dart';
 import 'package:my_first_app/features/subjects/presentation/providers/subject_providers.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 
@@ -204,7 +205,7 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
                     child: _SubjectListCard(
                       subject: subject,
                       subtitle: _subjectSubtitle(subject),
-                      icon: _subjectIcon(subject),
+                      icon: resolveSubjectIconCodepoint(subject.iconCodepoint),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -557,15 +558,6 @@ class _SubjectsPageState extends ConsumerState<SubjectsPage> {
     }
 
     return 'Ready to track assignments';
-  }
-
-  IconData _subjectIcon(SubjectRow subject) {
-    final codePoint = subject.iconCodepoint;
-    if (codePoint == 0) {
-      return Icons.menu_book_rounded;
-    }
-
-    return IconData(codePoint, fontFamily: 'MaterialIcons');
   }
 
   Widget _buildSectionHeader({required String title, int? count}) {

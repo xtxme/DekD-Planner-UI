@@ -7,6 +7,7 @@ import 'package:my_first_app/features/home/data/models/canvas_assignment.dart';
 import 'package:my_first_app/features/home/presentation/providers/home_tasks_provider.dart';
 import 'package:my_first_app/features/subjects/data/models/canvas_course.dart';
 import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
+import 'package:my_first_app/features/subjects/presentation/subject_icon_resolver.dart';
 import 'package:my_first_app/features/subjects/presentation/providers/subject_providers.dart';
 import 'package:my_first_app/features/subjects/subjects_detail/subject_detail_info.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
@@ -103,12 +104,7 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
                       code: _subject.code,
                       teacherInfo: subjectDetailInfo.teacherInfo,
                       description: subjectDetailInfo.description,
-                      icon: _subject.iconCodepoint == 0
-                          ? Icons.menu_book_rounded
-                          : IconData(
-                              _subject.iconCodepoint,
-                              fontFamily: 'MaterialIcons',
-                            ),
+                      icon: resolveSubjectIconCodepoint(_subject.iconCodepoint),
                       subjectColor: Color(_subject.colorValue),
                     ),
                     const SizedBox(height: 16),
@@ -246,17 +242,21 @@ class _SubjectsDetailPageState extends ConsumerState<SubjectsDetailPage> {
   }
 
   _AssignmentItem _mapCanvasAssignment(CanvasAssignment assignment) {
+    final now = DateTime.now();
+    final status = assignment.isCompleted
+        ? _AssignmentStatus.completed
+        : assignment.dueAt!.isBefore(now)
+        ? _AssignmentStatus.late
+        : _AssignmentStatus.inProgress;
+
     return _AssignmentItem(
       title: assignment.name.trim().isNotEmpty
           ? assignment.name.trim()
           : 'Untitled assignment',
       dueAt: assignment.dueAt!,
       completedAt: null,
-      icon: _iconForStatus(
-        _AssignmentStatus.inProgress,
-        _AssignmentSource.canvas,
-      ),
-      status: _AssignmentStatus.inProgress,
+      icon: _iconForStatus(status, _AssignmentSource.canvas),
+      status: status,
       source: _AssignmentSource.canvas,
     );
   }

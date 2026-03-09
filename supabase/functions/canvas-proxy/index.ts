@@ -3,11 +3,12 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 type DenoLike = {
@@ -19,19 +20,58 @@ type DenoLike = {
 
 const deno = (globalThis as unknown as { Deno: DenoLike }).Deno;
 
+class AuthValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "AuthValidationError";
+  }
+}
+
+async function requireAuthenticatedUser(req: Request): Promise<void> {
+  const authHeader = req.headers.get("authorization");
+  const apikey = req.headers.get("apikey");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    throw new AuthValidationError("Missing or invalid authorization header");
+  }
+  if (!apikey || apikey.trim().length === 0) {
+    throw new AuthValidationError("Missing apikey header");
+  }
+
+  const origin = new URL(req.url).origin;
+  const authUrl = new URL("/auth/v1/user", origin);
+  const authRes = await fetch(authUrl.toString(), {
+    headers: {
+      Authorization: authHeader,
+      apikey,
+    },
+  });
+
+  if (authRes.status >= 400) {
+    const errorText = await authRes.text();
+    console.error("Auth validation failed:", authRes.status, errorText);
+    throw new AuthValidationError("Invalid JWT");
+  }
+}
+
 deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
+    await requireAuthenticatedUser(req);
+
     const canvasBaseUrl = deno.env.get("CANVAS_BASE_URL");
     const canvasToken = deno.env.get("CANVAS_TOKEN");
 
     if (!canvasBaseUrl || !canvasToken) {
       return new Response(
-        JSON.stringify({error: "Missing CANVAS_BASE_URL or CANVAS_TOKEN"}),
-        { status: 500, headers: {...corsHeaders, "Content-Type": "application/json"}}
+        JSON.stringify({ error: "Missing CANVAS_BASE_URL or CANVAS_TOKEN" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -52,11 +92,24 @@ deno.serve(async (req: Request) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
+    if (e instanceof AuthValidationError) {
+      return new Response(
+        JSON.stringify({ code: 401, message: "Invalid JWT" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
+
     return new Response(
       JSON.stringify({ error: String(e) }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
-  } 
+  }
 });
 
 /* To invoke locally:
