@@ -14,10 +14,11 @@ import '../../../shared/widgets/navbar/app_navbar.dart';
 import 'package:my_first_app/shared/providers/nav_provider.dart';
 import '../edit_assignments/edit_assignments.dart';
 import '../providers.dart';
-import 'widgets/assignment_detail_action_buttons.dart';
-import 'widgets/assignment_detail_header.dart';
+import 'utils/assignment_detail_helpers.dart';
+import 'widgets/assignment_detail_fab.dart';
+import 'widgets/assignment_detail_hero_section.dart';
 import 'widgets/assignment_detail_notes_section.dart';
-import 'widgets/assignment_detail_overview_section.dart';
+import 'widgets/assignment_detail_progress_card.dart';
 import 'widgets/assignment_detail_stats_section.dart';
 
 class AssignmentsDetailPage extends ConsumerStatefulWidget {
@@ -41,6 +42,7 @@ class _AssignmentsDetailPageState extends ConsumerState<AssignmentsDetailPage> {
     final currentIndex = ref.watch(currentNavIndexProvider);
     final isLocal = widget.item.source == AssignmentFeedSource.local;
     final localDraft = isLocal ? _toAssignmentDraft(widget.item) : null;
+    
     final dueText =
         'Due: ${DateFormat('MMM dd, yyyy | hh:mm a').format(widget.item.dueAt)}';
     final notesText = widget.item.detailsText.trim().isEmpty
@@ -56,8 +58,141 @@ class _AssignmentsDetailPageState extends ConsumerState<AssignmentsDetailPage> {
       subjects: subjects,
     );
 
+    final timeRemaining = calculateTimeRemaining(widget.item.dueAt);
+    final timeRemainingColor = getTimeRemainingColor(timeRemaining);
+    final priority = calculatePriority(widget.item.dueAt, widget.item.status);
+    final priorityColor = getPriorityColor(priority);
+    final progressPercentage = calculateProgress(widget.item.status);
+    
+    final showComplete = isLocal;
+    final showEdit = isLocal;
+    final showDelete = isLocal;
+
+    void onComplete() async {
+      final draft = localDraft;
+      if (draft?.id == null) return;
+
+      try {
+        final dao = ref.read(assignmentDaoProvider);
+        final assignment = await dao.getAll().then(
+          (rows) => rows.firstWhere(
+            (r) => r.id == draft!.id,
+            orElse: () => rows.first,
+          ),
+        );
+
+        final updated = AssignmentRow(
+          id: assignment.id,
+          title: assignment.title,
+          subject: assignment.subject,
+          subjectId: assignment.subjectId,
+          dueAt: assignment.dueAt,
+          notes: assignment.notes,
+          status: 'completed',
+          completedAt: DateTime.now(),
+        );
+
+        await dao.update(updated);
+        ref.invalidate(assignmentListProvider);
+        await ref
+            .read(assignmentReminderSyncServiceProvider)
+            .resyncIfAuthenticated();
+
+        if (!mounted) return;
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Assignment completed!'),
+            ),
+          );
+          Navigator.of(context).pop();
+        }
+      } catch (_) {
+        if (!mounted) return;
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to complete assignment'),
+            ),
+          );
+        }
+      }
+    }
+    
+    void onEdit() {
+      if (localDraft == null) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => EditAssignmentsPage(
+            initialDraft: localDraft,
+          ),
+        ),
+      );
+    }
+    
+    void onDelete() async {
+      final draft = localDraft;
+      if (draft?.id == null) return;
+
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Delete Assignment'),
+          content: const Text('Are you sure you want to delete this assignment?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true || !mounted) return;
+
+      try {
+        await ref.read(assignmentDaoProvider).delete(draft!.id!);
+        ref.invalidate(assignmentListProvider);
+        await ref
+            .read(assignmentReminderSyncServiceProvider)
+            .resyncIfAuthenticated();
+
+        if (!mounted) return;
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Assignment deleted')),
+          );
+          Navigator.of(context).pop();
+        }
+      } catch (_) {
+        if (!mounted) return;
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to delete assignment')),
+          );
+        }
+      }
+    }
+
     return Scaffold(
       backgroundColor: AppColors.cFFF7F2EE,
+      floatingActionButton: (showComplete || showEdit || showDelete)
+          ? AssignmentDetailFAB(
+              onComplete: onComplete,
+              onEdit: onEdit,
+              onDelete: onDelete,
+              showComplete: showComplete,
+              showEdit: showEdit,
+              showDelete: showDelete,
+            )
+          : const SizedBox.shrink(),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,156 +207,36 @@ class _AssignmentsDetailPageState extends ConsumerState<AssignmentsDetailPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AssignmentDetailOverviewSection(
+                    AssignmentDetailHeroSection(
                       title: widget.item.title,
+                      timeRemaining: timeRemaining,
+                      timeRemainingColor: timeRemainingColor,
                       dueText: dueText,
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 20),
+                    AssignmentDetailProgressCard(
+                      progressPercentage: progressPercentage,
+                    ),
+                    const SizedBox(height: 20),
                     AssignmentDetailStatsSection(
                       subject: widget.item.subject,
                       status: statusText,
                       subjectIcon: subjectIcon,
+                      priority: priority,
+                      priorityColor: priorityColor,
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 20),
                     AssignmentDetailNotesSection(
                       notesText: notesText,
                       notesHtml: notesHtml,
                     ),
-                    const SizedBox(height: 22),
-                    AssignmentDetailActionButtons(
-                      onComplete: isLocal
-                          ? () async {
-                              final draft = localDraft;
-                              if (draft?.id == null) return;
-
-                              try {
-                                final dao = ref.read(assignmentDaoProvider);
-                                final assignment = await dao.getAll().then(
-                                  (rows) => rows.firstWhere(
-                                    (r) => r.id == draft!.id,
-                                    orElse: () => rows.first,
-                                  ),
-                                );
-
-                                final updated = AssignmentRow(
-                                  id: assignment.id,
-                                  title: assignment.title,
-                                  subject: assignment.subject,
-                                  subjectId: assignment.subjectId,
-                                  dueAt: assignment.dueAt,
-                                  notes: assignment.notes,
-                                  status: 'completed',
-                                  completedAt: DateTime.now(),
-                                );
-
-                                await dao.update(updated);
-                                ref.invalidate(assignmentListProvider);
-                                await ref
-                                    .read(assignmentReminderSyncServiceProvider)
-                                    .resyncIfAuthenticated();
-
-                                if (!mounted) return;
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Assignment completed!'),
-                                    ),
-                                  );
-                                  Navigator.of(context).pop();
-                                }
-                              } catch (_) {
-                                if (!mounted) return;
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Failed to complete assignment',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }
-                            }
-                          : null,
-                      showEdit: isLocal,
-                      showDelete: isLocal,
-                      onEdit: localDraft == null
-                          ? null
-                          : () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => EditAssignmentsPage(
-                                    initialDraft: localDraft,
-                                  ),
-                                ),
-                              );
-                            },
-                      onDelete: () async {
-                        final draft = localDraft;
-                        if (draft?.id == null) return;
-
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Delete Assignment'),
-                            content: const Text(
-                              'Are you sure you want to delete this assignment?',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                child: const Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-
-                        if (confirmed != true || !mounted) return;
-
-                        try {
-                          await ref
-                              .read(assignmentDaoProvider)
-                              .delete(draft!.id!);
-                          ref.invalidate(assignmentListProvider);
-                          await ref
-                              .read(assignmentReminderSyncServiceProvider)
-                              .resyncIfAuthenticated();
-
-                          if (!mounted) return;
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Assignment deleted'),
-                              ),
-                            );
-                            Navigator.of(context).pop();
-                          }
-                        } catch (_) {
-                          if (!mounted) return;
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Failed to delete assignment'),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                    ),
+                    const SizedBox(height: 100),
                   ],
                 ),
               ),
             ),
           ],
         ),
-      ),
       bottomNavigationBar: widget.withNavBar
           ? AppNavBar(
               currentIndex: currentIndex,
