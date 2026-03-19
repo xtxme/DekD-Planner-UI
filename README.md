@@ -37,7 +37,13 @@ flutter pub get
 
 This project reads `.env` at app startup (`lib/core/supabase/supabase_initializer.dart`).
 
-Create `.env` in project root:
+Start from the safe template that can be committed to GitHub:
+
+```bash
+cp .env.example .env
+```
+
+Then fill in the real values in `.env`:
 
 ```env
 SUPABASE_URL=your_supabase_project_url
@@ -48,8 +54,10 @@ CANVAS_TOKEN=your_canvas_token
 
 Notes:
 
+- `.env.example` is safe to commit. Keep real secrets only in `.env`.
 - `SUPABASE_URL` and `SUPABASE_ANON_KEY` are required to run the Flutter app.
 - `CANVAS_BASE_URL` and `CANVAS_TOKEN` are used by Edge Function `canvas-proxy`.
+- `.env` is bundled as a Flutter asset for the app build, so the final APK must be built with real values that point to a backend reachable from a physical mobile device.
 
 ## 5. Run Flutter app
 
@@ -119,7 +127,38 @@ supabase db reset
 - Flutter build/run fails
   - Run `flutter doctor` and fix missing platform dependencies.
 
-## 9. Recommended development flow
+## 9. Android APK build
+
+Build the submission APK with:
+
+```bash
+flutter pub get
+flutter build apk --release --no-tree-shake-icons
+```
+
+Artifact:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+Notes:
+
+- The release APK is intended for Android sideload testing.
+- Make sure `.env` contains the real `SUPABASE_URL` and `SUPABASE_ANON_KEY` before building.
+- If your backend only runs on `localhost` or `127.0.0.1`, the APK will install but will not work on a real phone.
+- This project stores some Material icon codepoints dynamically, so release builds must use `--no-tree-shake-icons`.
+
+## 10. Submission checklist
+
+- `build/app/outputs/flutter-apk/app-release.apk`
+- updated `README.md`
+- `.env.example`
+- backend details for evaluation
+- test account for evaluator, if authentication is required
+- repository link: `https://github.com/xtxme/DekD-Planner-UI.git`
+
+## 11. Recommended development flow
 
 1. `flutter pub get`
 2. Configure `.env`
