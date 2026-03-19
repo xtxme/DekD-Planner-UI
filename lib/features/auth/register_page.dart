@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/features/auth/presentation/providers/auth_session_provider.dart';
 import 'package:my_first_app/shared/theme/app_colors.dart';
 import 'package:my_first_app/shared/widgets/navbar/navbar_shell.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'widgets/auth_primary_button.dart';
 
@@ -44,33 +47,81 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
     try {
       final service = ref.read(authRemoteServiceProvider); //UI เรียกใช้งาน
-      await service.register(
+      final result = await service.register(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
         displayName: _nameController.text.trim(),
       );
+
+      if (result.hasActiveSession && result.user != null) {
+        await ref.read(authLocalCacheDaoProvider).saveSession(result.user!);
+        ref.invalidate(authSessionProvider);
+
+        if (!mounted) {
+          return;
+        }
+
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const NavbarShell()),
+          (route) => false,
+        );
+        return;
+      }
+
+      await ref.read(authLocalCacheDaoProvider).clearSession();
       ref.invalidate(authSessionProvider);
 
       if (!mounted) {
         return;
       }
 
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const NavbarShell()),
-        (route) => false,
+      _showSnackBar(
+        'Registration complete. Check your email to confirm your account before logging in.',
       );
-    } catch (_) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    } on AuthException catch (error) {
       if (!mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Register failed. Please try again.')),
+      _showSnackBar(error.message);
+    } on SocketException catch (_) {
+      if (!mounted) {
+        return;
+      }
+      _showSnackBar(
+        'Could not reach the authentication server. Check SUPABASE_URL and backend availability.',
       );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      _showSnackBar(_describeRegisterError(error));
     } finally {
       if (mounted) {
         setState(() => _isSubmitting = false);
       }
     }
+  }
+
+  String _describeRegisterError(Object error) {
+    final message = error.toString();
+    final normalized = message.toLowerCase();
+    final looksLikeHostLookupFailure =
+        normalized.contains('failed host lookup') ||
+        normalized.contains('name or service not known') ||
+        normalized.contains('nodename nor servname provided');
+
+    if (looksLikeHostLookupFailure) {
+      return 'Could not reach the authentication server. Check SUPABASE_URL and backend availability.';
+    }
+
+    return 'Register failed: $message';
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override

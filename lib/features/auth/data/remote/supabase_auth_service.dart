@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
 abstract class AuthRemoteService {
   Future<AuthUser?> signIn({required String email, required String password});
 
-  Future<AuthUser?> register({
+  Future<AuthRegistrationResult> register({
     required String email,
     required String password,
     String? displayName,
@@ -19,6 +19,16 @@ abstract class AuthRemoteService {
   Future<void> sendPasswordResetEmail(String email);
 
   Future<void> updatePassword({required String newPassword});
+}
+
+class AuthRegistrationResult {
+  const AuthRegistrationResult({
+    required this.user,
+    required this.hasActiveSession,
+  });
+
+  final AuthUser? user;
+  final bool hasActiveSession;
 }
 
 class SupabaseAuthService implements AuthRemoteService {
@@ -46,7 +56,7 @@ class SupabaseAuthService implements AuthRemoteService {
   }
 
   @override
-  Future<AuthUser?> register({
+  Future<AuthRegistrationResult> register({
     required String email,
     required String password,
     String? displayName,
@@ -58,7 +68,10 @@ class SupabaseAuthService implements AuthRemoteService {
           ? null
           : {'display_name': displayName.trim()},
     );
-    return _mapUser(response.user);
+    return AuthRegistrationResult(
+      user: _mapUser(response.user),
+      hasActiveSession: response.session != null,
+    );
   }
 
   @override
@@ -89,7 +102,8 @@ class SupabaseAuthService implements AuthRemoteService {
       return _mapUser(userResponse.user);
     } on AuthException catch (error) {
       final message = error.message.toLowerCase();
-      final isInvalidSession = message.contains('invalid jwt') ||
+      final isInvalidSession =
+          message.contains('invalid jwt') ||
           message.contains('session_not_found') ||
           message.contains(
             'session from session_id claim in jwt does not exist',

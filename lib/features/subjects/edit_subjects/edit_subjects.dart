@@ -4,6 +4,7 @@ import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_first_app/features/subjects/data/models/subject_row.dart';
+import 'package:my_first_app/features/subjects/presentation/subject_icon_resolver.dart';
 import 'package:my_first_app/features/subjects/presentation/providers/subject_providers.dart';
 
 import '../../../shared/theme/app_colors.dart';
@@ -65,9 +66,7 @@ class _EditSubjectsPageState extends ConsumerState<EditSubjectsPage> {
       text: widget.subject.description,
     );
     _selectedColor = Color(widget.subject.colorValue);
-    _selectedIcon = widget.subject.iconCodepoint == 0
-        ? Icons.menu_book_rounded
-        : IconData(widget.subject.iconCodepoint, fontFamily: 'MaterialIcons');
+    _selectedIcon = resolveSubjectIconCodepoint(widget.subject.iconCodepoint);
     if (!_colorChoices.contains(_selectedColor)) {
       _colorChoices.add(_selectedColor);
     }

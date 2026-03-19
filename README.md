@@ -1,167 +1,94 @@
-# DekD Planner UI
+# DekD Planner
 
-Flutter app for DekD Planner with Supabase backend and a Supabase Edge Function (`canvas-proxy`).
+คู่มือสำหรับผู้ประเมิน Android APK ของโปรเจกต์ DekD Planner
 
-## 1. Prerequisites
+## ภาพรวมโปรเจกต์
 
-Install these tools first:
+DekD Planner เป็นแอป Flutter สำหรับช่วยจัดการการเรียน โดยมีฟังก์ชันหลักดังนี้
 
-- Flutter SDK (recommended: latest stable)
-- Dart SDK (comes with Flutter)
-- Xcode (for iOS/macOS) or Android Studio + Android SDK (for Android)
-- Supabase CLI (`brew install supabase/tap/supabase` on macOS)
-- Deno VS Code extension (recommended for `supabase/functions/*`)
+- สมัครสมาชิกและเข้าสู่ระบบ
+- ดูรายวิชาและรายละเอียดของแต่ละวิชา
+- ดูงานที่ได้รับมอบหมาย
+- จัดการข้อมูลงานและการแจ้งเตือน
 
-Check versions:
+ชื่อแอปบน Android คือ `DekD Planner` และ package name ปัจจุบันคือ `com.xtxme.dekdplanner`
 
-```bash
-flutter --version
-flutter doctor
-supabase --version
-```
+## Repository และไฟล์ที่ใช้ส่ง
 
-## 2. Clone project
+- Repository: `https://github.com/xtxme/DekD-Planner-UI.git`
+- ไฟล์ APK สำหรับส่ง: `build/app/outputs/flutter-apk/app-release.apk`
 
-```bash
-git clone <your-repo-url>
-cd DekD-Planner-UI
-```
+หากผู้ประเมินได้รับ repository แต่ยังไม่ได้รับไฟล์ APK ให้ใช้ไฟล์ตาม path ข้างต้นหลังจากผู้ส่ง build แบบ release แล้ว
 
-## 3. Install dependencies
+## วิธีติดตั้งและเปิดใช้งานบน Android
 
-```bash
-flutter pub get
-```
+1. นำไฟล์ `app-release.apk` ไปไว้ในโทรศัพท์ Android
+2. เปิดไฟล์ APK บนอุปกรณ์
+3. หากระบบถามสิทธิ์ ให้อนุญาตการติดตั้งจากไฟล์ภายนอก
+4. กดติดตั้งแอป
+5. เปิดแอป `DekD Planner`
 
-## 4. Configure environment variables
+## ข้อมูลสำหรับผู้ประเมิน
 
-This project reads `.env` at app startup (`lib/core/supabase/supabase_initializer.dart`).
+กรุณากรอกข้อมูลส่วนนี้ก่อนส่งงานจริง
 
-Start from the safe template that can be committed to GitHub:
+- อีเมลสำหรับทดสอบ: `tt.icy013@gmail.com`
+- รหัสผ่านสำหรับทดสอบ: `[12345679]`
+- หมายเหตุเพิ่มเติม เช่น role, seed data, หรือขั้นตอนเตรียมบัญชี: `[กรอกก่อนส่ง]`
 
-```bash
-cp .env.example .env
-```
+หากแอปต้องใช้บัญชีที่มีข้อมูลตัวอย่างอยู่แล้ว ผู้ส่งควรตรวจให้แน่ใจว่าบัญชีนี้ login ได้จริงก่อนส่ง APK
 
-Then fill in the real values in `.env`:
+## ลำดับการทดสอบที่แนะนำ
 
-```env
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-CANVAS_BASE_URL=https://your-canvas-domain
-CANVAS_TOKEN=your_canvas_token
-```
+1. ติดตั้ง APK และเปิดแอป
+2. เข้าสู่ระบบด้วยบัญชีที่เตรียมไว้
+3. ตรวจว่าแอปสามารถโหลดข้อมูลจาก backend ได้ตามปกติ
+4. ตรวจหน้า subjects ว่าสามารถแสดงรายวิชาได้
+5. ตรวจหน้า assignments ว่าสามารถแสดงงานที่เกี่ยวข้องได้
+6. หากมีการใช้งาน notification ให้ยอมรับสิทธิ์ที่ Android ขอ แล้วตรวจการทำงานตามโจทย์
 
-Notes:
+## หมายเหตุเรื่อง Backend และ Environment
 
-- `.env.example` is safe to commit. Keep real secrets only in `.env`.
-- `SUPABASE_URL` and `SUPABASE_ANON_KEY` are required to run the Flutter app.
-- `CANVAS_BASE_URL` and `CANVAS_TOKEN` are used by Edge Function `canvas-proxy`.
-- `.env` is bundled as a Flutter asset for the app build, so the final APK must be built with real values that point to a backend reachable from a physical mobile device.
+แอปนี้อ่านค่าจาก `.env` ตอน build และค่าดังกล่าวจะถูก bundle เข้าไปในตัวแอป ดังนั้น APK ที่ส่งต้องถูก build ด้วยค่าจริงที่ใช้งานได้
 
-## 5. Run Flutter app
+ค่าที่จำเป็นมีดังนี้
 
-Start emulator/simulator or connect a device, then run:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `CANVAS_BASE_URL`
+- `CANVAS_TOKEN`
 
-```bash
-flutter run
-```
+ข้อสำคัญ:
 
-Useful options:
+- backend ที่ใช้ประเมินต้องเข้าถึงได้จากโทรศัพท์จริง
+- ไม่ควรใช้ service ที่เปิดได้เฉพาะ `localhost` หรือ `127.0.0.1`
+- ถ้า backend ยังไม่พร้อม แอปอาจติดตั้งได้แต่ใช้งานจริงไม่ได้
 
-```bash
-flutter run -d chrome     # web
-flutter run -d ios        # iOS simulator/device
-flutter run -d android    # Android emulator/device
-```
+ตัวอย่างไฟล์ environment template ดูได้ที่ [.env.example](/Users/icy/flutter/DekD-Planner/DekD-Planner-UI/.env.example)
 
-Quick cleanup (for disk-full/temp cache issues):
+## ข้อจำกัดที่ควรทราบ
 
-```bash
-./tool/cleanup.sh && flutter run
-```
+- release APK ปัจจุบันอาจยังใช้ debug signing หากยังไม่ได้ตั้งค่า signing key สำหรับ production
+- การ build release ต้องใช้คำสั่ง `flutter build apk --release --no-tree-shake-icons`
+- เหตุผลที่ต้องใช้ `--no-tree-shake-icons` คือโปรเจกต์นี้มีการ reconstruct บาง Material icons จาก stored codepoints
+- หากการประเมินครอบคลุม notification ผู้ประเมินต้องกดยอมรับ permission บนอุปกรณ์ Android
 
-## 6. (Optional) Run Supabase locally
+## ข้อมูลสำหรับผู้ส่งงาน
 
-If you want local backend + Edge Function testing:
+ก่อนส่งจริง ควรตรวจรายการต่อไปนี้
 
-```bash
-supabase start
-supabase db reset
-```
+- มีไฟล์ `build/app/outputs/flutter-apk/app-release.apk`
+- อัปเดตบัญชีทดสอบใน README แล้ว
+- backend ที่ใช้ประเมินยัง online และเข้าถึงได้จริง
+- `.env.example` สะท้อน key ที่จำเป็นครบ
 
-Then serve functions locally:
+## หมายเหตุสำหรับผู้พัฒนา
 
-```bash
-supabase functions serve canvas-proxy --env-file .env
-```
-
-Example invoke URL:
-
-```text
-http://127.0.0.1:54321/functions/v1/canvas-proxy
-```
-
-## 7. Database migrations
-
-Migrations are in `supabase/migrations`:
-
-- `001_init.sql`
-- `002_feature_complete_schema.sql`
-
-Apply them with:
-
-```bash
-supabase db reset
-```
-
-## 8. Common issues
-
-- `Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env`
-  - Verify `.env` exists in project root and keys are correct.
-
-- TypeScript error in Edge Function: `Cannot find name 'Deno'`
-  - Open project in VS Code with Deno extension enabled.
-  - Ensure `.vscode/settings.json` keeps `"deno.enablePaths": ["supabase/functions"]`.
-
-- Flutter build/run fails
-  - Run `flutter doctor` and fix missing platform dependencies.
-
-## 9. Android APK build
-
-Build the submission APK with:
+หากต้องการ build APK ใหม่ ให้ใช้คำสั่งนี้
 
 ```bash
 flutter pub get
 flutter build apk --release --no-tree-shake-icons
 ```
 
-Artifact:
-
-```text
-build/app/outputs/flutter-apk/app-release.apk
-```
-
-Notes:
-
-- The release APK is intended for Android sideload testing.
-- Make sure `.env` contains the real `SUPABASE_URL` and `SUPABASE_ANON_KEY` before building.
-- If your backend only runs on `localhost` or `127.0.0.1`, the APK will install but will not work on a real phone.
-- This project stores some Material icon codepoints dynamically, so release builds must use `--no-tree-shake-icons`.
-
-## 10. Submission checklist
-
-- `build/app/outputs/flutter-apk/app-release.apk`
-- updated `README.md`
-- `.env.example`
-- backend details for evaluation
-- test account for evaluator, if authentication is required
-- repository link: `https://github.com/xtxme/DekD-Planner-UI.git`
-
-## 11. Recommended development flow
-
-1. `flutter pub get`
-2. Configure `.env`
-3. `supabase start` (if using local backend)
-4. `flutter run`
-5. Work on app in `lib/` and Edge Function in `supabase/functions/canvas-proxy/index.ts`
+หากต้องการรายละเอียดการส่งงานเพิ่มเติม ดูได้ที่ [docs/submission/android-apk-submission.md](/Users/icy/flutter/DekD-Planner/DekD-Planner-UI/docs/submission/android-apk-submission.md)

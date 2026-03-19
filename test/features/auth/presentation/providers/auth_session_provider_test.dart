@@ -33,7 +33,7 @@ class _FakeAuthRemoteService implements AuthRemoteService {
   Future<AuthUser?> currentUser() async => currentUserResult;
 
   @override
-  Future<AuthUser?> register({
+  Future<AuthRegistrationResult> register({
     required String email,
     required String password,
     String? displayName,
